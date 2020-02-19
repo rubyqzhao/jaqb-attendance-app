@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "986621442209",
+    "firebase_url": "https://jaqb-attendance-app.firebaseio.com",
+    "project_id": "jaqb-attendance-app",
+    "storage_bucket": "jaqb-attendance-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:986621442209:android:3858833a431357812518e0",
+        "android_client_info": {
+          "package_name": "com.example.jaqb"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "986621442209-b23nfeg8jllm7sg72k8bbqe2schkukcr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcvT8Vg-EMaq2kBUtuQcnuXqE-7upKyII"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "986621442209-b23nfeg8jllm7sg72k8bbqe2schkukcr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
