@@ -10,17 +10,17 @@ public class User {
     public User(){
     }
 
-    private String email;
+    private String userName;
     private String password;
     private String firstName;
     private String lastName;
 
-    public String getEmail() {
-        return email;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getPassword() {

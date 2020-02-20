@@ -25,12 +25,17 @@ import android.widget.Toast;
 
 import com.example.jaqb.IncompleteActivity;
 import com.example.jaqb.R;
+import com.example.jaqb.data.model.User;
+import com.example.jaqb.services.FireBaseDBServices;
 import com.example.jaqb.ui.login.LoginViewModel;
 import com.example.jaqb.ui.login.LoginViewModelFactory;
 
 public class RegisterActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
+    private User newUser;
+    private FireBaseDBServices dbServices;
+
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -41,9 +46,12 @@ public class RegisterActivity extends AppCompatActivity {
 
         final EditText usernameEditText = findViewById(R.id.username);
         final EditText passwordEditText = findViewById(R.id.password);
+        final EditText firstNameEditText = findViewById(R.id.firstName);
+        final EditText lastNameEditText = findViewById(R.id.lastName);
         final Button loginButton = findViewById(R.id.login);
         final ProgressBar loadingProgressBar = findViewById(R.id.loading);
 
+        newUser = new User();
         loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
             @Override
             public void onChanged(@Nullable LoginFormState loginFormState) {
@@ -117,8 +125,26 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 loadingProgressBar.setVisibility(View.VISIBLE);
-                loginViewModel.login(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
+                newUser.setUserName(usernameEditText.getText().toString());
+                newUser.setPassword(passwordEditText.getText().toString());
+                newUser.setFirstName(firstNameEditText.getText().toString());
+                newUser.setLastName(lastNameEditText.getText().toString());
+                dbServices = new FireBaseDBServices();
+                int res = dbServices.registerUser(newUser);
+                String message = "";
+                if(res == 1){
+                    message += "User created is: " + newUser.getFirstName();
+                }
+                else if(res == 0){
+                    message += "Error creating user";
+                }
+                Toast.makeText(getApplicationContext()
+                        , message
+                        , Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(RegisterActivity.this, IncompleteActivity.class);
+                startActivity(intent);
+                //loginViewModel.login(usernameEditText.getText().toString(),
+                //       passwordEditText.getText().toString());
             }
         });
     }
