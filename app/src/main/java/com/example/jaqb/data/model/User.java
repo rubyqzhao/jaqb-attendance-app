@@ -1,4 +1,4 @@
-package com.example.jaqb.model;
+package com.example.jaqb.data.model;
 
 public class User {
 
