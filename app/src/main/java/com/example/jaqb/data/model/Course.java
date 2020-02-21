@@ -18,14 +18,32 @@ public class Course {
     private String code;
     private String instructorName;
     private String location;
-    private LocalTime classTime;
+    private LocalTime classStartTime;
+    private LocalTime classEndTime;
+    private String days;
 
-    public LocalTime getClassTime() {
-        return classTime;
+    public LocalTime getClassStartTime() {
+        return classStartTime;
     }
 
-    public void setClassTime(LocalTime classTime) {
-        this.classTime = classTime;
+    public void setClassStartTime(LocalTime classStartTime) {
+        this.classStartTime = classStartTime;
+    }
+
+    public LocalTime getClassEndTime() {
+        return classEndTime;
+    }
+
+    public void setClassEndTime(LocalTime classEndTime) {
+        this.classEndTime = classEndTime;
+    }
+
+    public String getDays() {
+        return days;
+    }
+
+    public void setDays(String days) {
+        this.days = days;
     }
 
     public String getCourseName() {
