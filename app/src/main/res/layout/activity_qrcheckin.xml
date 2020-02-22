@@ -7,42 +7,62 @@
     tools:context=".QRCheckin">
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/qrButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="224dp"
-        android:layout_marginEnd="144dp"
-        android:layout_marginRight="144dp"
+        android:layout_marginTop="164dp"
+        android:layout_marginEnd="148dp"
+        android:layout_marginRight="148dp"
         android:text="SCAN QR CODE"
+        android:onClick="qrButtonOnClick"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/textView3"
+    <Button
+        android:id="@+id/codeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
+        android:layout_marginTop="12dp"
+        android:text="ENTER CODE"
+        android:onClick="codeButtonOnClick"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.483"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/codeArea" />
+
+    <EditText
+        android:id="@+id/codeArea"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:ems="10"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.474"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/orText" />
+
+    <TextView
+        android:id="@+id/codeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="Enter 4-digit Code"
+        app:layout_constraintBottom_toTopOf="@+id/codeArea"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.484"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/orText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
         android:text="OR"
         android:textSize="16dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.488"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button" />
+        app:layout_constraintTop_toBottomOf="@+id/qrButton" />
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Button"
-        tools:layout_editor_absoluteX="163dp"
-        tools:layout_editor_absoluteY="470dp" />
-
-    <EditText
-        android:id="@+id/editText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Enter Code"
-        tools:layout_editor_absoluteX="102dp"
-        tools:layout_editor_absoluteY="407dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>
