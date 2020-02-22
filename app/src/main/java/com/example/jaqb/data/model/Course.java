@@ -14,44 +14,11 @@ public class Course {
     public Course(){
     }
 
-    private String courseName;
-    private String code;
-    private String instructorName;
-    private String location;
-    private LocalTime classStartTime;
-    private LocalTime classEndTime;
-    private String days;
-
-    public LocalTime getClassStartTime() {
-        return classStartTime;
-    }
-
-    public void setClassStartTime(LocalTime classStartTime) {
-        this.classStartTime = classStartTime;
-    }
-
-    public LocalTime getClassEndTime() {
-        return classEndTime;
-    }
-
-    public void setClassEndTime(LocalTime classEndTime) {
-        this.classEndTime = classEndTime;
-    }
-
-    public String getDays() {
-        return days;
-    }
-
-    public void setDays(String days) {
-        this.days = days;
-    }
-
-    public String getCourseName() {
-        return courseName;
-    }
-
-    public void setCourseName(String courseName) {
+    public Course(String courseName, String code, String days, String instructorName) {
         this.courseName = courseName;
+        this.code = code;
+        this.instructorName = instructorName;
+        this.days = days;
     }
 
     public String getCode() {
@@ -62,6 +29,14 @@ public class Course {
         this.code = code;
     }
 
+    public String getCourseName() {
+        return courseName;
+    }
+
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
+    }
+
     public String getInstructorName() {
         return instructorName;
     }
@@ -70,11 +45,19 @@ public class Course {
         this.instructorName = instructorName;
     }
 
-    public String getLocation() {
-        return location;
+    public String getDays() {
+        return days;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setDays(String days) {
+        this.days = days;
     }
+
+    private String code;
+    private String courseName;
+    private String instructorName;
+    //private String location;
+    //private LocalTime classStartTime;
+    //private LocalTime classEndTime;
+    private String days;
 }
