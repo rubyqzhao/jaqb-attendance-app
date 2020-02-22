@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void loginButtonOnClick(View view)
     {
-        Intent intent = new Intent(this, IncompleteActivity.class);
+        Intent intent = new Intent(this, CourseRegistrationActivity.class);
         startActivity(intent);
     }
 
