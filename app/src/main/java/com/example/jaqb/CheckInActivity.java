@@ -3,11 +3,9 @@ package com.example.jaqb;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import androidx.appcompat.widget.Toolbar;
-
-import com.example.jaqb.R;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 public class CheckInActivity extends AppCompatActivity {
 
