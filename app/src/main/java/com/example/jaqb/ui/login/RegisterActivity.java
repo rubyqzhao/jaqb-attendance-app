@@ -23,7 +23,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.jaqb.IncompleteActivity;
+import com.example.jaqb.CheckInActivity;
 import com.example.jaqb.R;
 import com.example.jaqb.data.model.User;
 import com.example.jaqb.services.FireBaseDBServices;
@@ -85,7 +85,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                 //Complete and destroy login activity once successful
                 //finish();
-                Intent intent = new Intent(loginButton.getContext(), IncompleteActivity.class);
+                Intent intent = new Intent(loginButton.getContext(), CheckInActivity.class);
                 startActivity(intent);
             }
         });
