@@ -14,6 +14,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.vision.CameraSource;
@@ -29,20 +30,24 @@ public class QRCheckin extends AppCompatActivity {
     CameraSource cameraSource;
     BarcodeDetector barcodeDetector;
     TextView textView;
+    Boolean value = false;
+    EditText editText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qrcheckin);
 
-        surfaceView = (SurfaceView)findViewById(R.id.cameraView);
-        textView = (TextView)findViewById(R.id.orText);
+        editText = findViewById(R.id.codeArea);
+
+        surfaceView = findViewById(R.id.cameraView);
 
         barcodeDetector = new BarcodeDetector.Builder(this)
                 .setBarcodeFormats(Barcode.QR_CODE).build();
 
         CameraSource.Builder builder = new CameraSource.Builder(this, barcodeDetector);
         builder.setRequestedPreviewSize(640, 480);
+        builder.setAutoFocusEnabled(true);
         cameraSource = builder.build();
 
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
@@ -86,7 +91,14 @@ public class QRCheckin extends AppCompatActivity {
                         public void run() {
                             Vibrator vibrator = (Vibrator)getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
                             vibrator.vibrate(1000);
-                            textView.setText(qrCodes.valueAt(0).displayValue);
+
+                            if(checkValues() == true)
+                                value = true;
+
+                            Intent intent = new Intent(QRCheckin.this, IncompleteActivity.class);
+                            intent.putExtra("success", value);
+                            intent.putExtra("data", qrCodes.valueAt(0).displayValue);
+                            startActivity(intent);
                         }
                     });
                 }
@@ -94,13 +106,21 @@ public class QRCheckin extends AppCompatActivity {
         });
     }
 
-    public void qrButtonOnClick(View view) {
+    public void codeButtonOnClick( View view) {
+        //Not yet implemented
+        if(checkValues() == true)
+            value = true;
         Intent intent = new Intent(QRCheckin.this, IncompleteActivity.class);
+        intent.putExtra("success", value);
+        intent.putExtra("data", editText.getText());
         startActivity(intent);
     }
 
-    public void codeButtonOnClick( View view) {
-        Intent intent = new Intent(QRCheckin.this, IncompleteActivity.class);
-        startActivity(intent);
+    public boolean checkValues() {
+        //Implement all the checks from database here
+
+        double val = Math.random()*2;
+        if(val > 1) return true;
+        return false;
     }
 }
