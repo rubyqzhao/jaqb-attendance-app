@@ -6,7 +6,6 @@ import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.jaqb.data.model.Course;
-import com.example.jaqb.services.FireBaseDBServices;
 import com.example.jaqb.ui.courses.CourseAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;

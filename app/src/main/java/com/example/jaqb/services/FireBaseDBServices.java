@@ -1,21 +1,8 @@
 package com.example.jaqb.services;
 
-import android.content.Context;
-import android.view.View;
-
-import androidx.annotation.NonNull;
-
-import com.example.jaqb.R;
-import com.example.jaqb.data.model.Course;
 import com.example.jaqb.data.model.User;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author amanjotsingh
