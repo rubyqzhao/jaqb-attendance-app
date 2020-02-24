@@ -17,7 +17,7 @@ public class IncompleteActivity extends AppCompatActivity {
 
         //Test Code
         Intent intent = getIntent();
-        String str = intent.getStringExtra("success");
+        String str = intent.getStringExtra("data");
         textView.setText(str);
     }
 }
