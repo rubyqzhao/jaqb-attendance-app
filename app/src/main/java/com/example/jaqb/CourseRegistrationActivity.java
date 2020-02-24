@@ -1,74 +1,52 @@
 package com.example.jaqb;
 
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
-import android.widget.Adapter;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-
+import android.widget.ListView;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.jaqb.data.model.Course;
-import com.example.jaqb.services.DataStatus;
 import com.example.jaqb.services.FireBaseDBServices;
-import com.example.jaqb.ui.courses.RecyclerViewConfig;
+import com.example.jaqb.ui.courses.CourseAdapter;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CourseRegistrationActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerView;
-    private EditText filter;
+    private DatabaseReference databaseReference;
+    private ListView listView;
     private List<Course> courseList;
-    private RecyclerViewConfig.CourseAdapter adapter;
+    private CourseAdapter courseAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_course_registration);
-        recyclerView = (RecyclerView) findViewById(R.id.course_list);
-        filter = (EditText) findViewById(R.id.search);
-        recyclerView.setAdapter(adapter);
-        new FireBaseDBServices().getAllCourses(new DataStatus() {
+        courseList = new ArrayList<>();
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Course");
+        listView = (ListView) findViewById(R.id.course_list);
+        courseAdapter = new CourseAdapter(this, courseList);
+        listView.setAdapter(courseAdapter);
+        databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
-            public void dataIsLoaded(List<Course> courses, List<String> keys) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 findViewById(R.id.progressBar).setVisibility(View.GONE);
-                new RecyclerViewConfig().setConfig(recyclerView, CourseRegistrationActivity.this,
-                        courses, keys);
+                List<String> keys = new ArrayList<String>();
+                for(DataSnapshot keyNode : dataSnapshot.getChildren()){
+                    keys.add(keyNode.getKey());
+                    Course course = keyNode.getValue(Course.class);
+                    courseList.add(course);
+                }
             }
 
             @Override
-            public void dataIsInserted() {
-
-            }
-
-            @Override
-            public void dataIsUpdated() {
-
-            }
-
-            @Override
-            public void dataIsDeleted() {
-
-            }
-        });
-        filter.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                adapter.getFilter().filter(s);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });

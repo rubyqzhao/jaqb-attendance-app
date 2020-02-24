@@ -1,7 +1,11 @@
 package com.example.jaqb.services;
 
+import android.content.Context;
+import android.view.View;
+
 import androidx.annotation.NonNull;
 
+import com.example.jaqb.R;
 import com.example.jaqb.data.model.Course;
 import com.example.jaqb.data.model.User;
 import com.google.firebase.database.DataSnapshot;
@@ -38,34 +42,5 @@ public class FireBaseDBServices{
             e.printStackTrace();
             return 0;
         }
-    }
-
-    public List<Course> getAllCourses(final DataStatus dataStatus){
-        final List<Course> courseList = new ArrayList<Course>();
-        DatabaseReference reff;
-        try{
-            reff = fDB.getReference().child("Course");
-            reff.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    List<String> keys = new ArrayList<String>();
-                    for(DataSnapshot keyNode : dataSnapshot.getChildren()){
-                        keys.add(keyNode.getKey());
-                        Course course = keyNode.getValue(Course.class);
-                        courseList.add(course);
-                    }
-                    dataStatus.dataIsLoaded(courseList, keys);
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-        return courseList;
     }
 }
