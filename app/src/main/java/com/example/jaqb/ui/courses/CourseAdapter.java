@@ -48,22 +48,22 @@ public class CourseAdapter extends BaseAdapter implements Filterable {
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder = null;
+        CourseViewHolder holder;
         if(convertView == null) {
-            holder = new ViewHolder();
+            holder = new CourseViewHolder();
             convertView = inflater.inflate(R.layout.course_list_item, null);
-            holder.courseCode = (TextView) convertView.findViewById(R.id.courseCode);
-            holder.courseName = (TextView) convertView.findViewById(R.id.courseName);
-            holder.courseDays = (TextView) convertView.findViewById(R.id.courseDays);
-            holder.courseInstructor = (TextView) convertView.findViewById(R.id.courseInstructor);
+            holder.setCourseCode((TextView) convertView.findViewById(R.id.courseCode));
+            holder.setCourseName((TextView) convertView.findViewById(R.id.courseName));
+            holder.setCourseDays((TextView) convertView.findViewById(R.id.courseDays));
+            holder.setCourseInstructor((TextView) convertView.findViewById(R.id.courseInstructor));
             convertView.setTag(holder);
         } else {
-            holder = (ViewHolder) convertView.getTag();
+            holder = (CourseViewHolder) convertView.getTag();
         }
-        holder.courseCode.setText(filteredList.get(position).getCode());
-        holder.courseName.setText(filteredList.get(position).getCourseName());
-        holder.courseDays.setText(filteredList.get(position).getDays());
-        holder.courseInstructor.setText(filteredList.get(position).getInstructorName());
+        holder.getCourseCode().setText(filteredList.get(position).getCode());
+        holder.getCourseName().setText(filteredList.get(position).getCourseName());
+        holder.getCourseDays().setText(filteredList.get(position).getDays());
+        holder.getCourseInstructor().setText(filteredList.get(position).getInstructorName());
         return convertView;
     }
 
