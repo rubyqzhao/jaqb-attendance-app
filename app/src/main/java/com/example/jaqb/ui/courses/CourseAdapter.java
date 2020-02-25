@@ -94,13 +94,8 @@ public class CourseAdapter extends BaseAdapter implements Filterable {
 
                 @Override
                 protected void publishResults(CharSequence constraint, FilterResults results) {
-                    if (results.count == 0) {
-                        filteredList.clear();
-                        notifyDataSetInvalidated();
-                    } else {
-                        filteredList = (ArrayList<Course>) results.values;
-                        notifyDataSetChanged();
-                    }
+                    filteredList = (ArrayList<Course>) results.values;
+                    notifyDataSetChanged();
                 }
             };
         }
