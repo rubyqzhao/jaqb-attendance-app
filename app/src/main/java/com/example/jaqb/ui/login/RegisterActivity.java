@@ -23,10 +23,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.jaqb.CheckInActivity;
+import com.example.jaqb.ui.student.CheckInActivity;
 import com.example.jaqb.R;
-import com.example.jaqb.ui.login.LoginViewModel;
-import com.example.jaqb.ui.login.LoginViewModelFactory;
 
 public class RegisterActivity extends AppCompatActivity {
 

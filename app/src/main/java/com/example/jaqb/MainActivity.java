@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.example.jaqb.ui.login.RegisterActivity;
+import com.example.jaqb.ui.student.CheckInActivity;
 
 public class MainActivity extends AppCompatActivity {
 

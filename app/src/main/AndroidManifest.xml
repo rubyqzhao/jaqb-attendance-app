@@ -20,7 +20,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CheckInActivity" />
+        <activity android:name=".ui.student.CheckInActivity" />
+        <activity android:name=".ui.instructor.HomeActivity" />
     </application>
 
 </manifest>
