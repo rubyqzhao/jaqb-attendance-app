@@ -8,7 +8,6 @@ public class CourseViewHolder {
     private TextView courseName;
     private TextView courseDays;
     private TextView courseInstructor;
-    private Button button;
 
     public TextView getCourseCode() {
         return courseCode;
@@ -40,13 +39,5 @@ public class CourseViewHolder {
 
     public void setCourseInstructor(TextView courseInstructor) {
         this.courseInstructor = courseInstructor;
-    }
-
-    public Button getButton() {
-        return button;
-    }
-
-    public void setButton(Button button) {
-        this.button = button;
     }
 }
