@@ -3,11 +3,11 @@ package com.example.jaqb.ui.register;
 /**
  * Class exposing authenticated user details to the UI.
  */
-class LoggedInUserView {
+class RegisteredInUserView {
     private String displayName;
     //... other data fields that may be accessible to the UI
 
-    LoggedInUserView(String displayName) {
+    RegisteredInUserView(String displayName) {
         this.displayName = displayName;
     }
 

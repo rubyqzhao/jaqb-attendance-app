@@ -8,8 +8,8 @@ import com.example.jaqb.data.LoginDataSource;
 import com.example.jaqb.data.LoginRepository;
 
 /**
- * ViewModel provider factory to instantiate LoginViewModel.
- * Required given LoginViewModel has a non-empty constructor
+ * ViewModel provider factory to instantiate RegisterViewModel.
+ * Required given RegisterViewModel has a non-empty constructor
  */
 public class LoginViewModelFactory implements ViewModelProvider.Factory {
 
