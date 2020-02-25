@@ -16,4 +16,5 @@
     <string name="action_attendance_history">"Attendance History"</string>
     <string name="header_upcoming_class">"Upcoming Class"</string>
     <string name="logout">"Log Out"</string>
+    <string name="action_set_rewards">"Set Class Rewards"</string>
 </resources>
