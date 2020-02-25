@@ -1,13 +1,18 @@
 package com.example.jaqb.ui.courses;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 import com.example.jaqb.R;
 import com.example.jaqb.data.model.Course;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,23 +22,25 @@ import java.util.List;
  * 1 textview.
  * */
 
-public class CourseAdapter extends BaseAdapter{
+public class CourseAdapter extends BaseAdapter implements Filterable {
 
     private LayoutInflater inflater;
     private List<Course> courses;
+    private List<Course> filteredList;
+    private Filter filter;
 
     public CourseAdapter(Context context, List<Course> courses) {
-        //super(context, R.layout.course_list_item, courses);
         this.inflater = LayoutInflater.from(context);
         this.courses = courses;
+        this.filteredList = courses;
     }
 
     public int getCount() {
-        return courses.size();
+        return filteredList.size();
     }
 
     public Course getItem(int position) {
-        return courses.get(position);
+        return filteredList.get(position);
     }
 
     public long getItemId(int position) {
@@ -53,10 +60,50 @@ public class CourseAdapter extends BaseAdapter{
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        holder.courseCode.setText(courses.get(position).getCode());
-        holder.courseName.setText(courses.get(position).getCourseName());
-        holder.courseDays.setText(courses.get(position).getDays());
-        holder.courseInstructor.setText(courses.get(position).getInstructorName());
+        holder.courseCode.setText(filteredList.get(position).getCode());
+        holder.courseName.setText(filteredList.get(position).getCourseName());
+        holder.courseDays.setText(filteredList.get(position).getDays());
+        holder.courseInstructor.setText(filteredList.get(position).getInstructorName());
         return convertView;
+    }
+
+    @Override
+    public Filter getFilter() {
+        if(filter == null) {
+            filter = new Filter() {
+                @Override
+                protected FilterResults performFiltering(CharSequence constraint) {
+                    constraint = constraint.toString().toLowerCase();
+                    FilterResults results = new FilterResults();
+                    if(TextUtils.isEmpty(constraint)){
+                        results.values = courses;
+                        results.count = courses.size();
+                    }
+                    if (constraint != null && constraint.toString().length() > 0) {
+                        List<Course> found = new ArrayList<>();
+                        for (Course item : courses) {
+                            if (item.getCode().toString().toLowerCase().contains(constraint)) {
+                                found.add(item);
+                            }
+                        }
+                        results.values = found;
+                        results.count = found.size();
+                    }
+                    return results;
+                }
+
+                @Override
+                protected void publishResults(CharSequence constraint, FilterResults results) {
+                    if (results.count == 0) {
+                        filteredList.clear();
+                        notifyDataSetInvalidated();
+                    } else {
+                        filteredList = (ArrayList<Course>) results.values;
+                        notifyDataSetChanged();
+                    }
+                }
+            };
+        }
+        return filter;
     }
 }

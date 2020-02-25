@@ -3,6 +3,8 @@ package com.example.jaqb;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.SearchView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.jaqb.data.model.Course;
@@ -22,6 +24,7 @@ public class CourseRegistrationActivity extends AppCompatActivity {
     private ListView listView;
     private List<Course> courseList;
     private CourseAdapter courseAdapter;
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +33,8 @@ public class CourseRegistrationActivity extends AppCompatActivity {
         courseList = new ArrayList<>();
         databaseReference = FirebaseDatabase.getInstance().getReference().child("Course");
         listView = (ListView) findViewById(R.id.course_list);
+        searchView = (SearchView) findViewById(R.id.seach);
+
         courseAdapter = new CourseAdapter(this, courseList);
         listView.setAdapter(courseAdapter);
         databaseReference.addValueEventListener(new ValueEventListener() {
@@ -47,6 +52,19 @@ public class CourseRegistrationActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
+            }
+        });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                courseAdapter.getFilter().filter(newText);
+                return true;
             }
         });
     }
