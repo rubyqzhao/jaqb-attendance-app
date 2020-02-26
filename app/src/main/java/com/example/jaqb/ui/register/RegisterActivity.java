@@ -1,9 +1,8 @@
-package com.example.jaqb.ui.login;
+package com.example.jaqb.ui.register;
 
 import android.app.Activity;
 
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,12 +26,10 @@ import com.example.jaqb.IncompleteActivity;
 import com.example.jaqb.R;
 import com.example.jaqb.data.model.User;
 import com.example.jaqb.services.FireBaseDBServices;
-import com.example.jaqb.ui.login.LoginViewModel;
-import com.example.jaqb.ui.login.LoginViewModelFactory;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private LoginViewModel loginViewModel;
+    private RegisterViewModel registerViewModel;
     private User newUser;
     private FireBaseDBServices dbServices;
 
@@ -41,51 +38,51 @@ public class RegisterActivity extends AppCompatActivity {
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory())
-                .get(LoginViewModel.class);
+        registerViewModel = new RegisterViewModel();
 
         final EditText usernameEditText = findViewById(R.id.username);
         final EditText passwordEditText = findViewById(R.id.password);
         final EditText firstNameEditText = findViewById(R.id.firstName);
         final EditText lastNameEditText = findViewById(R.id.lastName);
-        final Button loginButton = findViewById(R.id.login);
+        final Button registerButton = findViewById(R.id.login);
         final ProgressBar loadingProgressBar = findViewById(R.id.loading);
+        dbServices = FireBaseDBServices.getInstance();
 
         newUser = new User();
-        loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
+        registerViewModel.getLoginFormState().observe(this, new Observer<RegisterFormState>() {
             @Override
-            public void onChanged(@Nullable LoginFormState loginFormState) {
-                if (loginFormState == null) {
+            public void onChanged(@Nullable RegisterFormState registerFormState) {
+                if (registerFormState == null) {
                     return;
                 }
-                loginButton.setEnabled(loginFormState.isDataValid());
-                if (loginFormState.getUsernameError() != null) {
-                    usernameEditText.setError(getString(loginFormState.getUsernameError()));
+                registerButton.setEnabled(registerFormState.isDataValid());
+                if (registerFormState.getUsernameError() != null) {
+                    usernameEditText.setError(getString(registerFormState.getUsernameError()));
                 }
-                if (loginFormState.getPasswordError() != null) {
-                    passwordEditText.setError(getString(loginFormState.getPasswordError()));
+                if (registerFormState.getPasswordError() != null) {
+                    passwordEditText.setError(getString(registerFormState.getPasswordError()));
                 }
             }
         });
 
-        loginViewModel.getLoginResult().observe(this, new Observer<LoginResult>() {
+        registerViewModel.getLoginResult().observe(this, new Observer<RegisterResult>() {
             @Override
-            public void onChanged(@Nullable LoginResult loginResult) {
-                if (loginResult == null) {
+            public void onChanged(@Nullable RegisterResult registerResult) {
+                if (registerResult == null) {
                     return;
                 }
                 loadingProgressBar.setVisibility(View.GONE);
-                if (loginResult.getError() != null) {
-                    showLoginFailed(loginResult.getError());
+                if (registerResult.getError() != null) {
+                    showLoginFailed(registerResult.getError());
                 }
-                if (loginResult.getSuccess() != null) {
-                    updateUiWithUser(loginResult.getSuccess());
-                }
+                //if (registerResult.getSuccess() != null) {
+                //    updateUiWithUser(registerResult.getSuccess());
+                //}
                 setResult(Activity.RESULT_OK);
 
                 //Complete and destroy login activity once successful
                 //finish();
-                Intent intent = new Intent(loginButton.getContext(), IncompleteActivity.class);
+                Intent intent = new Intent(registerButton.getContext(), IncompleteActivity.class);
                 startActivity(intent);
             }
         });
@@ -103,7 +100,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                loginViewModel.loginDataChanged(usernameEditText.getText().toString(),
+                registerViewModel.loginDataChanged(usernameEditText.getText().toString(),
                         passwordEditText.getText().toString());
             }
         };
@@ -114,14 +111,14 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    loginViewModel.login(usernameEditText.getText().toString(),
-                            passwordEditText.getText().toString());
+                    //registerViewModel.login(usernameEditText.getText().toString(),
+                    //        passwordEditText.getText().toString());
                 }
                 return false;
             }
         });
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
+        registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 loadingProgressBar.setVisibility(View.VISIBLE);
@@ -129,30 +126,23 @@ public class RegisterActivity extends AppCompatActivity {
                 newUser.setPassword(passwordEditText.getText().toString());
                 newUser.setFirstName(firstNameEditText.getText().toString());
                 newUser.setLastName(lastNameEditText.getText().toString());
-                dbServices = new FireBaseDBServices();
-                int res = dbServices.registerUser(newUser);
+                boolean res = dbServices.registerUser(newUser, getApplicationContext());
                 String message = "";
-                if(res == 1){
+                if(res)
                     message += "User created is: " + newUser.getFirstName();
-                }
-                else if(res == 0){
+                else
                     message += "Error creating user";
-                }
                 Toast.makeText(getApplicationContext()
                         , message
                         , Toast.LENGTH_LONG).show();
+                /*Toast.makeText(getApplicationContext(), "Authentication failed.",
+                        Toast.LENGTH_SHORT).show();*/
                 Intent intent = new Intent(RegisterActivity.this, IncompleteActivity.class);
                 startActivity(intent);
                 //loginViewModel.login(usernameEditText.getText().toString(),
                 //       passwordEditText.getText().toString());
             }
         });
-    }
-
-    private void updateUiWithUser(LoggedInUserView model) {
-        String welcome = getString(R.string.welcome) + model.getDisplayName();
-        // TODO : initiate successful logged in experience
-        //Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
     }
 
     private void showLoginFailed(@StringRes Integer errorString) {

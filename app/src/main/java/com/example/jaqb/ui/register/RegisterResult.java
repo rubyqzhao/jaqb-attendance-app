@@ -1,15 +1,15 @@
-package com.example.jaqb.ui.login;
+package com.example.jaqb.ui.register;
 
 import androidx.annotation.Nullable;
 
 /**
  * Authentication result : success (user details) or error message.
  */
-class LoginResult {
+class RegisterResult {
     @Nullable
     private Integer error;
 
-    LoginResult(@Nullable Integer error) {
+    RegisterResult(@Nullable Integer error) {
         this.error = error;
     }
 

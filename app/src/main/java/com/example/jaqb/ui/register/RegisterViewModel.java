@@ -1,4 +1,4 @@
-package com.example.jaqb.ui.login;
+package com.example.jaqb.ui.register;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -8,26 +8,26 @@ import android.util.Patterns;
 
 import com.example.jaqb.R;
 
-public class LoginViewModel extends ViewModel {
+public class RegisterViewModel extends ViewModel {
 
-    private MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
-    private MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
+    private MutableLiveData<RegisterFormState> loginFormState = new MutableLiveData<>();
+    private MutableLiveData<RegisterResult> loginResult = new MutableLiveData<>();
 
-    LiveData<LoginFormState> getLoginFormState() {
+    LiveData<RegisterFormState> getLoginFormState() {
         return loginFormState;
     }
 
-    LiveData<LoginResult> getLoginResult() {
+    LiveData<RegisterResult> getLoginResult() {
         return loginResult;
     }
 
     public void loginDataChanged(String username, String password) {
         if (!isUserNameValid(username)) {
-            loginFormState.setValue(new LoginFormState(R.string.invalid_username, null));
+            loginFormState.setValue(new RegisterFormState(R.string.invalid_username, null));
         } else if (!isPasswordValid(password)) {
-            loginFormState.setValue(new LoginFormState(null, R.string.invalid_password));
+            loginFormState.setValue(new RegisterFormState(null, R.string.invalid_password));
         } else {
-            loginFormState.setValue(new LoginFormState(true));
+            loginFormState.setValue(new RegisterFormState(true));
         }
     }
 

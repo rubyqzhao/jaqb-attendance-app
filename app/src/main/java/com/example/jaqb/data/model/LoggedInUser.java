@@ -1,23 +1,43 @@
 package com.example.jaqb.data.model;
 
-/**
- * Data class that captures user information for logged in users retrieved from LoginRepository
- */
-public class LoggedInUser {
+import com.google.firebase.auth.FirebaseUser;
 
-    private String userId;
-    private String displayName;
+import java.util.Observable;
 
-    public LoggedInUser(String userId, String displayName) {
-        this.userId = userId;
-        this.displayName = displayName;
+public class LoggedInUser extends Observable {
+    private FirebaseUser firebaseUser;
+    private RegisteredUser registeredUser;
+
+    public LoggedInUser(FirebaseUser firebaseUser, RegisteredUser registeredUser)
+    {
+        this.firebaseUser = firebaseUser;
+        this.registeredUser = registeredUser;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getDisplayName()
+    {
+        return getfName() + " " + getlName();
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public String getfName()
+    {
+        return registeredUser.getfName();
     }
+
+    public String getlName()
+    {
+        return registeredUser.getlName();
+    }
+
+    public UserLevel getLevel()
+    {
+        return registeredUser.getLevel();
+    }
+
+    public String getuID()
+    {
+        return firebaseUser.getUid();
+    }
+
+    //List of courses
 }

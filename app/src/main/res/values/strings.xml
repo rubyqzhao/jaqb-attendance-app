@@ -9,5 +9,11 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
-    <string name="register_course">"Register"</string>
+    <string name="title_activity_login">Sign in</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="action_check_in">"Check In for Class"</string>
+    <string name="action_set_alarm">"Set Alarm"</string>
+    <string name="action_see_rewards">"See Rewards"</string>
+    <string name="action_attendance_history">"Attendance History"</string>
+    <string name="header_upcoming_class">"Upcoming Class"</string>
 </resources>
