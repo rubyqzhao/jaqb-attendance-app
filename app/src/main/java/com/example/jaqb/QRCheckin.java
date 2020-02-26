@@ -19,7 +19,6 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-//import com.droidmentor.locationhelper.LocationUtil.LocationHelper;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -27,7 +26,7 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
 
-public class QRCheckin extends AppCompatActivity {
+public class QRCheckin extends AppCompatActivity implements LocationListener {
 
     SurfaceView surfaceView;
     CameraSource cameraSource;
@@ -35,10 +34,9 @@ public class QRCheckin extends AppCompatActivity {
     TextView textView;
     Boolean value = false;
     EditText editText;
-    Location lastLocation;
+    LocationManager locationManager;
     double Long;
     double Lat;
-    //LocationHelper locationHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +58,8 @@ public class QRCheckin extends AppCompatActivity {
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
-                if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA)
+                        != PackageManager.PERMISSION_GRANTED) {
                     return;
                 }
                 try {
@@ -111,6 +110,8 @@ public class QRCheckin extends AppCompatActivity {
                 }
             }
         });
+
+
     }
 
     public void codeButtonOnClick( View view) {
@@ -124,19 +125,46 @@ public class QRCheckin extends AppCompatActivity {
     }
 
     public boolean checkValues() {
-        //Implement all the checks from database here
+        //Implement all the checks (location, class and time) from database here
 
         double val = Math.random()*2;
         if(val > 1) return true;
         return false;
     }
 
-    void getLocation() {
+    public boolean checkLocation(){
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        Location location = null;
         try {
-            //locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, (LocationListener) this);
+            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         } catch (SecurityException e) {
             e.printStackTrace();
         }
+        assert location != null;
+        onLocationChanged(location);
+
+        /* Get Location from database and compare */
+        return false;
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        Long = location.getLongitude();
+        Lat = location.getLatitude();
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
     }
 }
