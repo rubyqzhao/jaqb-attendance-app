@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.example.jaqb.CourseRegistrationActivity;
 import com.example.jaqb.IncompleteActivity;
 import com.example.jaqb.MainActivity;
 import com.example.jaqb.R;
@@ -43,6 +44,11 @@ public class CheckInActivity extends AppCompatActivity {
         }
         else if (id == R.id.action_instructor) {
             Intent intent = new Intent(this, HomeActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        else if (id == R.id.action_classes) {
+            Intent intent = new Intent(this, CourseRegistrationActivity.class);
             startActivity(intent);
             return true;
         }

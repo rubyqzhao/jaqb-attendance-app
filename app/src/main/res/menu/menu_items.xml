@@ -8,4 +8,7 @@
     <item
         android:id="@+id/action_instructor"
         android:title="Instructor View" />
+    <item
+        android:id="@+id/action_classes"
+        android:title="Class Management" />
 </menu>
