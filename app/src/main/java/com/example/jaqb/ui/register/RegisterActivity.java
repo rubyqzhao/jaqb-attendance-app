@@ -76,9 +76,9 @@ public class RegisterActivity extends AppCompatActivity {
                 if (registerResult.getError() != null) {
                     showLoginFailed(registerResult.getError());
                 }
-                if (registerResult.getSuccess() != null) {
-                    updateUiWithUser(registerResult.getSuccess());
-                }
+                //if (registerResult.getSuccess() != null) {
+                //    updateUiWithUser(registerResult.getSuccess());
+                //}
                 setResult(Activity.RESULT_OK);
 
                 //Complete and destroy login activity once successful
@@ -144,12 +144,6 @@ public class RegisterActivity extends AppCompatActivity {
                 //       passwordEditText.getText().toString());
             }
         });
-    }
-
-    private void updateUiWithUser(RegisteredInUserView model) {
-        String welcome = getString(R.string.welcome) + model.getDisplayName();
-        // TODO : initiate successful logged in experience
-        //Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
     }
 
     private void showLoginFailed(@StringRes Integer errorString) {

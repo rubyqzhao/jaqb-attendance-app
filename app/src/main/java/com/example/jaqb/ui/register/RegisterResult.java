@@ -7,21 +7,10 @@ import androidx.annotation.Nullable;
  */
 class RegisterResult {
     @Nullable
-    private RegisteredInUserView success;
-    @Nullable
     private Integer error;
 
     RegisterResult(@Nullable Integer error) {
         this.error = error;
-    }
-
-    RegisterResult(@Nullable RegisteredInUserView success) {
-        this.success = success;
-    }
-
-    @Nullable
-    RegisteredInUserView getSuccess() {
-        return success;
     }
 
     @Nullable
