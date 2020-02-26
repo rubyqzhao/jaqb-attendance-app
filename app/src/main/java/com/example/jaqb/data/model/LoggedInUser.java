@@ -2,8 +2,9 @@ package com.example.jaqb.data.model;
 
 import com.google.firebase.auth.FirebaseUser;
 
-public class LoggedInUser
-{
+import java.util.Observable;
+
+public class LoggedInUser extends Observable {
     private FirebaseUser firebaseUser;
     private RegisteredUser registeredUser;
 

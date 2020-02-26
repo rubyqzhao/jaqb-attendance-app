@@ -1,10 +1,13 @@
 package com.example.jaqb.services;
 
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
+import com.example.jaqb.CheckInActivity;
+import com.example.jaqb.MainActivity;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.data.model.RegisteredUser;
 import com.example.jaqb.data.model.User;
@@ -19,6 +22,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.Observer;
 
 /**
  * @author amanjotsinghs
@@ -47,7 +52,7 @@ public class FireBaseDBServices {
         return dbService;
     }
 
-    public boolean registerUser(final User newUser){
+    public boolean registerUser(final User newUser, final Context context){
         mAuth.createUserWithEmailAndPassword(newUser.getUserName(), newUser.getPassword())
             .addOnCompleteListener(new OnCompleteListener<AuthResult>()
             {
@@ -76,7 +81,7 @@ public class FireBaseDBServices {
         return true;
     }
 
-    public  boolean loginUser(String email, String password)
+    public  boolean loginUser(String email, String password, final Context context, final Observer observer)
     {
         mAuth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -94,18 +99,17 @@ public class FireBaseDBServices {
                                     UserLevel level = UserLevel.valueOf((String) dataSnapshot.child("level").getValue());
                                     RegisteredUser registeredUser = new RegisteredUser(level, fname, lname);
                                     currentUser = new LoggedInUser(firebaseUser, registeredUser);
-                                    goToUserHomepage();
+                                    observer.update(currentUser, currentUser.getLevel());
                                 }
 
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                                    observer.update(null, null);
                                 }
                             });
                     } else {
                         Log.w(TAG, "signInWithEmail:failure", task.getException());
-                        currentUser = null;
-                        //goToUserHomepage();
+                        observer.update(null, null);
                     }
 
                     // [START_EXCLUDE]
@@ -125,7 +129,7 @@ public class FireBaseDBServices {
         return currentUser;
     }
 
-    public void seeIfStillLoggedIn()
+    public void seeIfStillLoggedIn(final Context context)
     {
         // Check if user is signed in (non-null) and update UI accordingly.
         final FirebaseUser firebaseUser = mAuth.getCurrentUser();
@@ -141,7 +145,6 @@ public class FireBaseDBServices {
                             RegisteredUser registeredUser = new RegisteredUser(level, fname, lname);
                             currentUser = new LoggedInUser(firebaseUser, registeredUser);
                             System.out.println(currentUser.getDisplayName());
-                            goToUserHomepage();
                         }
 
                         @Override
@@ -152,25 +155,6 @@ public class FireBaseDBServices {
         }
         else
             System.out.println("Not Logged-in");
-        goToUserHomepage();
-    }
-
-    public void goToUserHomepage()
-    {
-        if(currentUser == null)
-            //Return to login
-            ;
-        else
-        {
-            switch(currentUser.getLevel())
-            {
-                case INSTRUCTOR:
-                    break;
-                case ADMIN:
-                    break;
-                default:
-                    //Student goes here
-            }
-        }
+        //goToUserHomepage(context);
     }
 }

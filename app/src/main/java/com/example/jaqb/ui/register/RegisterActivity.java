@@ -3,7 +3,6 @@ package com.example.jaqb.ui.register;
 import android.app.Activity;
 
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -127,7 +126,7 @@ public class RegisterActivity extends AppCompatActivity {
                 newUser.setPassword(passwordEditText.getText().toString());
                 newUser.setFirstName(firstNameEditText.getText().toString());
                 newUser.setLastName(lastNameEditText.getText().toString());
-                boolean res = dbServices.registerUser(newUser);
+                boolean res = dbServices.registerUser(newUser, getApplicationContext());
                 String message = "";
                 if(res)
                     message += "User created is: " + newUser.getFirstName();
