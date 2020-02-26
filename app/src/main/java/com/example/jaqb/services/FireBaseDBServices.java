@@ -43,7 +43,7 @@ public class FireBaseDBServices {
         return dbService;
     }
 
-    public boolean registerUser(User newUser){
+    public boolean registerUser(final User newUser){
         mAuth.createUserWithEmailAndPassword(newUser.getUserName(), newUser.getPassword())
             .addOnCompleteListener(new OnCompleteListener<AuthResult>()
             {
@@ -53,10 +53,13 @@ public class FireBaseDBServices {
                         Log.d(TAG, "createUserWithEmail:success");
                         FirebaseUser user = mAuth.getCurrentUser();
                         //updateUI(user);
-                        RegisteredUser registeredUser = new RegisteredUser(user.getUid());
-                        DatabaseReference reff = database.getReference("jaqb-attendance-app/User").push();
+                        RegisteredUser registeredUser = new RegisteredUser(user.getUid(),
+                                newUser.getFirstName(), newUser.getLastName());
+                        DatabaseReference reff = database.getReference("User").child(user.getUid());
                         System.out.println("Working!");
-                        reff.setValue(registeredUser);
+                        reff.child("fname").setValue(registeredUser.getfName());
+                        reff.child("lname").setValue(registeredUser.getlName());
+                        reff.child("level").setValue(registeredUser.getLevel());
                     } else {
                         Log.w(TAG, "createUserWithEmail:failure", task.getException());
                         System.out.println("Not Working!");
