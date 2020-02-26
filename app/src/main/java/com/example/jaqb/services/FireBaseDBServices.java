@@ -56,13 +56,13 @@ public class FireBaseDBServices {
                     if (task.isSuccessful()) {
                         Log.d(TAG, "createUserWithEmail:success");
                         FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                        //updateUI(user);
                         RegisteredUser registeredUser =
                                 new RegisteredUser(newUser.getFirstName(), newUser.getLastName());
                         DatabaseReference reff = database.getReference("User").child(firebaseUser.getUid());
                         reff.child("fname").setValue(registeredUser.getfName());
                         reff.child("lname").setValue(registeredUser.getlName());
                         reff.child("level").setValue(registeredUser.getLevel());
+                        //Go to login page
                     } else {
                         Log.w(TAG, "createUserWithEmail:failure", task.getException());
                         //updateUI(null);
@@ -94,7 +94,7 @@ public class FireBaseDBServices {
                                     UserLevel level = UserLevel.valueOf((String) dataSnapshot.child("level").getValue());
                                     RegisteredUser registeredUser = new RegisteredUser(level, fname, lname);
                                     currentUser = new LoggedInUser(firebaseUser, registeredUser);
-                                    System.out.println(currentUser.getDisplayName());
+                                    goToUserHomepage();
                                 }
 
                                 @Override
@@ -102,10 +102,10 @@ public class FireBaseDBServices {
 
                                 }
                             });
-                        //updateUI(user);
                     } else {
                         Log.w(TAG, "signInWithEmail:failure", task.getException());
-                        //updateUI(null);
+                        currentUser = null;
+                        //goToUserHomepage();
                     }
 
                     // [START_EXCLUDE]
@@ -141,7 +141,7 @@ public class FireBaseDBServices {
                             RegisteredUser registeredUser = new RegisteredUser(level, fname, lname);
                             currentUser = new LoggedInUser(firebaseUser, registeredUser);
                             System.out.println(currentUser.getDisplayName());
-                            //updateUI(currentUser);
+                            goToUserHomepage();
                         }
 
                         @Override
@@ -152,6 +152,25 @@ public class FireBaseDBServices {
         }
         else
             System.out.println("Not Logged-in");
-        //updateUI(currentUser);
+        goToUserHomepage();
+    }
+
+    public void goToUserHomepage()
+    {
+        if(currentUser == null)
+            //Return to login
+            ;
+        else
+        {
+            switch(currentUser.getLevel())
+            {
+                case INSTRUCTOR:
+                    break;
+                case ADMIN:
+                    break;
+                default:
+                    //Student goes here
+            }
+        }
     }
 }
