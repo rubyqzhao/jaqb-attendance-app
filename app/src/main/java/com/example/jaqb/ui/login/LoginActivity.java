@@ -22,13 +22,14 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.jaqb.IncompleteActivity;
 import com.example.jaqb.R;
+import com.example.jaqb.services.FireBaseDBServices;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
-    private FirebaseAuth mAuth;
+    private FireBaseDBServices dbServices;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         final EditText passwordEditText = findViewById(R.id.password);
         final Button loginButton = findViewById(R.id.login);
         final ProgressBar loadingProgressBar = findViewById(R.id.loading);
-        mAuth = FirebaseAuth.getInstance();
+        dbServices = FireBaseDBServices.getInstance();
 
         loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
             @Override
@@ -117,6 +118,25 @@ public class LoginActivity extends AppCompatActivity {
                 loadingProgressBar.setVisibility(View.VISIBLE);
                 //loginViewModel.login(usernameEditText.getText().toString(),
                 //        passwordEditText.getText().toString());
+                loadingProgressBar.setVisibility(View.VISIBLE);
+                String email = usernameEditText.getText().toString();
+                String password = passwordEditText.getText().toString();
+                dbServices = FireBaseDBServices.getInstance();
+                boolean res = dbServices.loginUser(email, password);
+                String message = "";
+                if(res)
+                    message += "Welcome!";
+                else
+                    message += "Error creating user";
+                Toast.makeText(getApplicationContext()
+                        , message
+                        , Toast.LENGTH_LONG).show();
+                /*Toast.makeText(getApplicationContext(), "Authentication failed.",
+                        Toast.LENGTH_SHORT).show();*/
+                Intent intent = new Intent(LoginActivity.this, IncompleteActivity.class);
+                startActivity(intent);
+                //loginViewModel.login(usernameEditText.getText().toString(),
+                //       passwordEditText.getText().toString());
             }
         });
     }
@@ -124,13 +144,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser != null)
-            System.out.println("Logged-in");
-        else
-            System.out.println("Not Logged-in");
-        //updateUI(currentUser);
+        dbServices.seeIfStillLoggedIn();
     }
 
     private void updateUiWithUser(LoggedInUserView model) {

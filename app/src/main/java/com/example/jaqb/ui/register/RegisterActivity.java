@@ -47,6 +47,7 @@ public class RegisterActivity extends AppCompatActivity {
         final EditText lastNameEditText = findViewById(R.id.lastName);
         final Button registerButton = findViewById(R.id.login);
         final ProgressBar loadingProgressBar = findViewById(R.id.loading);
+        dbServices = FireBaseDBServices.getInstance();
 
         newUser = new User();
         registerViewModel.getLoginFormState().observe(this, new Observer<RegisterFormState>() {
@@ -126,7 +127,6 @@ public class RegisterActivity extends AppCompatActivity {
                 newUser.setPassword(passwordEditText.getText().toString());
                 newUser.setFirstName(firstNameEditText.getText().toString());
                 newUser.setLastName(lastNameEditText.getText().toString());
-                dbServices = FireBaseDBServices.getInstance();
                 boolean res = dbServices.registerUser(newUser);
                 String message = "";
                 if(res)

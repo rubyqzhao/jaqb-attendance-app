@@ -9,28 +9,20 @@ import com.google.firebase.database.IgnoreExtraProperties;
 @IgnoreExtraProperties
 public class RegisteredUser {
 
-    private String uID;
     private String fName;
     private String lName;
     private UserLevel level;
 
-    public RegisteredUser() {}
-
-    public RegisteredUser(String uID, String fName, String lName)
+    public RegisteredUser(String fName, String lName)
     {
-        this(uID, UserLevel.STUDENT, fName, lName);
+        this(UserLevel.STUDENT, fName, lName);
     }
 
-    public RegisteredUser(String uID, UserLevel level, String fName, String lName)
+    public RegisteredUser(UserLevel level, String fName, String lName)
     {
-        this.uID = uID;
         this.level = level;
         this.fName = fName;
         this.lName = lName;
-    }
-
-    public String getuID() {
-        return uID;
     }
 
     public UserLevel getLevel()

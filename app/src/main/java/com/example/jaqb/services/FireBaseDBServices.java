@@ -5,16 +5,20 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.data.model.RegisteredUser;
 import com.example.jaqb.data.model.User;
+import com.example.jaqb.data.model.UserLevel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 /**
  * @author amanjotsinghs
@@ -29,7 +33,7 @@ public class FireBaseDBServices {
     private static final FireBaseDBServices dbService = new FireBaseDBServices();
 
     private FirebaseAuth mAuth;
-    private FirebaseUser currentUser;
+    private LoggedInUser currentUser;
     private FirebaseDatabase database;
 
     public FireBaseDBServices()
@@ -51,18 +55,16 @@ public class FireBaseDBServices {
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
                         Log.d(TAG, "createUserWithEmail:success");
-                        FirebaseUser user = mAuth.getCurrentUser();
+                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
                         //updateUI(user);
-                        RegisteredUser registeredUser = new RegisteredUser(user.getUid(),
-                                newUser.getFirstName(), newUser.getLastName());
-                        DatabaseReference reff = database.getReference("User").child(user.getUid());
-                        System.out.println("Working!");
+                        RegisteredUser registeredUser =
+                                new RegisteredUser(newUser.getFirstName(), newUser.getLastName());
+                        DatabaseReference reff = database.getReference("User").child(firebaseUser.getUid());
                         reff.child("fname").setValue(registeredUser.getfName());
                         reff.child("lname").setValue(registeredUser.getlName());
                         reff.child("level").setValue(registeredUser.getLevel());
                     } else {
                         Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                        System.out.println("Not Working!");
                         //updateUI(null);
                     }
 
@@ -76,16 +78,31 @@ public class FireBaseDBServices {
 
     public  boolean loginUser(String email, String password)
     {
-        final boolean[] successful = {false};
         mAuth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
                         Log.d(TAG, "signInWithEmail:success");
-                        currentUser = mAuth.getCurrentUser();
+                        final FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                        database.getReference("User").child(firebaseUser.getUid())
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    String fname = (String) dataSnapshot.child("fname").getValue();
+                                    String lname = (String) dataSnapshot.child("lname").getValue();
+                                    UserLevel level = UserLevel.valueOf((String) dataSnapshot.child("level").getValue());
+                                    RegisteredUser registeredUser = new RegisteredUser(level, fname, lname);
+                                    currentUser = new LoggedInUser(firebaseUser, registeredUser);
+                                    System.out.println(currentUser.getDisplayName());
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
                         //updateUI(user);
-                        successful[0] = true;
                     } else {
                         Log.w(TAG, "signInWithEmail:failure", task.getException());
                         //updateUI(null);
@@ -100,11 +117,41 @@ public class FireBaseDBServices {
                 }
             });
         // [END sign_in_with_email]
-        return successful[0];
+        return true;
     }
 
-    public FirebaseUser getCurrentUser()
+    public LoggedInUser getCurrentUser()
     {
         return currentUser;
+    }
+
+    public void seeIfStillLoggedIn()
+    {
+        // Check if user is signed in (non-null) and update UI accordingly.
+        final FirebaseUser firebaseUser = mAuth.getCurrentUser();
+        if(currentUser != null) {
+            System.out.println("Logged-in");
+            database.getReference("User").child(firebaseUser.getUid())
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            String fname = (String) dataSnapshot.child("fname").getValue();
+                            String lname = (String) dataSnapshot.child("lname").getValue();
+                            UserLevel level = UserLevel.valueOf((String) dataSnapshot.child("level").getValue());
+                            RegisteredUser registeredUser = new RegisteredUser(level, fname, lname);
+                            currentUser = new LoggedInUser(firebaseUser, registeredUser);
+                            System.out.println(currentUser.getDisplayName());
+                            //updateUI(currentUser);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+        }
+        else
+            System.out.println("Not Logged-in");
+        //updateUI(currentUser);
     }
 }
