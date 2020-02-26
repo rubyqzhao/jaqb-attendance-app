@@ -6,20 +6,12 @@ import androidx.lifecycle.ViewModel;
 
 import android.util.Patterns;
 
-import com.example.jaqb.data.LoginRepository;
-import com.example.jaqb.data.Result;
-import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.R;
 
 public class RegisterViewModel extends ViewModel {
 
     private MutableLiveData<RegisterFormState> loginFormState = new MutableLiveData<>();
     private MutableLiveData<RegisterResult> loginResult = new MutableLiveData<>();
-    private LoginRepository loginRepository;
-
-    RegisterViewModel(LoginRepository loginRepository) {
-        this.loginRepository = loginRepository;
-    }
 
     LiveData<RegisterFormState> getLoginFormState() {
         return loginFormState;
@@ -27,18 +19,6 @@ public class RegisterViewModel extends ViewModel {
 
     LiveData<RegisterResult> getLoginResult() {
         return loginResult;
-    }
-
-    public void login(String username, String password) {
-        // can be launched in a separate asynchronous job
-        Result<LoggedInUser> result = loginRepository.login(username, password);
-
-        if (result instanceof Result.Success) {
-            LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
-            loginResult.setValue(new RegisterResult(new RegisteredInUserView(data.getDisplayName())));
-        } else {
-            loginResult.setValue(new RegisterResult(R.string.login_failed));
-        }
     }
 
     public void loginDataChanged(String username, String password) {

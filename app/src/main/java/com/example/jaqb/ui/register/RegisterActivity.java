@@ -39,14 +39,13 @@ public class RegisterActivity extends AppCompatActivity {
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        registerViewModel = ViewModelProviders.of(this, new RegisterViewModelFactory())
-                .get(RegisterViewModel.class);
+        registerViewModel = new RegisterViewModel();
 
         final EditText usernameEditText = findViewById(R.id.username);
         final EditText passwordEditText = findViewById(R.id.password);
         final EditText firstNameEditText = findViewById(R.id.firstName);
         final EditText lastNameEditText = findViewById(R.id.lastName);
-        final Button loginButton = findViewById(R.id.login);
+        final Button registerButton = findViewById(R.id.login);
         final ProgressBar loadingProgressBar = findViewById(R.id.loading);
 
         newUser = new User();
@@ -56,7 +55,7 @@ public class RegisterActivity extends AppCompatActivity {
                 if (registerFormState == null) {
                     return;
                 }
-                loginButton.setEnabled(registerFormState.isDataValid());
+                registerButton.setEnabled(registerFormState.isDataValid());
                 if (registerFormState.getUsernameError() != null) {
                     usernameEditText.setError(getString(registerFormState.getUsernameError()));
                 }
@@ -83,7 +82,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                 //Complete and destroy login activity once successful
                 //finish();
-                Intent intent = new Intent(loginButton.getContext(), IncompleteActivity.class);
+                Intent intent = new Intent(registerButton.getContext(), IncompleteActivity.class);
                 startActivity(intent);
             }
         });
@@ -112,14 +111,14 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    registerViewModel.login(usernameEditText.getText().toString(),
-                            passwordEditText.getText().toString());
+                    //registerViewModel.login(usernameEditText.getText().toString(),
+                    //        passwordEditText.getText().toString());
                 }
                 return false;
             }
         });
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
+        registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 loadingProgressBar.setVisibility(View.VISIBLE);
@@ -127,18 +126,18 @@ public class RegisterActivity extends AppCompatActivity {
                 newUser.setPassword(passwordEditText.getText().toString());
                 newUser.setFirstName(firstNameEditText.getText().toString());
                 newUser.setLastName(lastNameEditText.getText().toString());
-                dbServices = new FireBaseDBServices();
-                int res = dbServices.registerUser(newUser);
+                dbServices = FireBaseDBServices.getInstance();
+                boolean res = dbServices.registerUser(newUser);
                 String message = "";
-                if(res == 1){
+                if(res)
                     message += "User created is: " + newUser.getFirstName();
-                }
-                else if(res == 0){
+                else
                     message += "Error creating user";
-                }
                 Toast.makeText(getApplicationContext()
                         , message
                         , Toast.LENGTH_LONG).show();
+                /*Toast.makeText(getApplicationContext(), "Authentication failed.",
+                        Toast.LENGTH_SHORT).show();*/
                 Intent intent = new Intent(RegisterActivity.this, IncompleteActivity.class);
                 startActivity(intent);
                 //loginViewModel.login(usernameEditText.getText().toString(),
