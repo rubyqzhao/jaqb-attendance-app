@@ -16,8 +16,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.concurrent.Executor;
-
 /**
  * @author amanjotsinghs
  * @author jkdrumm
@@ -47,7 +45,7 @@ public class FireBaseDBServices {
 
     public boolean registerUser(User newUser){
         mAuth.createUserWithEmailAndPassword(newUser.getUserName(), newUser.getPassword())
-            .addOnCompleteListener((Executor) this, new OnCompleteListener<AuthResult>()
+            .addOnCompleteListener(new OnCompleteListener<AuthResult>()
             {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
@@ -56,14 +54,12 @@ public class FireBaseDBServices {
                         FirebaseUser user = mAuth.getCurrentUser();
                         //updateUI(user);
                         RegisteredUser registeredUser = new RegisteredUser(user.getUid());
-                        DatabaseReference reff = database.getReference().child("User").push();
-                        reff.setValue(registeredUser, new DatabaseReference.CompletionListener() {
-                            @Override
-                            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                            }
-                        });
+                        DatabaseReference reff = database.getReference("jaqb-attendance-app/User").push();
+                        System.out.println("Working!");
+                        reff.setValue(registeredUser);
                     } else {
                         Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                        System.out.println("Not Working!");
                         //updateUI(null);
                     }
 
@@ -79,7 +75,7 @@ public class FireBaseDBServices {
     {
         final boolean[] successful = {false};
         mAuth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener((Executor) this, new OnCompleteListener<AuthResult>() {
+            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
