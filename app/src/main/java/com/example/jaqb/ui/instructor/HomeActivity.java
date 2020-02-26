@@ -9,6 +9,7 @@ import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.example.jaqb.CourseRegistrationActivity;
 import com.example.jaqb.IncompleteActivity;
 import com.example.jaqb.MainActivity;
 import com.example.jaqb.R;
@@ -35,6 +36,11 @@ public class HomeActivity extends AppCompatActivity {
         if (id == R.id.action_logout) {
             //todo: remove session information
             Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        else if (id == R.id.action_classes) {
+            Intent intent = new Intent(this, CourseRegistrationActivity.class);
             startActivity(intent);
             return true;
         }
