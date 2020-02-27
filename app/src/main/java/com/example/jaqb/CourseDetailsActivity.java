@@ -2,6 +2,7 @@ package com.example.jaqb;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -74,14 +75,22 @@ public class CourseDetailsActivity extends AppCompatActivity implements View.OnC
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
                         // update database with this course for that user
-                        if(fireBaseDBServices.registerCourse(registerCourse, currentUser)){
-                            System.out.println("Registered");
-                        }
-                        else{
-                            System.out.println("Error in registering course");
-                        };
-                        break;
+                        int res = fireBaseDBServices.registerCourse(registerCourse, currentUser);
+                        Intent intent = new Intent();
+                        if(res == 1){
+                            System.out.println("Registered in new course");
 
+                        }
+                        else if(res == 0){
+                            System.out.println("Already Registered");
+                            intent.setClass(getApplicationContext(), CourseRegistrationActivity.class);
+
+                        }
+                        else if(res == -1){
+                            System.out.println("Error in registering course");
+                            break;
+                        };
+                        startActivity(intent);
                     case DialogInterface.BUTTON_NEGATIVE:
                         break;
                 }

@@ -1,13 +1,10 @@
 package com.example.jaqb.services;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.example.jaqb.CheckInActivity;
-import com.example.jaqb.MainActivity;
 import com.example.jaqb.data.model.Course;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.data.model.RegisteredUser;
@@ -25,6 +22,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Observer;
 
 /**
@@ -99,7 +97,12 @@ public class FireBaseDBServices {
                                     String fname = (String) dataSnapshot.child("fname").getValue();
                                     String lname = (String) dataSnapshot.child("lname").getValue();
                                     UserLevel level = UserLevel.valueOf((String) dataSnapshot.child("level").getValue());
-                                    RegisteredUser registeredUser = new RegisteredUser(level, fname, lname);
+                                    //dataSnapshot.child("courses").getChildren().iterator().next().getKey();
+                                    List<String> courses = new ArrayList<>();
+                                    for(DataSnapshot s : dataSnapshot.child("courses").getChildren()){
+                                        courses.add(s.getKey());
+                                    }
+                                    RegisteredUser registeredUser = new RegisteredUser(fname, lname, level, courses);
                                     currentUser = new LoggedInUser(firebaseUser, registeredUser);
                                     observer.update(currentUser, currentUser.getLevel());
                                 }
@@ -144,7 +147,11 @@ public class FireBaseDBServices {
                             String fname = (String) dataSnapshot.child("fname").getValue();
                             String lname = (String) dataSnapshot.child("lname").getValue();
                             UserLevel level = UserLevel.valueOf((String) dataSnapshot.child("level").getValue());
-                            RegisteredUser registeredUser = new RegisteredUser(level, fname, lname);
+                            List<String> courses = new ArrayList<>();
+                            for(DataSnapshot s : dataSnapshot.child("courses").getChildren()){
+                                courses.add(s.getKey());
+                            }
+                            RegisteredUser registeredUser = new RegisteredUser(fname, lname, level, courses);
                             currentUser = new LoggedInUser(firebaseUser, registeredUser);
                             System.out.println(currentUser.getDisplayName());
                         }
@@ -160,19 +167,56 @@ public class FireBaseDBServices {
         //goToUserHomepage(context);
     }
 
-    public boolean registerCourse(Course course, LoggedInUser user)
+    public int registerCourse(final Course newCourse, LoggedInUser user)
     {
-        boolean res = false;
-        if(user != null){
+        int res;
+        List<String> presentCourses = currentUser.getRegisteredCourses();
+        for(String course : presentCourses){
+            if(newCourse.getCode().equalsIgnoreCase(course)){
+                res = 0;
+                return res;
+            }
+        }
+        try{
+            DatabaseReference reff = database.getReference("User").child(user.getuID());
+            reff.child("courses").child(newCourse.getCode()).setValue("true");
+            res = 1;
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            res = -1;
+        }
+        return res;
+        /*if(user != null){
             try{
                 DatabaseReference reff = database.getReference("User").child(user.getuID());
-                reff.child("courses").child(course.getCode()).setValue("true");
-                res = true;
+                reff.child("courses").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for(DataSnapshot keyNode : dataSnapshot.getChildren()){
+                            if(course.getCode().equalsIgnoreCase(keyNode.getKey())){
+                                res[0] = 0;
+                                break;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+                if(res[0] == 0){
+                    return res[0];
+                }
+                else{
+                    reff.child("courses").child(course.getCode()).setValue("true");
+                    res[0] = 1;
+                }
             }
             catch(Exception e){
                 e.printStackTrace();
             }
-        }
-        return res;
+        }*/
     }
 }

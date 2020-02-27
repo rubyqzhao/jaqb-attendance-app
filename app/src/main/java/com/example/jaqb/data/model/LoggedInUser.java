@@ -2,15 +2,16 @@ package com.example.jaqb.data.model;
 
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
 public class LoggedInUser extends Observable {
     private FirebaseUser firebaseUser;
     private RegisteredUser registeredUser;
-    private List<Course> registeredCourses;
+    private List<String> registeredCourses = new ArrayList<>();
 
-    public List<Course> getRegisteredCourses() {
+    public List<String> getRegisteredCourses() {
         return registeredCourses;
     }
 
@@ -18,6 +19,7 @@ public class LoggedInUser extends Observable {
     {
         this.firebaseUser = firebaseUser;
         this.registeredUser = registeredUser;
+        this.registeredCourses.addAll(registeredUser.getCourses());
     }
 
     public String getDisplayName()

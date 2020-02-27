@@ -43,7 +43,7 @@ public class CourseRegistrationActivity extends AppCompatActivity implements
         searchView = (SearchView) findViewById(R.id.seach);
         courseAdapter = new CourseAdapter(this, courseList);
         listView.setAdapter(courseAdapter);
-        databaseReference.addValueEventListener(this);
+        databaseReference.addListenerForSingleValueEvent(this);
         searchView.setOnQueryTextListener(this);
         listView.setOnItemClickListener(this);
     }
