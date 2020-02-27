@@ -52,4 +52,9 @@ public class HomeActivity extends AppCompatActivity {
         Intent intent = new Intent(this, IncompleteActivity.class);
         startActivity(intent);
     }
+
+    public void GetQRButtonOnClick(View view) {
+        Intent intent = new Intent(this, IncompleteActivity.class);
+        startActivity(intent);
+    }
 }
