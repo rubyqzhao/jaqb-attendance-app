@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.example.jaqb.data.model.Course;
+import com.example.jaqb.ui.menu.MenuOptionsActivity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,7 +30,7 @@ import com.example.jaqb.ui.instructor.HomeActivity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CheckInActivity extends AppCompatActivity {
+public class CheckInActivity extends MenuOptionsActivity {
 
     private TextView upcomingClass;
     private DatabaseReference databaseReference;
@@ -58,6 +59,7 @@ public class CheckInActivity extends AppCompatActivity {
                     Course course = keyNode.getValue(Course.class);
                     courseList.add(course);
                 }
+                upcomingClass.setText(determineClassToDisplay());
             }
 
             @Override
@@ -70,36 +72,6 @@ public class CheckInActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         upcomingClass.setText(determineClassToDisplay());
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_items, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_logout) {
-            //todo: remove session information
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            return true;
-        }
-        else if (id == R.id.action_instructor) {
-            Intent intent = new Intent(this, HomeActivity.class);
-            startActivity(intent);
-            return true;
-        }
-        else if (id == R.id.action_classes) {
-            Intent intent = new Intent(this, CourseRegistrationActivity.class);
-            startActivity(intent);
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     public void checkinButtonOnClick(View view) {
@@ -126,7 +98,7 @@ public class CheckInActivity extends AppCompatActivity {
         String message;
         //todo: change decision logic to get closest upcoming class
         if(!courseList.isEmpty()) {
-            Course course = courseList.get(0);
+            Course course = courseList.get(1);
             String code = course.getCode();
             String days = course.getDays();
 

@@ -155,4 +155,10 @@ public class FireBaseDBServices{
             System.out.println("Not Logged-in");
         //goToUserHomepage(context);
     }
+
+    public void logoutUser() {
+        currentUser = null;
+        mAuth.signOut();
+    }
+
 }

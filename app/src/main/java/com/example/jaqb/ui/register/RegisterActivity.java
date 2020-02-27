@@ -34,7 +34,6 @@ public class RegisterActivity extends AppCompatActivity {
     private User newUser;
     private FireBaseDBServices dbServices;
 
-
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

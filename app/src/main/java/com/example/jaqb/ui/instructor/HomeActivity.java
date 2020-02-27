@@ -16,11 +16,12 @@ import com.example.jaqb.IncompleteActivity;
 import com.example.jaqb.MainActivity;
 import com.example.jaqb.R;
 
+import com.example.jaqb.ui.menu.MenuOptionsActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends MenuOptionsActivity {
     private FusedLocationProviderClient fusedLocationClient;
     private double latitude;
     private double longitude;
@@ -39,31 +40,6 @@ public class HomeActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         //todo: update coordDisplay using what's stored in the database
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_items, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_logout) {
-            //todo: remove session information
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            return true;
-        }
-        else if (id == R.id.action_classes) {
-            Intent intent = new Intent(this, CourseRegistrationActivity.class);
-            startActivity(intent);
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     public void SetRewardsButtonOnClick(View view) {
