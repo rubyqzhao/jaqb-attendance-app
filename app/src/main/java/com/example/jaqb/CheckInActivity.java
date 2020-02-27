@@ -39,4 +39,8 @@ public class CheckInActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void searchCoursesButtonOnClick(View view) {
+        Intent intent = new Intent(this, CourseRegistrationActivity.class);
+        startActivity(intent);
+    }
 }

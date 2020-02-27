@@ -6,7 +6,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.jaqb.data.model.Course;
+import com.example.jaqb.data.model.LoggedInUser;
+import com.example.jaqb.services.FireBaseDBServices;
 
 /**
  * @author amanjotsingh
@@ -27,6 +33,9 @@ public class CourseDetailsActivity extends AppCompatActivity implements View.OnC
     private TextView courseInstructorTextView;
     private Button registerButton;
     private DialogInterface.OnClickListener dialogClickListener;
+    private FireBaseDBServices fireBaseDBServices;
+    private LoggedInUser currentUser;
+    private Course registerCourse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,14 +56,30 @@ public class CourseDetailsActivity extends AppCompatActivity implements View.OnC
         courseDaysTextView.setText(courseDays);
         courseInstructorTextView.setText(courseInstructor);
 
+        registerCourse = new Course();
+        registerCourse.setDays(courseDays);
+        registerCourse.setCode(courseCode);
+        registerCourse.setInstructorName(courseInstructor);
+        registerCourse.setCourseName(courseName);
+
+        fireBaseDBServices = FireBaseDBServices.getInstance();
+        currentUser = fireBaseDBServices.getCurrentUser();
+
         registerButton = (Button) findViewById(R.id.register);
         registerButton.setOnClickListener(this);
+
         dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
                         // update database with this course for that user
+                        if(fireBaseDBServices.registerCourse(registerCourse, currentUser)){
+                            System.out.println("Registered");
+                        }
+                        else{
+                            System.out.println("Error in registering course");
+                        };
                         break;
 
                     case DialogInterface.BUTTON_NEGATIVE:

@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 
 import com.example.jaqb.CheckInActivity;
 import com.example.jaqb.MainActivity;
+import com.example.jaqb.data.model.Course;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.data.model.RegisteredUser;
 import com.example.jaqb.data.model.User;
@@ -23,6 +24,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Observer;
 
 /**
@@ -156,5 +158,21 @@ public class FireBaseDBServices {
         else
             System.out.println("Not Logged-in");
         //goToUserHomepage(context);
+    }
+
+    public boolean registerCourse(Course course, LoggedInUser user)
+    {
+        boolean res = false;
+        if(user != null){
+            try{
+                DatabaseReference reff = database.getReference("User").child(user.getuID());
+                reff.child("courses").child(course.getCode()).setValue("true");
+                res = true;
+            }
+            catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+        return res;
     }
 }
