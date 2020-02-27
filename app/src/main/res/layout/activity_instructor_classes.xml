@@ -8,19 +8,16 @@
 
     <Button
         android:id="@+id/set_location"
-        android:layout_width="wrap_content"
+        android:layout_width="120dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="18dp"
-        android:layout_marginRight="18dp"
+        android:layout_marginTop="44dp"
+        android:layout_marginEnd="36dp"
+        android:layout_marginRight="36dp"
         android:background="@color/colorAccent"
-        android:onClick="SetRewardsButtonOnClick"
-        android:text="@string/action_submit"
+        android:onClick="submitLocationButtonOnClick"
+        android:text="@string/action_submit_location"
         android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/address_input"
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
     <Button
@@ -78,19 +75,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/instructor_toolbar" />
 
-    <EditText
-        android:id="@+id/address_input"
-        android:layout_width="264dp"
-        android:layout_height="47dp"
-        android:layout_marginStart="31dp"
-        android:layout_marginLeft="31dp"
-        android:layout_marginTop="42dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginRight="12dp"
-        android:ems="10"
-        android:hint="Set your location for class"
-        android:inputType="textPostalAddress"
-        app:layout_constraintEnd_toStartOf="@+id/set_location"
+    <TextView
+        android:id="@+id/gps_coord"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="27dp"
+        android:layout_marginLeft="27dp"
+        android:layout_marginTop="45dp"
+        android:text="No location has been set!"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
