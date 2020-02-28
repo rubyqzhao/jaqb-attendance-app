@@ -38,7 +38,7 @@ public class CheckInActivity extends AppCompatActivity {
 
         if (id == R.id.action_logout) {
             FireBaseDBServices.getInstance().logoutUser();
-            Intent intent = new Intent(this, MainActivity.class);
+            Intent intent = new Intent(this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             return true;
         }
