@@ -15,6 +15,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -35,6 +36,8 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
     Boolean value = false;
     EditText editText;
     LocationManager locationManager;
+    String data;
+    Integer codeFound = 0;
     double Long;
     double Lat;
 
@@ -92,21 +95,11 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
                 final SparseArray<Barcode> qrCodes = detections.getDetectedItems();
                 
                 if(qrCodes.size()!=0) {
-                    textView.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Vibrator vibrator = (Vibrator)getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
-                            vibrator.vibrate(1000);
 
-                            if(checkValues() == true)
-                                value = true;
-
-                            Intent intent = new Intent(QRCheckin.this, IncompleteActivity.class);
-                            //intent.putExtra("success", value);
-                            intent.putExtra("data", qrCodes.valueAt(0).displayValue);
-                            startActivity(intent);
-                        }
-                    });
+                    Vibrator vibrator = (Vibrator)getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+                    vibrator.vibrate(100);
+                    codeFound++;
+                    runActivity(qrCodes, codeFound);
                 }
             }
         });
@@ -119,7 +112,6 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
         if(checkValues() == true)
             value = true;
         Intent intent = new Intent(QRCheckin.this, IncompleteActivity.class);
-        //intent.putExtra("success", value);
         intent.putExtra("data", editText.getText().toString());
         startActivity(intent);
     }
@@ -166,5 +158,15 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
     @Override
     public void onProviderDisabled(String provider) {
 
+    }
+
+    public void runActivity(SparseArray<Barcode> qrCodes, Integer codefound) {
+        if(codefound == 1){
+            Intent intent = new Intent(QRCheckin.this, IncompleteActivity.class);
+            intent.putExtra("data", qrCodes.valueAt(0).displayValue);
+            finish();
+            startActivity(intent);
+            codeFound = 0;
+        }
     }
 }

@@ -21,4 +21,5 @@ public class IncompleteActivity extends AppCompatActivity {
         String str = intent.getStringExtra("data");
         testTextView.setText(str);
     }
+
 }
