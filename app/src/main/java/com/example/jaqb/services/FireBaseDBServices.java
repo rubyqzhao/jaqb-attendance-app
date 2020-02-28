@@ -208,6 +208,7 @@ public class FireBaseDBServices {
     public void logoutUser() {
         currentUser = null;
         mAuth.signOut();
+        allCourses.clear();
     }
 
     public void addPoints(final int numPoints, final Observer observer) {
