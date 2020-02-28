@@ -5,7 +5,20 @@
     android:id="@+id/linearLayout"
     style="@style/Widget.AppCompat.ListView"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/courseTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="8dp"
+        android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/courseInstructor" />
 
     <TextView
         android:id="@+id/courseCode"
@@ -14,6 +27,7 @@
         android:layout_marginStart="4dp"
         android:layout_marginLeft="4dp"
         android:layout_marginTop="5dp"
+        android:text="text"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -26,6 +40,7 @@
         android:layout_marginLeft="4dp"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="8dp"
+        android:text="test"
         android:textStyle="italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,6 +53,7 @@
         android:layout_marginTop="5dp"
         android:layout_marginEnd="4dp"
         android:layout_marginRight="4dp"
+        android:text="test"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -47,6 +63,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
+        android:text="test"
         app:layout_constraintEnd_toStartOf="@+id/courseInstructor"
         app:layout_constraintStart_toEndOf="@+id/courseCode"
         app:layout_constraintTop_toTopOf="parent" />

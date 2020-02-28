@@ -8,6 +8,15 @@ public class CourseViewHolder {
     private TextView courseName;
     private TextView courseDays;
     private TextView courseInstructor;
+    private TextView courseTime;
+
+    public TextView getCourseTime() {
+        return courseTime;
+    }
+
+    public void setCourseTime(TextView courseTime) {
+        this.courseTime = courseTime;
+    }
 
     public TextView getCourseCode() {
         return courseCode;

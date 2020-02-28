@@ -56,6 +56,7 @@ public class CourseAdapter extends BaseAdapter implements Filterable {
             holder.setCourseName((TextView) convertView.findViewById(R.id.courseName));
             holder.setCourseDays((TextView) convertView.findViewById(R.id.courseDays));
             holder.setCourseInstructor((TextView) convertView.findViewById(R.id.courseInstructor));
+            holder.setCourseTime((TextView) convertView.findViewById(R.id.courseTime));
             convertView.setTag(holder);
         } else {
             holder = (CourseViewHolder) convertView.getTag();
@@ -64,6 +65,7 @@ public class CourseAdapter extends BaseAdapter implements Filterable {
         holder.getCourseName().setText(filteredList.get(position).getCourseName());
         holder.getCourseDays().setText(filteredList.get(position).getDays());
         holder.getCourseInstructor().setText(filteredList.get(position).getInstructorName());
+        holder.getCourseTime().setText(filteredList.get(position).getTime());
         return convertView;
     }
 
