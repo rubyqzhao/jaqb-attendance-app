@@ -55,7 +55,7 @@ public class FireBaseDBServices {
         return dbService;
     }
 
-    public boolean registerUser(final User newUser, final Observer observer){
+    public void registerUser(final User newUser, final Observer observer){
         mAuth.createUserWithEmailAndPassword(newUser.getUserName(), newUser.getPassword())
             .addOnCompleteListener(new OnCompleteListener<AuthResult>()
             {
@@ -70,22 +70,16 @@ public class FireBaseDBServices {
                         reff.child("fname").setValue(registeredUser.getfName());
                         reff.child("lname").setValue(registeredUser.getlName());
                         reff.child("level").setValue(registeredUser.getLevel());
-                        //observer.update(null =, registeredUser);
-                        //Go to login page
+                        observer.update(null, registeredUser);
                     } else {
                         Log.w(TAG, "createUserWithEmail:failure", task.getException());
                         observer.update(null, null);
                     }
-
-                    // [START_EXCLUDE]
-                    //hideProgressBar();
-                    // [END_EXCLUDE]
                 }
             });
-        return true;
     }
 
-    public  boolean loginUser(String email, String password, final Observer observer)
+    public void loginUser(String email, String password, final Observer observer)
     {
         mAuth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -135,17 +129,11 @@ public class FireBaseDBServices {
                         Log.w(TAG, "signInWithEmail:failure", task.getException());
                         observer.update(null, null);
                     }
-
-                    // [START_EXCLUDE]
                     if (!task.isSuccessful()) {
                         //mStatusTextView.setText(R.string.auth_failed);
                     }
-                    //hideProgressBar();
-                    // [END_EXCLUDE]
                 }
             });
-        // [END sign_in_with_email]
-        return true;
     }
 
     public LoggedInUser getCurrentUser()

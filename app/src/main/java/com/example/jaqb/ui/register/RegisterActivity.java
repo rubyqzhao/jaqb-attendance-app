@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jaqb.IncompleteActivity;
+import com.example.jaqb.ui.login.LoginActivity;
 import com.example.jaqb.ui.student.CheckInActivity;
 import com.example.jaqb.IncompleteActivity;
 import com.example.jaqb.R;
@@ -37,6 +38,7 @@ public class RegisterActivity extends AppCompatActivity implements java.util.Obs
     private RegisterViewModel registerViewModel;
     private User newUser;
     private FireBaseDBServices dbServices;
+    private ProgressBar loadingProgressBar;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -50,7 +52,7 @@ public class RegisterActivity extends AppCompatActivity implements java.util.Obs
         final EditText firstNameEditText = findViewById(R.id.firstName);
         final EditText lastNameEditText = findViewById(R.id.lastName);
         final Button registerButton = findViewById(R.id.login);
-        final ProgressBar loadingProgressBar = findViewById(R.id.loading);
+        loadingProgressBar = findViewById(R.id.loading);
         dbServices = FireBaseDBServices.getInstance();
 
         newUser = new User();
@@ -131,21 +133,7 @@ public class RegisterActivity extends AppCompatActivity implements java.util.Obs
                 newUser.setPassword(passwordEditText.getText().toString());
                 newUser.setFirstName(firstNameEditText.getText().toString());
                 newUser.setLastName(lastNameEditText.getText().toString());
-                boolean res = dbServices.registerUser(newUser, registerActivity);
-                String message = "";
-                if(res)
-                    message += "User created is: " + newUser.getFirstName();
-                else
-                    message += "Error creating user";
-                Toast.makeText(getApplicationContext()
-                        , message
-                        , Toast.LENGTH_LONG).show();
-                /*Toast.makeText(getApplicationContext(), "Authentication failed.",
-                        Toast.LENGTH_SHORT).show();*/
-                Intent intent = new Intent(RegisterActivity.this, IncompleteActivity.class);
-                startActivity(intent);
-                //loginViewModel.login(usernameEditText.getText().toString(),
-                //       passwordEditText.getText().toString());
+                dbServices.registerUser(newUser, registerActivity);
             }
         });
     }
@@ -157,6 +145,18 @@ public class RegisterActivity extends AppCompatActivity implements java.util.Obs
     @Override
     public void update(Observable o, Object arg)
     {
-
+        System.out.println(arg);
+        if(arg == null)
+        {
+            //Invalid credentials
+            loadingProgressBar.setVisibility(View.GONE);
+            Toast.makeText(getApplicationContext(), "Email is already taken",
+                    Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(intent);
+        }
     }
 }

@@ -18,18 +18,15 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 
-import com.example.jaqb.IncompleteActivity;
-import com.example.jaqb.MainActivity;
 import com.example.jaqb.CheckInActivity;
-
+import com.example.jaqb.IncompleteActivity;
 import com.example.jaqb.R;
 import com.example.jaqb.data.model.UserLevel;
 import com.example.jaqb.services.FireBaseDBServices;
+import com.example.jaqb.ui.instructor.HomeActivity;
 
 import java.util.Observable;
-import com.example.jaqb.ui.student.CheckInActivity;
 
 public class LoginActivity extends AppCompatActivity implements java.util.Observer {
 
@@ -158,7 +155,7 @@ public class LoginActivity extends AppCompatActivity implements java.util.Observ
             switch((UserLevel) (arg))
             {
                 case INSTRUCTOR:
-                    intent = new Intent(getApplicationContext(), IncompleteActivity.class);
+                    intent = new Intent(getApplicationContext(), HomeActivity.class);
                     break;
                 case ADMIN:
                     intent = new Intent(getApplicationContext(), IncompleteActivity.class);
