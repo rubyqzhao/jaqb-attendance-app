@@ -41,7 +41,7 @@ public class FireBaseDBServices {
     private LoggedInUser currentUser;
     private FirebaseDatabase database;
 
-    public FireBaseDBServices()
+    private FireBaseDBServices()
     {
         mAuth = FirebaseAuth.getInstance();
         database =  FirebaseDatabase.getInstance();
@@ -52,7 +52,7 @@ public class FireBaseDBServices {
         return dbService;
     }
 
-    public boolean registerUser(final User newUser, final Context context){
+    public boolean registerUser(final User newUser, final Observer observer){
         mAuth.createUserWithEmailAndPassword(newUser.getUserName(), newUser.getPassword())
             .addOnCompleteListener(new OnCompleteListener<AuthResult>()
             {
@@ -67,10 +67,11 @@ public class FireBaseDBServices {
                         reff.child("fname").setValue(registeredUser.getfName());
                         reff.child("lname").setValue(registeredUser.getlName());
                         reff.child("level").setValue(registeredUser.getLevel());
+                        //observer.update(null =, registeredUser);
                         //Go to login page
                     } else {
                         Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                        //updateUI(null);
+                        observer.update(null, null);
                     }
 
                     // [START_EXCLUDE]
@@ -81,7 +82,7 @@ public class FireBaseDBServices {
         return true;
     }
 
-    public  boolean loginUser(String email, String password, final Context context, final Observer observer)
+    public  boolean loginUser(String email, String password, final Observer observer)
     {
         mAuth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
