@@ -1,17 +1,8 @@
 package com.example.jaqb.ui.login;
 
 import android.app.Activity;
-
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -23,26 +14,39 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+
+import com.example.jaqb.CheckInActivity;
 import com.example.jaqb.IncompleteActivity;
 import com.example.jaqb.R;
-import com.example.jaqb.ui.login.LoginViewModel;
-import com.example.jaqb.ui.login.LoginViewModelFactory;
+import com.example.jaqb.data.model.UserLevel;
+import com.example.jaqb.services.FireBaseDBServices;
+import com.example.jaqb.ui.instructor.HomeActivity;
 
-public class RegisterActivity extends AppCompatActivity {
+import java.util.Observable;
 
+public class LoginActivity extends AppCompatActivity implements java.util.Observer {
+
+    private LoginActivity loginActivity;
     private LoginViewModel loginViewModel;
+    private FireBaseDBServices dbServices;
+    private ProgressBar loadingProgressBar;
 
     @Override
-    public void onCreate(final Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
-        loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory())
-                .get(LoginViewModel.class);
+        setContentView(R.layout.activity_login);
+        loginViewModel = new LoginViewModel();
+        loginActivity = this;
 
         final EditText usernameEditText = findViewById(R.id.username);
         final EditText passwordEditText = findViewById(R.id.password);
         final Button loginButton = findViewById(R.id.login);
-        final ProgressBar loadingProgressBar = findViewById(R.id.loading);
+        loadingProgressBar = findViewById(R.id.loading);
+        dbServices = FireBaseDBServices.getInstance();
 
         loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
             @Override
@@ -70,14 +74,14 @@ public class RegisterActivity extends AppCompatActivity {
                 if (loginResult.getError() != null) {
                     showLoginFailed(loginResult.getError());
                 }
-                if (loginResult.getSuccess() != null) {
-                    updateUiWithUser(loginResult.getSuccess());
-                }
+                //if (loginResult.getSuccess() != null) {
+                //    updateUiWithUser(loginResult.getSuccess());
+                //}
                 setResult(Activity.RESULT_OK);
 
                 //Complete and destroy login activity once successful
                 //finish();
-                Intent intent = new Intent(loginButton.getContext(), IncompleteActivity.class);
+                Intent intent = new Intent(loginButton.getContext(), CheckInActivity.class);
                 startActivity(intent);
             }
         });
@@ -106,8 +110,8 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    loginViewModel.login(usernameEditText.getText().toString(),
-                            passwordEditText.getText().toString());
+                    //loginViewModel.login(usernameEditText.getText().toString(),
+                    //        passwordEditText.getText().toString());
                 }
                 return false;
             }
@@ -117,19 +121,49 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 loadingProgressBar.setVisibility(View.VISIBLE);
-                loginViewModel.login(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
+                loadingProgressBar.setVisibility(View.VISIBLE);
+                String email = usernameEditText.getText().toString();
+                String password = passwordEditText.getText().toString();
+                dbServices = FireBaseDBServices.getInstance();
+                dbServices.loginUser(email, password, loginActivity);
             }
         });
     }
 
-    private void updateUiWithUser(LoggedInUserView model) {
-        String welcome = getString(R.string.welcome) + model.getDisplayName();
-        // TODO : initiate successful logged in experience
-        //Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
+    @Override
+    public void onStart() {
+        super.onStart();
+        dbServices.seeIfStillLoggedIn(getApplicationContext());
     }
 
     private void showLoginFailed(@StringRes Integer errorString) {
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        if(o == null)
+        {
+            //Invalid credentials
+            loadingProgressBar.setVisibility(View.GONE);
+            Toast.makeText(getApplicationContext(), "Invalid Email or Password",
+                    Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Intent intent = null;
+            switch((UserLevel) (arg))
+            {
+                case INSTRUCTOR:
+                    intent = new Intent(getApplicationContext(), HomeActivity.class);
+                    break;
+                case ADMIN:
+                    intent = new Intent(getApplicationContext(), IncompleteActivity.class);
+                    break;
+                default:
+                    intent = new Intent(getApplicationContext(), CheckInActivity.class);
+            }
+            startActivity(intent);
+        }
     }
 }
