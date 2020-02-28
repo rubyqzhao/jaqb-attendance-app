@@ -86,4 +86,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
+    <Button
+        android:id="@+id/button5"
+        android:layout_width="180dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="22dp"
+        android:background="@color/colorAccent"
+        android:onClick="myCoursesButtonOnClick"
+        android:text="@string/action_my_courses"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@+id/class_rewards"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

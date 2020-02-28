@@ -14,6 +14,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.example.jaqb.CourseRegistrationActivity;
 import com.example.jaqb.IncompleteActivity;
 import com.example.jaqb.MainActivity;
+import com.example.jaqb.MyCoursesActivity;
 import com.example.jaqb.R;
 
 import com.example.jaqb.ui.menu.MenuOptionsActivity;
@@ -64,5 +65,10 @@ public class HomeActivity extends MenuOptionsActivity {
                         }
                     }
                 });
+    }
+
+    public void myCoursesButtonOnClick(View view) {
+        Intent intent = new Intent(this, MyCoursesActivity.class);
+        startActivity(intent);
     }
 }
