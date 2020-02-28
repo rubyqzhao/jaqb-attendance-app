@@ -9,6 +9,8 @@ import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.jaqb.services.FireBaseDBServices;
+
 /**
  * Activity class that acts as a landing page after the user logs in. It routes the user
  * to different activities based on their action.
@@ -35,7 +37,7 @@ public class CheckInActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_logout) {
-            //todo: remove session information
+            FireBaseDBServices.getInstance().logoutUser();
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             return true;
@@ -45,7 +47,7 @@ public class CheckInActivity extends AppCompatActivity {
     }
 
         public void checkinButtonOnClick(View view) {
-        Intent intent = new Intent(this, IncompleteActivity.class);
+        Intent intent = new Intent(this, QRCheckin.class);
         startActivity(intent);
     }
 

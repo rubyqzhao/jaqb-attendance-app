@@ -21,6 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 import java.util.Observer;
 
 /**
@@ -44,108 +45,103 @@ public class FireBaseDBServices {
         return allCourses;
     }
 
-    private FireBaseDBServices()
-    {
+    private FireBaseDBServices() {
         mAuth = FirebaseAuth.getInstance();
-        database =  FirebaseDatabase.getInstance();
+        database = FirebaseDatabase.getInstance();
     }
 
-    public static FireBaseDBServices getInstance()
-    {
+    public static FireBaseDBServices getInstance() {
         return dbService;
     }
 
-    public void registerUser(final User newUser, final Observer observer){
+    public void registerUser(final User newUser, final Observer observer) {
         mAuth.createUserWithEmailAndPassword(newUser.getUserName(), newUser.getPassword())
-            .addOnCompleteListener(new OnCompleteListener<AuthResult>()
-            {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if (task.isSuccessful()) {
-                        Log.d(TAG, "createUserWithEmail:success");
-                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                        RegisteredUser registeredUser =
-                                new RegisteredUser(newUser.getFirstName(), newUser.getLastName());
-                        DatabaseReference reff = database.getReference("User").child(firebaseUser.getUid());
-                        reff.child("fname").setValue(registeredUser.getfName());
-                        reff.child("lname").setValue(registeredUser.getlName());
-                        reff.child("level").setValue(registeredUser.getLevel());
-                        observer.update(null, registeredUser);
-                    } else {
-                        Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                        observer.update(null, null);
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "createUserWithEmail:success");
+                            FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                            RegisteredUser registeredUser =
+                                    new RegisteredUser(newUser.getFirstName(), newUser.getLastName());
+                            DatabaseReference reff = database.getReference("User").child(firebaseUser.getUid());
+                            reff.child("fname").setValue(registeredUser.getfName());
+                            reff.child("lname").setValue(registeredUser.getlName());
+                            reff.child("level").setValue(registeredUser.getLevel());
+                            observer.update(null, registeredUser);
+                        } else {
+                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                            observer.update(null, null);
+                        }
                     }
-                }
-            });
+                });
     }
 
-    public void loginUser(String email, String password, final Observer observer)
-    {
+    public void loginUser(String email, String password, final Observer observer) {
         mAuth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if (task.isSuccessful()) {
-                        Log.d(TAG, "signInWithEmail:success");
-                        final FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                        database.getReference("User").child(firebaseUser.getUid())
-                            .addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    String fname = (String) dataSnapshot.child("fname").getValue();
-                                    String lname = (String) dataSnapshot.child("lname").getValue();
-                                    UserLevel level = UserLevel.valueOf((String) dataSnapshot.child("level").getValue());
-                                    //dataSnapshot.child("courses").getChildren().iterator().next().getKey();
-                                    List<String> courses = new ArrayList<>();
-                                    for(DataSnapshot s : dataSnapshot.child("courses").getChildren()){
-                                        courses.add(s.getKey());
-                                    }
-                                    RegisteredUser registeredUser = new RegisteredUser(fname, lname, level, courses);
-                                    currentUser = new LoggedInUser(firebaseUser, registeredUser);
-                                }
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "signInWithEmail:success");
+                            final FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                            database.getReference("User").child(firebaseUser.getUid())
+                                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            String fname = (String) dataSnapshot.child("fname").getValue();
+                                            String lname = (String) dataSnapshot.child("lname").getValue();
+                                            UserLevel level = UserLevel.valueOf((String) dataSnapshot.child("level").getValue());
+                                            //dataSnapshot.child("courses").getChildren().iterator().next().getKey();
+                                            List<String> courses = new ArrayList<>();
+                                            for (DataSnapshot s : dataSnapshot.child("courses").getChildren()) {
+                                                courses.add(s.getKey());
+                                            }
+                                            RegisteredUser registeredUser = new RegisteredUser(fname, lname, level, courses);
+                                            currentUser = new LoggedInUser(firebaseUser, registeredUser);
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-                                }
-                            });
-                        database.getReference("Course")
-                                .addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        for(DataSnapshot keyNode : dataSnapshot.getChildren()){
-                                            Course course = keyNode.getValue(Course.class);
-                                            allCourses.add(course);
+                                            database.getReference("Course")
+                                                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                            for (DataSnapshot keyNode : dataSnapshot.getChildren()) {
+                                                                Course course = keyNode.getValue(Course.class);
+                                                                allCourses.add(course);
+                                                            }
+                                            currentUser.setRegisteredCourses(getUserCourses(currentUser, allCourses));
+                                            observer.update(currentUser, currentUser.getLevel());
                                         }
-                                        currentUser.setRegisteredCourses(getUserCourses(currentUser, allCourses));
-                                        observer.update(currentUser, currentUser.getLevel());
-                                    }
 
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                                        observer.update(null, null);
-                                    }
-                                });
-                    } else {
-                        Log.w(TAG, "signInWithEmail:failure", task.getException());
-                        observer.update(null, null);
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                                        }
+                                    });
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                                            observer.update(null, null);
+                                        }
+                                    });
+                        } else {
+                            Log.w(TAG, "signInWithEmail:failure", task.getException());
+                            observer.update(null, null);
+                        }
+                        if (!task.isSuccessful()) {
+                            //mStatusTextView.setText(R.string.auth_failed);
+                        }
                     }
-                    if (!task.isSuccessful()) {
-                        //mStatusTextView.setText(R.string.auth_failed);
-                    }
-                }
-            });
+                });
     }
 
-    public LoggedInUser getCurrentUser()
-    {
+    public LoggedInUser getCurrentUser() {
         return currentUser;
     }
 
-    public void seeIfStillLoggedIn(final Context context)
-    {
+    public void seeIfStillLoggedIn(final Context context) {
         // Check if user is signed in (non-null) and update UI accordingly.
         final FirebaseUser firebaseUser = mAuth.getCurrentUser();
-        if(currentUser != null) {
+        if (currentUser != null) {
             System.out.println("Logged-in");
             database.getReference("User").child(firebaseUser.getUid())
                     .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -155,7 +151,7 @@ public class FireBaseDBServices {
                             String lname = (String) dataSnapshot.child("lname").getValue();
                             UserLevel level = UserLevel.valueOf((String) dataSnapshot.child("level").getValue());
                             List<String> courses = new ArrayList<>();
-                            for(DataSnapshot s : dataSnapshot.child("courses").getChildren()){
+                            for (DataSnapshot s : dataSnapshot.child("courses").getChildren()) {
                                 courses.add(s.getKey());
                             }
                             RegisteredUser registeredUser = new RegisteredUser(fname, lname, level, courses);
@@ -168,21 +164,18 @@ public class FireBaseDBServices {
 
                         }
                     });
-        }
-        else
+        } else
             System.out.println("Not Logged-in");
         //goToUserHomepage(context);
     }
 
-    public int registerCourse(final Course newCourse, LoggedInUser user)
-    {
+    public int registerCourse(final Course newCourse, LoggedInUser user) {
         int res = 0;
-        try{
+        try {
             DatabaseReference reff = database.getReference("User").child(user.getuID());
             reff.child("courses").child(newCourse.getCode()).setValue("true");
             res = 1;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return res;
@@ -192,9 +185,9 @@ public class FireBaseDBServices {
         List<String> courseNames = new ArrayList<>();
         courseNames.addAll(currentUser.getCourseNames());
         List<Course> userCourses = new ArrayList<>();
-        for(String course : courseNames){
-            for(Course c : allCourses){
-                if(course.equalsIgnoreCase(c.getCode())){
+        for (String course : courseNames) {
+            for (Course c : allCourses) {
+                if (course.equalsIgnoreCase(c.getCode())) {
                     userCourses.add(c);
                 }
             }
@@ -204,8 +197,8 @@ public class FireBaseDBServices {
 
     public boolean courseAlreadyRegistered(String code) {
         List<String> presentCourses = currentUser.getCourseNames();
-        for(String course : presentCourses){
-            if(code.equalsIgnoreCase(course)){
+        for (String course : presentCourses) {
+            if (code.equalsIgnoreCase(course)) {
                 return true;
             }
         }
@@ -217,4 +210,31 @@ public class FireBaseDBServices {
         mAuth.signOut();
     }
 
+    public void addPoints(final int numPoints, final Observer observer) {
+        final DatabaseReference reff = database.getReference("User").child(currentUser.getuID()).child("points");
+        reff.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    try
+                    {
+                        long totalPoints = (long) dataSnapshot.getValue();
+                        totalPoints += numPoints;
+                        reff.setValue(totalPoints);
+                    }
+                    catch (NullPointerException e)
+                    {
+                        reff.setValue(numPoints);
+                    }
+                    observer.update(null, numPoints);
+
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    observer.update(null, 0);
+                }
+
+            });
+    }
 }
