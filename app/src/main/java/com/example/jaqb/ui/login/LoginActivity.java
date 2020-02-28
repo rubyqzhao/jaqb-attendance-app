@@ -127,7 +127,7 @@ public class LoginActivity extends AppCompatActivity implements java.util.Observ
                 String email = usernameEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
                 dbServices = FireBaseDBServices.getInstance();
-                dbServices.loginUser(email, password, getApplicationContext(), loginActivity);
+                dbServices.loginUser(email, password, loginActivity);
             }
         });
     }

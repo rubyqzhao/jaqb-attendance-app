@@ -27,8 +27,11 @@ import com.example.jaqb.R;
 import com.example.jaqb.data.model.User;
 import com.example.jaqb.services.FireBaseDBServices;
 
-public class RegisterActivity extends AppCompatActivity {
+import java.util.Observable;
 
+public class RegisterActivity extends AppCompatActivity implements java.util.Observer {
+
+    private RegisterActivity registerActivity;
     private RegisterViewModel registerViewModel;
     private User newUser;
     private FireBaseDBServices dbServices;
@@ -39,6 +42,7 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         registerViewModel = new RegisterViewModel();
+        registerActivity = this;
 
         final EditText usernameEditText = findViewById(R.id.username);
         final EditText passwordEditText = findViewById(R.id.password);
@@ -126,7 +130,7 @@ public class RegisterActivity extends AppCompatActivity {
                 newUser.setPassword(passwordEditText.getText().toString());
                 newUser.setFirstName(firstNameEditText.getText().toString());
                 newUser.setLastName(lastNameEditText.getText().toString());
-                boolean res = dbServices.registerUser(newUser, getApplicationContext());
+                boolean res = dbServices.registerUser(newUser, registerActivity);
                 String message = "";
                 if(res)
                     message += "User created is: " + newUser.getFirstName();
@@ -147,5 +151,11 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void showLoginFailed(@StringRes Integer errorString) {
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void update(Observable o, Object arg)
+    {
+
     }
 }
