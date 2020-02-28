@@ -14,7 +14,10 @@ It may also be available for download from the Google Play store in the future
 
 ## Authors
 
-Amanjot Singh, asing225@asu.edu - asing225
-Bharat Goel, bgoel1@asu.edu - BharatG295
-Ruby Zhao - qrzhao@asu.edu - rubyqzhao
-Joshua Drumm - jkdrumm@asu.edu - Jkdrumm
+Amanjot Singh: asing225@asu.edu - asing225
+
+Bharat Goel: bgoel1@asu.edu - BharatG295
+
+Ruby Zhao: qrzhao@asu.edu - rubyqzhao
+
+Joshua Drumm: jkdrumm@asu.edu - Jkdrumm
