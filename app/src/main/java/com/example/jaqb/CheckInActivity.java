@@ -3,12 +3,16 @@ package com.example.jaqb;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+
+/**
+ * Activity class that acts as a landing page after the user logs in. It routes the user
+ * to different activities based on their action.
+ * */
 
 public class CheckInActivity extends AppCompatActivity {
 
@@ -60,4 +64,8 @@ public class CheckInActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void myCoursesButtonOnClick(View view) {
+        Intent intent = new Intent(this, MyCoursesActivity.class);
+        startActivity(intent);
+    }
 }

@@ -16,5 +16,8 @@
     <string name="action_see_rewards">"See Rewards"</string>
     <string name="action_attendance_history">"Attendance History"</string>
     <string name="header_upcoming_class">"Upcoming Class"</string>
+    <string name="action_search_course">"Search Courses"</string>
+    <string name="action_register_course">"Register"</string>
+    <string name="action_my_courses">My Courses</string>
     <string name="logout">"Log Out"</string>
 </resources>
