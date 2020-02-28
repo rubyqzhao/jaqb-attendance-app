@@ -23,6 +23,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.example.jaqb.CheckInActivity;
 import com.example.jaqb.IncompleteActivity;
 import com.example.jaqb.MainActivity;
+import com.example.jaqb.CheckInActivity;
 import com.example.jaqb.R;
 import com.example.jaqb.data.model.UserLevel;
 import com.example.jaqb.services.FireBaseDBServices;
@@ -82,7 +83,7 @@ public class LoginActivity extends AppCompatActivity implements java.util.Observ
 
                 //Complete and destroy login activity once successful
                 //finish();
-                Intent intent = new Intent(getApplicationContext(), IncompleteActivity.class);
+                Intent intent = new Intent(loginButton.getContext(), CheckInActivity.class);
                 startActivity(intent);
             }
         });
