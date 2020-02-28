@@ -26,6 +26,7 @@
         <activity android:name=".CourseRegistrationActivity" />
         <activity android:name=".CourseDetailsActivity"/>
         <activity android:name=".CheckInActivity"/>
+        <activity android:name=".MyCoursesActivity"/>
     </application>
 
 </manifest>

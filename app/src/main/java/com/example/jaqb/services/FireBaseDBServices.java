@@ -2,9 +2,7 @@ package com.example.jaqb.services;
 
 import android.content.Context;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
-
 import com.example.jaqb.data.model.Course;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.data.model.RegisteredUser;
@@ -20,13 +18,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observer;
 
 /**
- * @author amanjotsinghs
+ * @author amanjotsingh
  * @author jkdrumm
  *
  * This class contains the methods required to communicate with the database
@@ -40,6 +37,11 @@ public class FireBaseDBServices {
     private FirebaseAuth mAuth;
     private LoggedInUser currentUser;
     private FirebaseDatabase database;
+    private List<Course> allCourses = new ArrayList<>();
+
+    public List<Course> getAllCourses() {
+        return allCourses;
+    }
 
     private FireBaseDBServices()
     {
@@ -104,14 +106,29 @@ public class FireBaseDBServices {
                                     }
                                     RegisteredUser registeredUser = new RegisteredUser(fname, lname, level, courses);
                                     currentUser = new LoggedInUser(firebaseUser, registeredUser);
-                                    observer.update(currentUser, currentUser.getLevel());
                                 }
 
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError databaseError) {
-                                    observer.update(null, null);
                                 }
                             });
+                        database.getReference("Course")
+                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        for(DataSnapshot keyNode : dataSnapshot.getChildren()){
+                                            Course course = keyNode.getValue(Course.class);
+                                            allCourses.add(course);
+                                        }
+                                        currentUser.setRegisteredCourses(getUserCourses(currentUser, allCourses));
+                                        observer.update(currentUser, currentUser.getLevel());
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                        observer.update(null, null);
+                                    }
+                                });
                     } else {
                         Log.w(TAG, "signInWithEmail:failure", task.getException());
                         observer.update(null, null);
@@ -169,14 +186,7 @@ public class FireBaseDBServices {
 
     public int registerCourse(final Course newCourse, LoggedInUser user)
     {
-        int res;
-        List<String> presentCourses = currentUser.getRegisteredCourses();
-        for(String course : presentCourses){
-            if(newCourse.getCode().equalsIgnoreCase(course)){
-                res = 0;
-                return res;
-            }
-        }
+        int res = 0;
         try{
             DatabaseReference reff = database.getReference("User").child(user.getuID());
             reff.child("courses").child(newCourse.getCode()).setValue("true");
@@ -184,39 +194,31 @@ public class FireBaseDBServices {
         }
         catch (Exception e){
             e.printStackTrace();
-            res = -1;
         }
         return res;
-        /*if(user != null){
-            try{
-                DatabaseReference reff = database.getReference("User").child(user.getuID());
-                reff.child("courses").addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for(DataSnapshot keyNode : dataSnapshot.getChildren()){
-                            if(course.getCode().equalsIgnoreCase(keyNode.getKey())){
-                                res[0] = 0;
-                                break;
-                            }
-                        }
-                    }
+    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-                if(res[0] == 0){
-                    return res[0];
-                }
-                else{
-                    reff.child("courses").child(course.getCode()).setValue("true");
-                    res[0] = 1;
+    public List<Course> getUserCourses(LoggedInUser currentUser, List<Course> allCourses) {
+        List<String> courseNames = new ArrayList<>();
+        courseNames.addAll(currentUser.getCourseNames());
+        List<Course> userCourses = new ArrayList<>();
+        for(String course : courseNames){
+            for(Course c : allCourses){
+                if(course.equalsIgnoreCase(c.getCode())){
+                    userCourses.add(c);
                 }
             }
-            catch(Exception e){
-                e.printStackTrace();
+        }
+        return userCourses;
+    }
+
+    public boolean courseAlreadyRegistered(String code) {
+        List<String> presentCourses = currentUser.getCourseNames();
+        for(String course : presentCourses){
+            if(code.equalsIgnoreCase(course)){
+                return true;
             }
-        }*/
+        }
+        return false;
     }
 }

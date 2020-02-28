@@ -1,7 +1,5 @@
 package com.example.jaqb.data.model;
 
-import java.time.LocalTime;
-
 /**
  * @author amanjotsingh
  *
@@ -11,14 +9,13 @@ import java.time.LocalTime;
 
 public class Course {
 
-    public Course(){
-    }
+    private String code;
+    private String courseName;
+    private String instructorName;
+    private String time;
+    private String days;
 
-    public Course(String courseName, String code, String days, String instructorName) {
-        this.courseName = courseName;
-        this.code = code;
-        this.instructorName = instructorName;
-        this.days = days;
+    public Course(){
     }
 
     public String getCode() {
@@ -53,11 +50,11 @@ public class Course {
         this.days = days;
     }
 
-    private String code;
-    private String courseName;
-    private String instructorName;
-    //private String location;
-    //private LocalTime classStartTime;
-    //private LocalTime classEndTime;
-    private String days;
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
 }

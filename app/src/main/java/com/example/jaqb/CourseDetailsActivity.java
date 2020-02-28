@@ -8,9 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.jaqb.data.model.Course;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.services.FireBaseDBServices;
@@ -28,10 +26,13 @@ public class CourseDetailsActivity extends AppCompatActivity implements View.OnC
     private String courseName;
     private String courseDays;
     private String courseInstructor;
+    private String time;
     private TextView courseCodeTextView;
     private TextView courseNameTextView;
     private TextView courseDaysTextView;
     private TextView courseInstructorTextView;
+    private TextView courseLocation;
+    private TextView courseTime;
     private Button registerButton;
     private DialogInterface.OnClickListener dialogClickListener;
     private FireBaseDBServices fireBaseDBServices;
@@ -46,28 +47,42 @@ public class CourseDetailsActivity extends AppCompatActivity implements View.OnC
         courseName = (String) getIntent().getCharSequenceExtra("name");
         courseDays = (String) getIntent().getCharSequenceExtra("days");
         courseInstructor = (String) getIntent().getCharSequenceExtra("instructor");
+        time = (String) getIntent().getCharSequenceExtra("time");
+        String registered = (String) getIntent().getCharSequenceExtra("registered");
 
         courseCodeTextView = (TextView) findViewById(R.id.code);
         courseNameTextView = (TextView) findViewById(R.id.name);
         courseDaysTextView = (TextView) findViewById(R.id.days);
         courseInstructorTextView = (TextView) findViewById(R.id.instructor);
+        courseLocation = (TextView) findViewById(R.id.location);
+        courseTime = (TextView) findViewById(R.id.time);
 
         courseCodeTextView.setText(courseCode);
         courseNameTextView.setText(courseName);
         courseDaysTextView.setText(courseDays);
         courseInstructorTextView.setText(courseInstructor);
+        courseLocation.setText("Poly AGBC 150");
+        courseTime.setText(time);
 
         registerCourse = new Course();
         registerCourse.setDays(courseDays);
         registerCourse.setCode(courseCode);
         registerCourse.setInstructorName(courseInstructor);
         registerCourse.setCourseName(courseName);
+        registerCourse.setTime(time);
 
         fireBaseDBServices = FireBaseDBServices.getInstance();
         currentUser = fireBaseDBServices.getCurrentUser();
 
+
         registerButton = (Button) findViewById(R.id.register);
-        registerButton.setOnClickListener(this);
+        if("true".equalsIgnoreCase(registered)){
+            registerButton.setEnabled(false);
+            Toast.makeText(this, "Already Registered", Toast.LENGTH_LONG).show();
+        }
+        else if("false".equalsIgnoreCase(registered)){
+            registerButton.setOnClickListener(this);
+        }
 
         dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
@@ -79,15 +94,14 @@ public class CourseDetailsActivity extends AppCompatActivity implements View.OnC
                         Intent intent = new Intent();
                         if(res == 1){
                             System.out.println("Registered in new course");
+                            currentUser.updateCourse(registerCourse);
+                            intent.setClass(getApplicationContext(), MyCoursesActivity.class);
+                            Toast.makeText(getApplicationContext(), "Registered", Toast.LENGTH_LONG).show();
 
                         }
                         else if(res == 0){
-                            System.out.println("Already Registered");
-                            intent.setClass(getApplicationContext(), CourseRegistrationActivity.class);
-
-                        }
-                        else if(res == -1){
                             System.out.println("Error in registering course");
+                            intent.setClass(getApplicationContext(), CourseRegistrationActivity.class);
                             break;
                         };
                         startActivity(intent);

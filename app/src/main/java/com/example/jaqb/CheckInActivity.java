@@ -4,10 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import androidx.appcompat.widget.Toolbar;
-
-import com.example.jaqb.R;
-
 import androidx.appcompat.app.AppCompatActivity;
+
+/**
+ * Activity class that acts as a landing page after the user logs in. It routes the user
+ * to different activities based on their action.
+ * */
 
 public class CheckInActivity extends AppCompatActivity {
 
@@ -39,8 +41,8 @@ public class CheckInActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void searchCoursesButtonOnClick(View view) {
-        Intent intent = new Intent(this, CourseRegistrationActivity.class);
+    public void myCoursesButtonOnClick(View view) {
+        Intent intent = new Intent(this, MyCoursesActivity.class);
         startActivity(intent);
     }
 }
