@@ -99,6 +99,7 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
                     Vibrator vibrator = (Vibrator)getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
                     vibrator.vibrate(100);
                     codeFound++;
+                    barcodeDetector.setProcessor(null);
                     runActivity(qrCodes, codeFound);
                 }
             }
