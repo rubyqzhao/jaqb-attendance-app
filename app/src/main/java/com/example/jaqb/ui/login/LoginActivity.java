@@ -20,15 +20,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.example.jaqb.CheckInActivity;
 import com.example.jaqb.IncompleteActivity;
 import com.example.jaqb.MainActivity;
 import com.example.jaqb.CheckInActivity;
+
 import com.example.jaqb.R;
 import com.example.jaqb.data.model.UserLevel;
 import com.example.jaqb.services.FireBaseDBServices;
 
 import java.util.Observable;
+import com.example.jaqb.ui.student.CheckInActivity;
 
 public class LoginActivity extends AppCompatActivity implements java.util.Observer {
 

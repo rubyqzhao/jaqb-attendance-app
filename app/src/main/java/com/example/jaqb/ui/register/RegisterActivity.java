@@ -23,6 +23,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jaqb.IncompleteActivity;
+import com.example.jaqb.ui.student.CheckInActivity;
+import com.example.jaqb.IncompleteActivity;
 import com.example.jaqb.R;
 import com.example.jaqb.data.model.User;
 import com.example.jaqb.services.FireBaseDBServices;
@@ -35,7 +37,6 @@ public class RegisterActivity extends AppCompatActivity implements java.util.Obs
     private RegisterViewModel registerViewModel;
     private User newUser;
     private FireBaseDBServices dbServices;
-
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {

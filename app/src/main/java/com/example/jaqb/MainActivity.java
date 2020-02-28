@@ -8,6 +8,8 @@ import android.view.View;
 import com.example.jaqb.ui.login.LoginActivity;
 import com.example.jaqb.ui.register.RegisterActivity;
 
+import com.example.jaqb.ui.student.CheckInActivity;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override

@@ -20,4 +20,9 @@
     <string name="action_register_course">"Register"</string>
     <string name="action_my_courses">My Courses</string>
     <string name="logout">"Log Out"</string>
+    <string name="register_course">"Register"</string>
+    <string name="action_set_rewards">"Set Class Rewards"</string>
+    <string name="action_get_qr">"Get QR Code"</string>
+    <string name="class_list">"Class List"</string>
+    <string name="action_submit_location">"Update Class Location"</string>
 </resources>

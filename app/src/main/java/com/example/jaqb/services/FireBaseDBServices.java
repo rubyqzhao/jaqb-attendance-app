@@ -3,6 +3,7 @@ package com.example.jaqb.services;
 import android.content.Context;
 import android.util.Log;
 import androidx.annotation.NonNull;
+
 import com.example.jaqb.data.model.Course;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.data.model.RegisteredUser;
@@ -222,4 +223,10 @@ public class FireBaseDBServices {
         }
         return false;
     }
+
+    public void logoutUser() {
+        currentUser = null;
+        mAuth.signOut();
+    }
+
 }
