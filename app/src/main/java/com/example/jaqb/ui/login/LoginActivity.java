@@ -19,7 +19,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 
-import com.example.jaqb.CheckInActivity;
+import com.example.jaqb.ui.student.CheckInActivity;
 import com.example.jaqb.IncompleteActivity;
 import com.example.jaqb.R;
 import com.example.jaqb.data.model.UserLevel;
