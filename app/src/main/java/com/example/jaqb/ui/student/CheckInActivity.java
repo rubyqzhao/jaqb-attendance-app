@@ -3,17 +3,20 @@ package com.example.jaqb.ui.student;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.TextView;
 
+import com.example.jaqb.IncompleteActivity;
+import com.example.jaqb.MainActivity;
+import com.example.jaqb.MyCoursesActivity;
+import com.example.jaqb.QRCheckin;
+import com.example.jaqb.R;
 import com.example.jaqb.data.model.Course;
+import com.example.jaqb.services.FireBaseDBServices;
 import com.example.jaqb.ui.menu.MenuOptionsActivity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -21,17 +24,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import com.example.jaqb.CourseRegistrationActivity;
-import com.example.jaqb.IncompleteActivity;
-import com.example.jaqb.MainActivity;
-import com.example.jaqb.R;
-import com.example.jaqb.ui.instructor.HomeActivity;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class CheckInActivity extends MenuOptionsActivity {
+/**
+ * Activity class that acts as a landing page after the user logs in. It routes the user
+ * to different activities based on their action.
+ * */
 
+public class CheckInActivity extends MenuOptionsActivity {
     private TextView upcomingClass;
     private DatabaseReference databaseReference;
     private List<Course> courseList;
@@ -74,8 +75,28 @@ public class CheckInActivity extends MenuOptionsActivity {
         upcomingClass.setText(determineClassToDisplay());
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_items, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_logout) {
+            FireBaseDBServices.getInstance().logoutUser();
+            Intent intent = new Intent(this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     public void checkinButtonOnClick(View view) {
-        Intent intent = new Intent(this, IncompleteActivity.class);
+        Intent intent = new Intent(this, QRCheckin.class);
         startActivity(intent);
     }
 
@@ -91,6 +112,11 @@ public class CheckInActivity extends MenuOptionsActivity {
 
     public void seeAttendanceButtonOnClick(View view) {
         Intent intent = new Intent(this, IncompleteActivity.class);
+        startActivity(intent);
+    }
+
+    public void myCoursesButtonOnClick(View view) {
+        Intent intent = new Intent(this, MyCoursesActivity.class);
         startActivity(intent);
     }
 
