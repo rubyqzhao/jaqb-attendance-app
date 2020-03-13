@@ -6,15 +6,13 @@ It also aides teachers and professers by providing statistics about student atte
 ## Deliverables
 ### Sprint 1: 02/03/2020 - 02/14/2020
 
-The team delivered the idea of the project as an implementation perspective and corressponsing design and requirements documents. Here is the link to the sprint 1 deliverable.
-
-[Sprint 1](https://drive.google.com/drive/folders/1_f3spOBcYigsPCPFOnJ15grue7upz4Gn)
+The team delivered the idea of the project as an implementation perspective and corressponsing design and requirements documents. [Here](https://drive.google.com/drive/folders/1_f3spOBcYigsPCPFOnJ15grue7upz4Gn) is the link to the sprint 1 deliverable.
 
 ### Sprint 2: 02/15/2020 - 02/28/2020
 
 The team delivered the first increment of the project as an android application. The app consists of student and instructors user profiles. The details of the functionalities implemented by the team can be found [here](https://docs.google.com/document/d/1JiDfwaotclKOdiXwXR_Ovv3P5N81zkR9i4qwKOUxXz8/edit#heading=h.qxlahr8l2jxu)
 
-The apk file for the sprint 2 increment can be downloaded from [here](deliverable/JAQB_S1.apk)
+The apk file for the sprint 2 increment can be downloaded from [here](deliverable/). Download the JAQB_S1.apk by right click and save link as and run in an android device.
 
 ## Installation
 
