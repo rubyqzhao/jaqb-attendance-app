@@ -31,6 +31,7 @@
         </activity>
         <activity android:name=".CourseRegistrationActivity" />
         <activity android:name=".CourseDetailsActivity"/>
+        <activity android:name=".RegisteredCourseDetailsActivity"/>
         <activity android:name=".ui.student.CheckInActivity"/>
         <activity android:name=".MyCoursesActivity"/>
         <activity android:name=".ui.instructor.HomeActivity"/>
