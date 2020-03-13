@@ -46,10 +46,8 @@ public class BadgeAdapter extends BaseAdapter {
         }
 
         ImageView imageView = convertView.findViewById(R.id.badge_art);
-        TextView textView = convertView.findViewById(R.id.badge_name);
 
         imageView.setImageResource(badge.getImage());
-        textView.setText(badge.getName());
 
         return convertView;
     }
