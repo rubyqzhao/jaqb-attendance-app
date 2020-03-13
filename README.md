@@ -12,7 +12,7 @@ The team delivered the idea of the project as an implementation perspective and 
 
 The team delivered the first increment of the project as an android application. The app consists of student and instructors user profiles. The details of the functionalities implemented by the team can be found [here](https://docs.google.com/document/d/1JiDfwaotclKOdiXwXR_Ovv3P5N81zkR9i4qwKOUxXz8/edit#heading=h.qxlahr8l2jxu)
 
-The apk file for the sprint 2 increment can be downloaded from [here](deliverable/). Download the JAQB_S1.apk by right click and save link as and run in an android device.
+The apk file for the sprint 2 increment can be downloaded from [here](./deliverables/). Download the JAQB_S1.apk by right click and save link as and run in an android device. [Link](https://www.youtube.com/watch?v=wqeUCOIpPh8) to youtube video.
 
 ## Installation
 
