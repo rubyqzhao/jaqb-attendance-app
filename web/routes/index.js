@@ -20,7 +20,7 @@ firebase.initializeApp(firebaseConfig);
 var database = firebase.database();
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', function(req, res) {
     getCourses(function(courseList) {
         res.render('index', {
             title: 'JAQB Admin',
@@ -29,9 +29,38 @@ router.get('/', function(req, res, next) {
     });
 });
 
+router.post('/add-course', function (req, res) {
+    var response = req.body;
+    console.log(response);
+    //if input isn't entered or invalid, prevent send
+    if(response == null || response.code == null || response.name == null
+        || response.days == null || response.instructor == null || response.time == null) {
+        res.send('Submission is invalid');
+    }
+    else if(response.code.localeCompare("") == 0 || response.name.localeCompare("") == 0
+        || response.days.localeCompare("") == 0 || response.instructor.localeCompare("") == 0
+        || response.time.localeCompare("") == 0) {
+        res.send('Missing information');
+    }
+    else {
+        database.ref('Course/').push().set({
+            code: response.code,
+            courseName: response.name,
+            days: response.days,
+            instructorName: response.instructor,
+            time: response.time
+        });
+        res.send('Submitted');
+    }
+});
+
+router.post('/delete-course', function(req, res) {
+    res.send('Deleted');
+});
+
 function getCourses(callback) {
     var courseRef = database.ref('Course/');
-    courseRef.on('value', function(snapshot) {
+    courseRef.once('value', function(snapshot) {
         var courseList = [];
 
         snapshot.forEach(function(item) {
@@ -43,7 +72,6 @@ function getCourses(callback) {
             var listing = [code, name, days, time, instructor];
             courseList.push(listing);
         });
-        console.log(courseList);
         return callback(courseList);
     });
 }

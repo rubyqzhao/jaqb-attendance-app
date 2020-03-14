@@ -19,5 +19,35 @@ block content
           each row in item
             td(id="class-" + row) #{row}
 
-  
+
   button(type="button", onclick="window.location.href = '/user_privileges_page';") User Privileges
+
+  h2 Add Courses
+  form(name="add-course", action="add-course", method="post")
+    div.input
+      span.label Course Code (eg SER 517)
+      input(type="text", name="code")
+      br
+      span.label Course Name
+      input(type="text", name="name")
+      br
+      span.label Meeting Days (MO,TU,WE,TH,FR)
+      input(type="text", name="days")
+      br
+      span.label Meeting Time
+      input(type="time", name="time")
+      br
+      span.label Course Instructor
+      input(type="text", name="instructor")
+      br
+    div.actions
+      input(type="submit", value="Add")
+
+  h2 Delete Course
+  form(name="delete-course", action="delete-course" method="post")
+    div.input
+      span.label Course Code (eg SER 517)
+      input(type="text", name="courseCode")
+      br
+    div.actions
+      input(type="submit", value="Delete")
