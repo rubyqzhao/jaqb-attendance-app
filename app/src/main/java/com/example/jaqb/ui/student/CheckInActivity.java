@@ -124,7 +124,7 @@ public class CheckInActivity extends MenuOptionsActivity {
         String message;
         //todo: change decision logic to get closest upcoming class
         if(!courseList.isEmpty()) {
-            Course course = courseList.get(1);
+            Course course = courseList.get(0);
             String code = course.getCode();
             String days = course.getDays();
 
