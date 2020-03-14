@@ -20,9 +20,6 @@ The apk file for the sprint 2 increment can be downloaded from [here](./delivera
 2. Create a Virtual Device or use your own Android by connecting it via USB
 3. With the correct device selected in the ADB manager, hit the run button
 
-An APK of the project will become available at a later date
-It may also be available for download from the Google Play store in the future
-
 ## Authors
 
 Amanjot Singh: asing225@asu.edu - asing225
