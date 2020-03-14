@@ -2,6 +2,7 @@ package com.example.jaqb;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -55,7 +56,8 @@ public class MyCoursesActivity extends AppCompatActivity implements
     {
         Course course = courseAdapter.getItem(position);
 
-        Intent intent = new Intent(this, RegisteredCourseDetailsActivity.class);
+        Intent intent = new Intent(this, RegisteredCourseDetailsActivity.class)
+                                    .setData(CalendarContract.Events.CONTENT_URI);
         intent.putExtra("code", course.getCode());
         intent.putExtra("name", course.getCourseName());
         intent.putExtra("instructor", course.getInstructorName());
