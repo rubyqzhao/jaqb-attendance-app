@@ -48,5 +48,51 @@ function getCourses(callback) {
     });
 }
 
+router.get('/user_privileges_page', function(req, res, next) {
+    getUsers(function(userList) {
+        res.render('user_privileges', {
+            title: 'User Privileges',
+            users: userList
+        });
+    });
+});
+
+router.get('/user_privileges_page', function(req, res, next) {
+  res.render('user_privileges', { title: 'Add classes to Instructors' });
+});
+
+function getUsers(callback) {
+    var userRef = database.ref('User/');
+    userRef.on('value', function(snapshot) {
+        var userList = [];
+
+        snapshot.forEach(function(item) {
+            var firstName = item.val().fname;
+            var lastName = item.val().lname;
+            var level = item.val().level;
+            var user = [firstName, lastName, level];
+            userList.push(user);
+        });
+        console.log(userList);
+        return callback(userList);
+    });
+}
+
+function updateUserPrivilege(callback) {
+    var userRef = database.ref('User/');
+    userRef.on('value', function(snapshot) {
+        var userList = [];
+
+        snapshot.forEach(function(item) {
+            var firstName = item.val().fname;
+            var lastName = item.val().lname;
+            var level = item.val().level;
+            var user = [firstName, lastName, level];
+            userList.push(user);
+        });
+        console.log(userList);
+        return callback(userList);
+    });
+}
 
 module.exports = router;
