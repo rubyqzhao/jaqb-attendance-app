@@ -17,12 +17,10 @@ public class BadgeActivity extends MenuOptionsActivity {
 
     //todo: replace placeholder badges with the designed badge icons
     private Badge[] badges = {
-        new Badge(0, "First Check-in", R.drawable.star_disabled),
-                new Badge(1, "Attended Your Classes", R.drawable.star_enabled),
-                new Badge(2, "Five Day Streak!", R.drawable.star_enabled),
-                new Badge(3, "Ten Day Streak!", R.drawable.star_disabled),
-                new Badge(4, "Earned Three Badges", R.drawable.star_enabled),
-                new Badge(5, "Perfect Attendance", R.drawable.star_disabled),
+        new Badge(0, "All Classes Attended", R.drawable.all_classes_attended_2x),
+                new Badge(1, "All Classes in a Course", R.drawable.all_classes_of_a_course_2x),
+                new Badge(2, "Attend First Class", R.drawable.attend_first_class_2x),
+                new Badge(3, "Five Day Streak", R.drawable.go_5_days_a_week_2x)
     };
 
     @Override
