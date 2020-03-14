@@ -3,3 +3,18 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
+
+  h2 Course Listing
+  table
+    thead
+      tr
+        th Code
+        th Course Name
+        th Days
+        th Time
+        th Instructor
+    tbody
+      each item in courses
+        tr
+          each row in item
+            td(id="class-" + row) #{row}
