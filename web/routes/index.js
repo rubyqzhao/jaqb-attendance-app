@@ -55,7 +55,32 @@ router.post('/add-course', function (req, res) {
 });
 
 router.post('/delete-course', function(req, res) {
-    res.send('Deleted');
+    var response = req.body;
+    if (response == null || response.courseCode == null)
+        res.send('Invalid POST');
+    else if(response.courseCode.localeCompare("") == 0) {
+        res.send('Please enter a course code');
+    }
+    else {
+        var userQuery = database.ref('Course/').orderByChild("code").equalTo(response.courseCode);
+        console.log(userQuery)
+        userQuery.once('value', function (data) {
+            if (!data.exists()) {
+                res.send('No users found')
+            }
+            else {
+                data.forEach(function (user) {
+                    database.ref('Course/' + user.key).remove()
+                        .then(function () {
+                            res.send("Remove succeeded.")
+                        })
+                        .catch(function (error) {
+                            res.send("Remove failed: " + error.message)
+                        });
+                });
+            }
+        });
+    }
 });
 
 function getCourses(callback) {
