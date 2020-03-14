@@ -30,6 +30,7 @@ import com.example.jaqb.services.FireBaseDBServices;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAdjusters;
 
@@ -148,9 +149,10 @@ public class RegisteredCourseDetailsActivity extends AppCompatActivity implement
         long nextDay = getNextDay();
         ContentValues values = new ContentValues();
 
+        Uri event = null;
         values.put(CalendarContract.Events.CALENDAR_ID, 1);
         values.put(CalendarContract.Events.TITLE, courseName);
-        values.put(CalendarContract.EXTRA_EVENT_ALL_DAY, true);
+        values.put(CalendarContract.EXTRA_EVENT_ALL_DAY, false);
         values.put(CalendarContract.Events.DTSTART, nextDay);
         values.put(CalendarContract.Events.DTEND, nextDay + 60 * 60 * 1000);
         values.put(CalendarContract.Events.EVENT_TIMEZONE, String.valueOf(timeZone));
@@ -165,7 +167,7 @@ public class RegisteredCourseDetailsActivity extends AppCompatActivity implement
         values.put(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_FREE);
         if(view.equals(deleteAlarmButton))
             values.put(CalendarContract.Events.HAS_ALARM, 0);
-        Uri event = cr.insert(EVENTS_URI, values);
+        event = cr.insert(EVENTS_URI, values);
 
         if(event != null) {
             if(view.equals(setAlarmButton)) {
@@ -229,7 +231,7 @@ public class RegisteredCourseDetailsActivity extends AppCompatActivity implement
             default:
                 dayOfWeek = null;
         }
-        return ZonedDateTime.now().with(TemporalAdjusters.nextOrSame(dayOfWeek)).toInstant().toEpochMilli();
+        return ZonedDateTime.now().toLocalDate().with(TemporalAdjusters.nextOrSame(dayOfWeek)).atStartOfDay().toInstant(ZoneId.systemDefault().getRules().getOffset(LocalDateTime.now())).getEpochSecond() * 1000;
     }
 
     private String getCalendarUriBase(boolean eventUri) {
