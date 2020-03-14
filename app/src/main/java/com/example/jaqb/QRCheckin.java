@@ -26,20 +26,28 @@ import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
+import java.sql.Time;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Random;
 
 public class QRCheckin extends AppCompatActivity implements LocationListener {
 
+    private static final double ALLOWED_DISTANCE = 50;
     SurfaceView surfaceView;
     CameraSource cameraSource;
     BarcodeDetector barcodeDetector;
     TextView textView;
-    Boolean value = false;
     EditText editText;
     LocationManager locationManager;
     String data;
     Integer codeFound = 0;
     double Long;
     double Lat;
+    String checkIn = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +108,11 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
                     vibrator.vibrate(100);
                     codeFound++;
                     barcodeDetector.setProcessor(null);
+                    try {
+                        checkIn = checkValues();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                     runActivity(qrCodes, codeFound);
                 }
             }
@@ -108,22 +121,88 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
 
     }
 
-    public void codeButtonOnClick( View view) {
+    public void codeButtonOnClick( View view) throws ParseException {
         //Not yet implemented
-        if(checkValues() == true)
-            value = true;
+
         Intent intent = new Intent(QRCheckin.this, IncompleteActivity.class);
         intent.putExtra("data", editText.getText().toString());
         startActivity(intent);
     }
 
-    public boolean checkValues() {
+    public String checkValues() throws ParseException {
         //Implement all the checks (location, class and time) from database here
 
-        double val = Math.random()*2;
-        if(val > 1) return true;
+        /*Location Check starts*/
+        checkLocation();
+
+        //Change to get long from DB function
+        double randLong = generateRandomLoc(180);
+        double randLat = generateRandomLoc(90);
+        //****
+
+        boolean distOk = checkDist(randLat, randLong);
+        /*Location Check ends*/
+
+        /*Time Check starts*/
+        boolean timeOk = checkTime();
+        /*Time Check ends*/
+
+        if (timeOk && distOk) {
+            return "CheckIn";
+        } else if(timeOk && !distOk) {
+            return "Get close & try again";
+        } else if(!timeOk && distOk) {
+            return "Too early/Too late";
+        } else {
+            return "Please checkin before class within 15 mins of strt time";
+        }
+    }
+
+    private boolean checkTime() throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
+        String dateInString = "22-01-2015 10:20:56";
+        Date date = sdf.parse(dateInString);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        long classTime = calendar.getTimeInMillis();
+
+        calendar = Calendar.getInstance();
+        long currentTime = calendar.getTimeInMillis();
+
+        if(Math.abs(classTime - currentTime) == 1000*60*15)
+            return true;
+        return false;
+
+    }
+
+    private boolean checkDist(double randLat, double randLong) {
+        final int R = 6371;
+
+        double latDist = Math.toRadians(Lat - randLat);
+        double longDist = Math.toRadians(Long - randLong);
+        double a = Math.sin(latDist/2) * Math.sin(latDist/2)
+                + Math.cos(Math.toRadians(randLat)) * Math.cos(Math.toRadians(Lat))
+                + Math.sin(longDist/2) * Math.sin(longDist/2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        double dist = R*c*1000;
+
+        if(dist <=  ALLOWED_DISTANCE) {
+            return true;
+        }
         return false;
     }
+
+    //convert to get Long & Lat from DB
+    private double generateRandomLoc(int i) {
+        double num = (Math.random()*i);
+        double neg = Math.floor(Math.random());
+        if(neg == 0) {
+            num *= -1;
+        }
+        return num;
+    }
+    //***
 
     public boolean checkLocation(){
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
