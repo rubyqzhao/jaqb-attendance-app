@@ -101,7 +101,7 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
             @Override
             public void receiveDetections(Detector.Detections<Barcode> detections) {
                 final SparseArray<Barcode> qrCodes = detections.getDetectedItems();
-                
+
                 if(qrCodes.size()!=0) {
 
                     Vibrator vibrator = (Vibrator)getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
