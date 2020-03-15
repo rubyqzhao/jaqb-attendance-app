@@ -10,6 +10,7 @@ function changePrivilege(level){
                 //show content
                 console.log(data);
                 alert('Success!');
+                window.location.reload();
             },
             error: function(jqXHR, textStatus, err) {
                 //show error message
