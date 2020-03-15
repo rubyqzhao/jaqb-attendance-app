@@ -11,8 +11,11 @@ block content
         th First Name
         th Last Name
         th Level
+        th
     tbody
-      each item in users
+      each row in users
         tr
-          each row in item
-            td(id="class-" + row) #{row}
+          each item in row
+            td(id="class-" + item) #{item}  
+          td 
+            button(type='submit', onclick='changePrivilege("#{row}")') Change Privilege
