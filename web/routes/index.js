@@ -115,11 +115,6 @@ router.post('/change_privilege', function(req, res) {
     res.redirect('/');
 });
 
-
-router.get('/user_privileges_page', function(req, res) {
-  res.render('user_privileges', { title: 'Add classes to Instructors' });
-});
-
 function changePrivilege(level){
     var arr = level.split(',');
     var fName = arr[0];
