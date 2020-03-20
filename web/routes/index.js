@@ -101,7 +101,7 @@ function getCourses(callback) {
     });
 }
 
-router.get('/user_privileges_page', function(req, res, next) {
+router.get('/user_privileges_page', function(req, res) {
     getUsers(function(userList) {
         res.render('user_privileges', {
             title: 'User Privileges',
@@ -110,13 +110,67 @@ router.get('/user_privileges_page', function(req, res, next) {
     });
 });
 
-router.get('/user_privileges_page', function(req, res, next) {
+router.post('/change_privilege', function(req, res) {
+    changePrivilege(JSON.stringify(req.body));
+    res.redirect('/');
+});
+
+
+router.get('/user_privileges_page', function(req, res) {
   res.render('user_privileges', { title: 'Add classes to Instructors' });
 });
 
+function changePrivilege(level){
+    var arr = level.split(',');
+    var fName = arr[0];
+    var lName = arr[1];
+    var lev = arr[2];
+    if(lev.localeCompare("STUDENT") == 1){
+        var userQry = database.ref('User/').orderByChild("fname").equalTo(fName.substring(2));
+        console.log(userQry)
+        userQry.once('value', function (data) {
+            if (!data.exists()) {
+                //res.send('No users found')
+            }
+            else {
+                data.forEach(function (user) {
+                    database.ref('User/' + user.key).update({ level: "INSTRUCTOR" })
+                        .then(function () {
+                            return;
+                        })
+                        .catch(function (error) {
+                            return;
+                        });
+                });
+            }
+        });
+    }
+    else{
+        var userQry = database.ref('User/').orderByChild("fname").equalTo(fName.substring(2));
+        console.log(userQry)
+        userQry.once('value', function (data) {
+            if (!data.exists()) {
+                //res.send('No users found')
+            }
+            else {
+                data.forEach(function (user) {
+                    database.ref('User/' + user.key).update({ level: "STUDENT" })
+                        .then(function () {
+                            return;
+                        })
+                        .catch(function (error) {
+                            return;
+                        });
+                });
+            }
+        });
+    }
+    return;
+}
+
 function getUsers(callback) {
     var userRef = database.ref('User/');
-    userRef.on('value', function(snapshot) {
+    userRef.once('value', function(snapshot) {
         var userList = [];
 
         snapshot.forEach(function(item) {
@@ -133,7 +187,7 @@ function getUsers(callback) {
 
 function updateUserPrivilege(callback) {
     var userRef = database.ref('User/');
-    userRef.on('value', function(snapshot) {
+    userRef.once('value', function(snapshot) {
         var userList = [];
 
         snapshot.forEach(function(item) {
