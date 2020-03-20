@@ -1,9 +1,9 @@
-function changePrivilege(level){
+//get all courses
+function getCourses(){
     $.ajax({
-            type: "POST",
-            url: "/change_privilege",
+            type: "GET",
+            url: "/all-courses",
             timeout: 5000,
-            data: level,
             success: function(data) {
                 //show content
                 console.log(data);

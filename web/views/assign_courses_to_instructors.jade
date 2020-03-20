@@ -1,7 +1,22 @@
-doctype html
-html
-  head
-    title= title
-  body
-    p Assign Course to Instructors!
- 
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+
+  h2 Instructors Listing
+  table
+    thead
+      tr
+        th First Name
+        th Last Name
+        th Level
+        th Courses
+        th
+    tbody
+      each row in instructors
+        tr
+          each item in row
+            td(id="class-" + item) #{item}
+          td 
+            button(type='submit', onclick='') Assign Course

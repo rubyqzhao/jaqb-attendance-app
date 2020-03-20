@@ -29,6 +29,29 @@ router.get('/', function(req, res) {
     });
 });
 
+router.get('/user_privileges_page', function(req, res) {
+    getUsers(function(userList) {
+        res.render('user_privileges', {
+            title: 'User Privileges',
+            users: userList
+        });
+    });
+});
+
+router.get('/assign_courses', function(req, res) {
+    getInstructors(function(instructorList) {
+        res.render('assign_courses_to_instructors', {
+            title: 'instructors',
+            instructors: instructorList
+        });
+    });
+});
+
+router.post('/change_privilege', function(req, res) {
+    changePrivilege(JSON.stringify(req.body));
+    res.redirect('/');
+});
+
 router.post('/add-course', function (req, res) {
     var response = req.body;
     console.log(response);
@@ -100,29 +123,6 @@ function getCourses(callback) {
         return callback(courseList);
     });
 }
-
-router.get('/user_privileges_page', function(req, res) {
-    getUsers(function(userList) {
-        res.render('user_privileges', {
-            title: 'User Privileges',
-            users: userList
-        });
-    });
-});
-
-router.get('/assign_courses', function(req, res) {
-    getInstructors(function(instructorList) {
-        res.render('assign_courses_to_instructors', {
-            title: 'instructors',
-            instructors: instructorList
-        });
-    });
-});
-
-router.post('/change_privilege', function(req, res) {
-    changePrivilege(JSON.stringify(req.body));
-    res.redirect('/');
-});
 
 function changePrivilege(level){
     var arr = level.split(',');
@@ -198,13 +198,14 @@ function getInstructors(callback) {
             var firstName = item.val().fname;
             var lastName = item.val().lname;
             var level = item.val().level;
-            var courses = item.val().courses;
+            var courses = JSON.stringify(item.val().courses);
             if(level.localeCompare("INSTRUCTOR") == 0){
-                var instructor = [firstName, lastName, level, courses];
+                var regex = new RegExp(/true|"|:|{|}/gi);
+                var str1 = courses.replace(regex, '');
+                var instructor = [firstName, lastName, level, str1];
                 instructorList.push(instructor);
             }
         });
-        console.log(instructorList);
         return callback(instructorList);
     });
 }
