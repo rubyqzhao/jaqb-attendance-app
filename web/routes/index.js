@@ -110,6 +110,15 @@ router.get('/user_privileges_page', function(req, res) {
     });
 });
 
+router.get('/assign_courses', function(req, res) {
+    getInstructors(function(instructorList) {
+        res.render('assign_courses_to_instructors', {
+            title: 'instructors',
+            instructors: instructorList
+        });
+    });
+});
+
 router.post('/change_privilege', function(req, res) {
     changePrivilege(JSON.stringify(req.body));
     res.redirect('/');
@@ -177,6 +186,24 @@ function getUsers(callback) {
         });
         console.log(userList);
         return callback(userList);
+    });
+}
+
+function getInstructors(callback) {
+    var userRef = database.ref('User/');
+    userRef.once('value', function(snapshot) {
+        var instructorList = [];
+
+        snapshot.forEach(function(item) {
+            var firstName = item.val().fname;
+            var lastName = item.val().lname;
+            var level = item.val().level;
+            var courses = item.val().courses;
+            var instructor = [firstName, lastName, level, courses];
+            instructorList.push(instructor);
+        });
+        console.log(instructorList);
+        return callback(instructorList);
     });
 }
 
