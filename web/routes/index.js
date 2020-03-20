@@ -199,8 +199,10 @@ function getInstructors(callback) {
             var lastName = item.val().lname;
             var level = item.val().level;
             var courses = item.val().courses;
-            var instructor = [firstName, lastName, level, courses];
-            instructorList.push(instructor);
+            if(level.localeCompare("INSTRUCTOR") == 0){
+                var instructor = [firstName, lastName, level, courses];
+                instructorList.push(instructor);
+            }
         });
         console.log(instructorList);
         return callback(instructorList);
