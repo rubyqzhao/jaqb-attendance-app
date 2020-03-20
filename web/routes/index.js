@@ -29,6 +29,7 @@ router.get('/', function(req, res) {
     });
 });
 
+// opens the page with list of users, enables admin to change user privileges
 router.get('/user_privileges_page', function(req, res) {
     getUsers(function(userList) {
         res.render('user_privileges', {
@@ -38,6 +39,7 @@ router.get('/user_privileges_page', function(req, res) {
     });
 });
 
+// opens list of instructors in the app, enables admin to assign courses to them
 router.get('/assign_courses', function(req, res) {
     getInstructors(function(instructorList) {
         res.render('assign_courses_to_instructors', {
@@ -47,6 +49,19 @@ router.get('/assign_courses', function(req, res) {
     });
 });
 
+// get courses in page - add courses to the instructor
+router.get('/all_courses', function(req, res) {
+    console.log(req.query.ins_data);
+    // var ins_courses = 
+    getCoursesForInstructor(req.query.ins_data, function(){
+        res.render('assignCourses', {
+            title: 'instructors',
+            courses: ins_courses
+        });
+    });
+});
+
+// post request to update the user privileges
 router.post('/change_privilege', function(req, res) {
     changePrivilege(JSON.stringify(req.body));
     res.redirect('/');
@@ -122,6 +137,10 @@ function getCourses(callback) {
         });
         return callback(courseList);
     });
+}
+
+function getCoursesForInstructor(instructorDetails) {
+    return instructorDetails.substring(0, 5);
 }
 
 function changePrivilege(level){

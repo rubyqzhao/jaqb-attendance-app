@@ -38,9 +38,4 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-app.get('/instructorToClasses', function(req, res){
-  res.render('assign_courses', {
-  });
-});
-
 module.exports = app;
