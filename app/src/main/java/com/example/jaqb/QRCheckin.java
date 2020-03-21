@@ -52,11 +52,11 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
     LocationManager locationManager;
     String data;
     Integer codeFound = 0;
+    String currentQR;
     double Long;
     double Lat;
     double currentLongitude;
     double currentLatitude;
-    String checkIn = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +66,7 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
         Intent receiveIntent = this.getIntent();
         currentLongitude = receiveIntent.getDoubleExtra("courseLongitude", 0.0);
         currentLatitude = receiveIntent.getDoubleExtra("courseLatitude", 0.0);
+        currentQR = receiveIntent.getStringExtra("courseQR");
 
         editText = findViewById(R.id.codeArea);
 
@@ -88,7 +89,7 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
                 }
                 try {
                     cameraSource.start(holder);
-                } catch(IOException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
 
@@ -105,7 +106,7 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
             }
         });
 
-        barcodeDetector.setProcessor(new Detector.Processor<Barcode>()   {
+        barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
             @Override
             public void release() {
 
@@ -115,18 +116,13 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
             public void receiveDetections(Detector.Detections<Barcode> detections) {
                 final SparseArray<Barcode> qrCodes = detections.getDetectedItems();
 
-                if(qrCodes.size()!=0) {
+                if (qrCodes.size() != 0) {
 
-                    Vibrator vibrator = (Vibrator)getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+                    Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
                     vibrator.vibrate(100);
                     codeFound++;
                     barcodeDetector.setProcessor(null);
-                    try {
-                        checkIn = checkValues();
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                    runActivity(qrCodes, codeFound);
+                    checkValues(qrCodes.valueAt(0).displayValue);
                 }
             }
         });
@@ -134,15 +130,13 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
 
     }
 
-    public void codeButtonOnClick( View view) throws ParseException {
+    public void codeButtonOnClick(View view) throws ParseException {
         //Not yet implemented
-
-        Intent intent = new Intent(QRCheckin.this, IncompleteActivity.class);
-        intent.putExtra("data", editText.getText().toString());
-        startActivity(intent);
+        String textCode = editText.getText().toString();
+        checkValues(textCode);
     }
 
-    public String checkValues() throws ParseException {
+    public void checkValues(String code) {
         //Implement all the checks (location & QR) from database here
 
         /*Location Check starts*/
@@ -150,21 +144,38 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
         boolean distOk = checkDist();
         /*Location Check ends*/
 
-        /*Time Check starts*/
+        /*Time Check starts
         boolean timeOk = checkTime();
-        /*Time Check ends*/
+        Time Check ends*/
 
-        if (timeOk && distOk) {
-            return "CheckIn";
-        } else if(timeOk && !distOk) {
-            return "Get close & try again";
-        } else if(!timeOk && distOk) {
-            return "Too early/Too late";
-        } else {
-            return "Please checkin before class within 15 mins of strt time";
+        /*QR check* starts*/
+        boolean codeOk = (currentQR == code);
+        /*QR check ends*/
+
+        takeDecision(distOk, codeOk);
+    }
+
+    private void takeDecision(boolean distOk, boolean codeOk) {
+        if (distOk && codeOk) {
+            Toast.makeText(this, "CheckIn Successful", Toast.LENGTH_LONG).show();
+            /* Do other necessary updates*/
+            finish();
+        }
+        if (distOk && !codeOk) {
+            Toast.makeText(this, "Invalid QR code. Please try with updated QR code", Toast.LENGTH_LONG).show();
+            finish();
+        }
+        if (!distOk && codeOk) {
+            Toast.makeText(this, "You are to far from the class. Please get in class and try again", Toast.LENGTH_LONG).show();
+            finish();
+        }
+        if (!distOk && !codeOk) {
+            Toast.makeText(this, "Neither you are in class nor QR is valid", Toast.LENGTH_LONG).show();
+            finish();
         }
     }
 
+    /*
     private boolean checkTime() throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
         String dateInString = "22-01-2015 10:20:56";
@@ -181,20 +192,20 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
             return true;
         return false;
 
-    }
+    }*/
 
     private boolean checkDist() {
         final int R = 6371;
 
         double latDist = Math.toRadians(Lat - currentLatitude);
         double longDist = Math.toRadians(Long - currentLongitude);
-        double a = Math.sin(latDist/2) * Math.sin(latDist/2)
+        double a = Math.sin(latDist / 2) * Math.sin(latDist / 2)
                 + Math.cos(Math.toRadians(currentLatitude)) * Math.cos(Math.toRadians(Lat))
-                + Math.sin(longDist/2) * Math.sin(longDist/2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        double dist = R*c*1000;
+                + Math.sin(longDist / 2) * Math.sin(longDist / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double dist = R * c * 1000;
 
-        if(dist <=  ALLOWED_DISTANCE) {
+        if (dist <= ALLOWED_DISTANCE) {
             return true;
         }
 
@@ -202,7 +213,7 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
     }
 
 
-    public boolean checkLocation(){
+    public boolean checkLocation() {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Location location = null;
         try {
@@ -236,15 +247,5 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
     @Override
     public void onProviderDisabled(String provider) {
 
-    }
-
-    public void runActivity(SparseArray<Barcode> qrCodes, Integer codefound) {
-        if(codefound == 1){
-            Intent intent = new Intent(QRCheckin.this, IncompleteActivity.class);
-            intent.putExtra("data", qrCodes.valueAt(0).displayValue);
-            finish();
-            startActivity(intent);
-            codeFound = 0;
-        }
     }
 }
