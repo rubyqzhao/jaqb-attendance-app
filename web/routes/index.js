@@ -42,7 +42,7 @@ router.get('/user_privileges_page', function(req, res) {
 // opens list of instructors in the app, enables admin to assign courses to them
 router.get('/assign_courses', function(req, res) {
     getInstructors(function(instructorList) {
-        res.render('assign_courses_to_instructors', {
+        res.render('all_instructors', {
             title: 'instructors',
             instructors: instructorList
         });
@@ -51,12 +51,10 @@ router.get('/assign_courses', function(req, res) {
 
 // get courses in page - add courses to the instructor
 router.get('/all_courses', function(req, res) {
-    console.log(req.query.ins_data);
-    // var ins_courses = 
-    getCoursesForInstructor(req.query.ins_data, function(){
-        res.render('assignCourses', {
+    getCoursesForInstructor(req.query.ins_data, function(available_courses){
+        res.render('assign_courses', {
             title: 'instructors',
-            courses: ins_courses
+            available_courses: available_courses
         });
     });
 });
@@ -139,8 +137,34 @@ function getCourses(callback) {
     });
 }
 
-function getCoursesForInstructor(instructorDetails) {
-    return instructorDetails.substring(0, 5);
+function getCoursesForInstructor(instructorDetails, callback) {
+    var available_courses = [];
+    var ins_data = instructorDetails.split(',');
+    var fname = ins_data[0];
+    var lname = ins_data[1];
+    var courses= [];
+    var i=0;
+    for(i = 3; i< ins_data.length; i++){
+        courses.push(ins_data[i]);
+    }
+    console.log("INS COURSES: " + courses);
+
+    var courseRef = database.ref('Course/');
+    courseRef.once('value', function(snapshot) {
+        snapshot.forEach(function(item) {
+            var code = item.val().code;
+            if(!(courses.indexOf(code) >= 0)){
+                var name = item.val().courseName;
+                var days = item.val().days;
+                var time = item.val().time;
+                var instructor = item.val().instructorName;
+                var listing = [code, name, days, time, instructor];
+                console.log("AVAILABLE COURSES : " + code);
+                available_courses.push(listing);   
+            }
+        });
+        return callback(available_courses);
+    });
 }
 
 function changePrivilege(level){
@@ -150,7 +174,7 @@ function changePrivilege(level){
     var lev = arr[2];
     if(lev.localeCompare("STUDENT") == 1){
         var userQry = database.ref('User/').orderByChild("fname").equalTo(fName.substring(2));
-        console.log(userQry)
+        //console.log(userQry)
         userQry.once('value', function (data) {
             if (!data.exists()) {
                 //res.send('No users found')
@@ -170,7 +194,7 @@ function changePrivilege(level){
     }
     else{
         var userQry = database.ref('User/').orderByChild("fname").equalTo(fName.substring(2));
-        console.log(userQry)
+        //console.log(userQry)
         userQry.once('value', function (data) {
             if (!data.exists()) {
                 //res.send('No users found')
@@ -203,7 +227,7 @@ function getUsers(callback) {
             var user = [firstName, lastName, level];
             userList.push(user);
         });
-        console.log(userList);
+        //console.log(userList);
         return callback(userList);
     });
 }
@@ -241,7 +265,7 @@ function updateUserPrivilege(callback) {
             var user = [firstName, lastName, level];
             userList.push(user);
         });
-        console.log(userList);
+        //console.log(userList);
         return callback(userList);
     });
 }

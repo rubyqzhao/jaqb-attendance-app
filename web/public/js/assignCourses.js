@@ -7,6 +7,7 @@ function addCourses(instructor){
         data: {"ins_data": instructor},
         success: function(res) {
             console.log(res);
+            document.write(res);
         },
         error: function(jqXHR, textStatus, err) {
             //show error message
