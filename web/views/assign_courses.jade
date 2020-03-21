@@ -1,1 +1,22 @@
-p assign courses
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+
+  h2 Available Courses
+  table
+    thead
+      tr
+        th First Name
+        th Last Name
+        th Level
+        th Courses
+        th
+    tbody
+      each row in available_courses
+        tr
+          each item in row
+            td(id="class-" + item) #{item}
+          td 
+            button(type='submit', onclick='addCoursesToInstructor("#{row}", "#{title}")') Assign

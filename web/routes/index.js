@@ -51,9 +51,12 @@ router.get('/assign_courses', function(req, res) {
 
 // get courses in page - add courses to the instructor
 router.get('/all_courses', function(req, res) {
+    var ins_details = req.query.ins_data.split(',');
+    var fname = ins_details[0];
+    var lname = ins_details[1];
     getCoursesForInstructor(req.query.ins_data, function(available_courses){
         res.render('assign_courses', {
-            title: 'instructors',
+            title: fname + " " + lname,
             available_courses: available_courses
         });
     });
@@ -62,6 +65,11 @@ router.get('/all_courses', function(req, res) {
 // post request to update the user privileges
 router.post('/change_privilege', function(req, res) {
     changePrivilege(JSON.stringify(req.body));
+    res.redirect('/');
+});
+
+router.post('/add_course_to_instructor', function(req, res) {
+    addCourseToInstructor(JSON.stringify(req.body));
     res.redirect('/');
 });
 
@@ -137,6 +145,10 @@ function getCourses(callback) {
     });
 }
 
+function addCourseToInstructor(request_body){
+    console.log("REQUEST BODY : " + request_body);
+}
+
 function getCoursesForInstructor(instructorDetails, callback) {
     var available_courses = [];
     var ins_data = instructorDetails.split(',');
@@ -147,7 +159,7 @@ function getCoursesForInstructor(instructorDetails, callback) {
     for(i = 3; i< ins_data.length; i++){
         courses.push(ins_data[i]);
     }
-    console.log("INS COURSES: " + courses);
+    // console.log("INS COURSES: " + courses);
 
     var courseRef = database.ref('Course/');
     courseRef.once('value', function(snapshot) {
@@ -159,7 +171,7 @@ function getCoursesForInstructor(instructorDetails, callback) {
                 var time = item.val().time;
                 var instructor = item.val().instructorName;
                 var listing = [code, name, days, time, instructor];
-                console.log("AVAILABLE COURSES : " + code);
+                // console.log("AVAILABLE COURSES : " + code);
                 available_courses.push(listing);   
             }
         });
