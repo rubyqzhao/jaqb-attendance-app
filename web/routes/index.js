@@ -69,6 +69,7 @@ router.post('/change_privilege', function(req, res) {
 });
 
 router.post('/add_course_to_instructor', function(req, res) {
+    //console.log(JSON.stringify(req.body) + " : BODY");
     addCourseToInstructor(JSON.stringify(req.body));
     res.redirect('/');
 });
@@ -146,7 +147,30 @@ function getCourses(callback) {
 }
 
 function addCourseToInstructor(request_body){
-    console.log("REQUEST BODY : " + request_body);
+    var regex = new RegExp(/"|:|{|}/gi);
+    var str1 = request_body.replace(regex, '');
+    var details = str1.split(',');
+    var course_code = details[0];
+    var fname = details[1].split(' ')[0];
+    var lname = details[1].split(' ')[1];
+    console.log(course_code + "  --  " + fname + "  --  " + lname);
+    var userQry = database.ref('User/').orderByChild("fname").equalTo(fname);
+        userQry.once('value', function (data) {
+            if (!data.exists()) {
+                //res.send('No users found')
+            }
+            else {
+                data.forEach(function (user) {
+                    database.ref('User/' + user.key + '/courses/' + course_code).set("true" )
+                        .then(function () {
+                            return;
+                        })
+                        .catch(function (error) {
+                            return;
+                        });
+                });
+            }
+        });
 }
 
 function getCoursesForInstructor(instructorDetails, callback) {

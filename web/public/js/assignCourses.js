@@ -16,7 +16,7 @@ function addCourses(instructor){
 }
 
 function addCoursesToInstructor(course_details, instructor){
-    console.log("COURSE DETAILS: " + course_details);
+    console.log("COURSE DETAILS: " + course_details.split(',')[0]);
     console.log("INSTRUCTOR : " + instructor);
     // var r = confirm("Do !");
     // if (r == true) {
@@ -27,12 +27,9 @@ function addCoursesToInstructor(course_details, instructor){
     // }
     $.ajax({
         type: "POST",
-        url: "/",
+        url: "/add_course_to_instructor",
         timeout: 5000,
-        data: {
-            "course_details": course_details,
-            "instructor": instructor
-        },
+        data: course_details.split(',')[0] + ',' + instructor,
         success: function(data) {
             //show content
             alert('Success!');
