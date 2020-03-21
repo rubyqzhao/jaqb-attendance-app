@@ -37,7 +37,7 @@ import java.util.Random;
 /**
  * @author Bharat Goel
  *
- * This Activity scans the QR code and verify the time and locatio of the student to decide
+ * This Activity scans the QR code and verify the time and location of the student to decide
  * whether to mark attendance or not
  */
 
@@ -50,8 +50,6 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
     TextView textView;
     EditText editText;
     LocationManager locationManager;
-    String data;
-    Integer codeFound = 0;
     String currentQR;
     double Long;
     double Lat;
@@ -117,21 +115,16 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
                 final SparseArray<Barcode> qrCodes = detections.getDetectedItems();
 
                 if (qrCodes.size() != 0) {
-
                     Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
                     vibrator.vibrate(100);
-                    codeFound++;
                     barcodeDetector.setProcessor(null);
                     checkValues(qrCodes.valueAt(0).displayValue);
                 }
             }
         });
-
-
     }
 
     public void codeButtonOnClick(View view) throws ParseException {
-        //Not yet implemented
         String textCode = editText.getText().toString();
         checkValues(textCode);
     }
@@ -149,7 +142,7 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
         Time Check ends*/
 
         /*QR check* starts*/
-        boolean codeOk = (currentQR == code);
+        boolean codeOk = (currentQR.equals(code));
         /*QR check ends*/
 
         takeDecision(distOk, codeOk);
@@ -158,7 +151,7 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
     private void takeDecision(boolean distOk, boolean codeOk) {
         if (distOk && codeOk) {
             Toast.makeText(this, "CheckIn Successful", Toast.LENGTH_LONG).show();
-            /* Do other necessary updates*/
+            /*todo: Do other necessary updates*/
             finish();
         }
         if (distOk && !codeOk) {
@@ -201,7 +194,7 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
         double longDist = Math.toRadians(Long - currentLongitude);
         double a = Math.sin(latDist / 2) * Math.sin(latDist / 2)
                 + Math.cos(Math.toRadians(currentLatitude)) * Math.cos(Math.toRadians(Lat))
-                + Math.sin(longDist / 2) * Math.sin(longDist / 2);
+                * Math.sin(longDist / 2) * Math.sin(longDist / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         double dist = R * c * 1000;
 
