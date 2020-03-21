@@ -34,6 +34,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
+/**
+ * @author Bharat Goel
+ *
+ * This Activity scans the QR code and verify the time and locatio of the student to decide
+ * whether to mark attendance or not
+ */
+
 public class QRCheckin extends AppCompatActivity implements LocationListener {
 
     private static final double ALLOWED_DISTANCE = 50;
@@ -47,12 +54,18 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
     Integer codeFound = 0;
     double Long;
     double Lat;
+    double currentLongitude;
+    double currentLatitude;
     String checkIn = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qrcheckin);
+
+        Intent receiveIntent = this.getIntent();
+        currentLongitude = receiveIntent.getDoubleExtra("courseLongitude", 0.0);
+        currentLatitude = receiveIntent.getDoubleExtra("courseLatitude", 0.0);
 
         editText = findViewById(R.id.codeArea);
 
@@ -130,17 +143,11 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
     }
 
     public String checkValues() throws ParseException {
-        //Implement all the checks (location, class and time) from database here
+        //Implement all the checks (location & QR) from database here
 
         /*Location Check starts*/
         checkLocation();
-
-        //Change to get long from DB function
-        double randLong = generateRandomLoc(180);
-        double randLat = generateRandomLoc(90);
-        //****
-
-        boolean distOk = checkDist(randLat, randLong);
+        boolean distOk = checkDist();
         /*Location Check ends*/
 
         /*Time Check starts*/
@@ -176,13 +183,13 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
 
     }
 
-    private boolean checkDist(double randLat, double randLong) {
+    private boolean checkDist() {
         final int R = 6371;
 
-        double latDist = Math.toRadians(Lat - randLat);
-        double longDist = Math.toRadians(Long - randLong);
+        double latDist = Math.toRadians(Lat - currentLatitude);
+        double longDist = Math.toRadians(Long - currentLongitude);
         double a = Math.sin(latDist/2) * Math.sin(latDist/2)
-                + Math.cos(Math.toRadians(randLat)) * Math.cos(Math.toRadians(Lat))
+                + Math.cos(Math.toRadians(currentLatitude)) * Math.cos(Math.toRadians(Lat))
                 + Math.sin(longDist/2) * Math.sin(longDist/2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         double dist = R*c*1000;
@@ -190,19 +197,10 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
         if(dist <=  ALLOWED_DISTANCE) {
             return true;
         }
+
         return false;
     }
 
-    //convert to get Long & Lat from DB
-    private double generateRandomLoc(int i) {
-        double num = (Math.random()*i);
-        double neg = Math.floor(Math.random());
-        if(neg == 0) {
-            num *= -1;
-        }
-        return num;
-    }
-    //***
 
     public boolean checkLocation(){
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
