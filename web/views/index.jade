@@ -5,8 +5,8 @@ block content
   p Welcome to #{title}
 
   h2 Course Listing
-  table
-    thead
+  table(id="mytab", class="table table-striped table-bordered")
+    thead(align="left")
       tr
         th Code
         th Course Name
@@ -19,8 +19,11 @@ block content
           each row in item
             td(id="class-" + row) #{row}
 
-
+  h2 Change User Privileges
   button(type="button", onclick="window.location.href = '/user_privileges_page';") User Privileges
+
+  h2 Assign Courses to Instructors
+  button(type="button", onclick="window.location.href = '/assign_courses';") Assign Courses to Instructors
 
   h2 Add Courses
   form(name="add-course", action="add-course", method="post")
