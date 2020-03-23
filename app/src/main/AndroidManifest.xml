@@ -39,6 +39,8 @@
         <activity android:name=".MyCoursesActivity"/>
         <activity android:name=".ui.instructor.HomeActivity"/>
         <activity android:name=".ui.student.BadgeActivity" />
+        <activity android:name=".ui.instructor.DisplayQRCodeActivity" />
+
         <meta-data
             android:name="com.google.android.gms.vision.DEPENDENCIES"
             android:value="barcode" />

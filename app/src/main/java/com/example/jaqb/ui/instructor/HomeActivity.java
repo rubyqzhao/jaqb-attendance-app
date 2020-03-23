@@ -17,6 +17,9 @@ import com.example.jaqb.MainActivity;
 import com.example.jaqb.MyCoursesActivity;
 import com.example.jaqb.R;
 
+import com.example.jaqb.data.model.Course;
+import com.example.jaqb.data.model.LoggedInUser;
+import com.example.jaqb.services.FireBaseDBServices;
 import com.example.jaqb.ui.menu.MenuOptionsActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -27,6 +30,9 @@ public class HomeActivity extends MenuOptionsActivity {
     private double latitude;
     private double longitude;
     private TextView coordDisplay;
+    private FireBaseDBServices fireBaseDBServices;
+    private LoggedInUser instructor;
+    private Course nextClass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +42,9 @@ public class HomeActivity extends MenuOptionsActivity {
         setSupportActionBar(myToolbar);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         coordDisplay = findViewById(R.id.gps_coord);
+        fireBaseDBServices = FireBaseDBServices.getInstance();
+        instructor = fireBaseDBServices.getCurrentUser();
+        nextClass = new Course("DUM 101", "Dummy Class");
     }
 
     protected void onResume() {
@@ -49,7 +58,9 @@ public class HomeActivity extends MenuOptionsActivity {
     }
 
     public void GetQRButtonOnClick(View view) {
-        Intent intent = new Intent(this, IncompleteActivity.class);
+        //int res = fireBaseDBServices.startAttendanceForCourse(instructor, nextClass);
+        Intent intent = new Intent(this, DisplayQRCodeActivity.class);
+        //intent.putExtra("QR_Code", res);
         startActivity(intent);
     }
 
