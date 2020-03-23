@@ -1,8 +1,10 @@
 package com.example.jaqb.services;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 import com.example.jaqb.data.model.Course;
 import com.example.jaqb.data.model.LoggedInUser;
@@ -18,11 +20,17 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+
+import static java.time.format.DateTimeFormatter.ofPattern;
 
 /**
  * @author amanjotsingh
@@ -169,11 +177,33 @@ public class FireBaseDBServices {
         //goToUserHomepage(context);
     }
 
-    public int registerCourse(final Course newCourse, LoggedInUser user) {
+    public int registerCourse(final Course newCourse, final LoggedInUser user) {
         int res = 0;
         try {
             DatabaseReference reff = database.getReference("User").child(user.getuID());
             reff.child("courses").child(newCourse.getCode()).setValue("true");
+            boolean temp = "STUDENT" == user.getLevel().toString();
+            if(temp) {
+                Query query = database.getReference("Course/").orderByChild("code")
+                        .equalTo(newCourse.getCode());
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (final DataSnapshot keyNode : dataSnapshot.getChildren()) {
+                            Course course = keyNode.getValue(Course.class);
+                            if(newCourse.getCode().equalsIgnoreCase(course.getCode())) {
+                                database.getReference("Course").child(keyNode.getKey())
+                                        .child("students").child(user.getuID()).setValue("true");
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
             res = 1;
         } catch (Exception e) {
             e.printStackTrace();
@@ -237,5 +267,38 @@ public class FireBaseDBServices {
                 }
 
             });
+    }
+
+    public int startAttendanceForCourse(LoggedInUser instructor, Course nextClass) {
+        final int[] attendanceCreated = {0};
+        try{
+            final DatabaseReference reff = database.getReference("InstructorAttendance").child(nextClass.getCode());
+            reff.addListenerForSingleValueEvent(new ValueEventListener() {
+                @RequiresApi(api = Build.VERSION_CODES.O)
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.exists()){
+                        System.out.println("INSTRUCTOR HISTORY EXISTS");
+                        attendanceCreated[0] = 0;
+                    }
+                    else{
+                        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                        LocalDateTime now = LocalDateTime.now();
+                        System.out.println("INSTRUCTOR HISTORY NOT FOUND");
+                        reff.child(dtf.format(now)).setValue("false");
+                        attendanceCreated[0] = 1;
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return attendanceCreated[0];
     }
 }
