@@ -1,11 +1,8 @@
 package com.example.jaqb.services;
 
 import android.content.Context;
-import android.os.Build;
 import android.util.Log;
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-
 import com.example.jaqb.data.model.Course;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.data.model.RegisteredUser;
@@ -22,15 +19,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Observable;
 import java.util.Observer;
-
-import static java.time.format.DateTimeFormatter.ofPattern;
 
 /**
  * @author amanjotsingh
@@ -267,24 +260,24 @@ public class FireBaseDBServices {
             });
     }
 
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public int startAttendanceForCourse(final Course nextClass) {
         final int[] attendanceCreated = {0};
-        final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        final LocalDateTime now = LocalDateTime.now();
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        final String strDate= formatter.format(date);
+        System.out.println("THE DATE IS : " + strDate);
         try{
             final DatabaseReference reff = database.getReference("InstructorAttendance")
-                    .child(nextClass.getCode()).child(dtf.format(now));
+                    .child(nextClass.getCode()).child(strDate);
             reff.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if(dataSnapshot.exists()){
-                        System.out.println("INSTRUCTOR HISTORY EXISTS");
+                        System.out.println("IT EXISTS");
                         attendanceCreated[0] = 0;
                     }
                     else{
-                        System.out.println("INSTRUCTOR HISTORY NOT FOUND");
+                        System.out.println("IT DOESN'T EXISTS");
                         Query query = database.getReference("Course").orderByChild("code")
                                 .equalTo(nextClass.getCode());
                         query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -293,21 +286,24 @@ public class FireBaseDBServices {
                                 String key = "";
                                 for(DataSnapshot keyNode : dataSnapshot.getChildren()){
                                     key = keyNode.getKey();
-
+                                    System.out.println("KEY IS : " + key);
                                 }
-//                                System.out.println("KEY : " + key);
                                 database.getReference("Course").child(key).child("students")
                                         .addListenerForSingleValueEvent(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                 for(DataSnapshot keyNode : dataSnapshot.getChildren()){
-//                                                    System.out.println("STUDENTS VALUE : " + keyNode.getValue());
-//                                                    System.out.println("STUDENTS KEY : " + keyNode.getKey());
                                                     String studentKey = keyNode.getKey();
+                                                    System.out.println("STUDENT KEYS: " + studentKey);
                                                     database.getReference("InstructorHistory")
                                                             .child(nextClass.getCode())
-                                                            .child(dtf.format(now))
+                                                            .child(strDate)
                                                             .child(studentKey).setValue("false");
+                                                    database.getReference("User")
+                                                            .child(studentKey)
+                                                            .child("attendanceHistory")
+                                                            .child(nextClass.getCode())
+                                                            .child(strDate).setValue("false");
                                                 }
                                             }
 
