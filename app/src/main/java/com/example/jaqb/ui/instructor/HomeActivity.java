@@ -44,7 +44,7 @@ public class HomeActivity extends MenuOptionsActivity {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         coordDisplay = findViewById(R.id.gps_coord);
         fireBaseDBServices = FireBaseDBServices.getInstance();
-        nextClass = new Course("CSE 392", "Dummy Class");
+        nextClass = new Course("SER 515", "Dummy Class");
     }
 
     protected void onResume() {
