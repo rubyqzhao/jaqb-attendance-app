@@ -182,8 +182,8 @@ public class FireBaseDBServices {
         try {
             DatabaseReference reff = database.getReference("User").child(user.getuID());
             reff.child("courses").child(newCourse.getCode()).setValue("true");
-            boolean temp = "STUDENT" == user.getLevel().toString();
-            if(temp) {
+            boolean isStudent = "STUDENT" == user.getLevel().toString();
+            if(isStudent) {
                 Query query = database.getReference("Course/").orderByChild("code")
                         .equalTo(newCourse.getCode());
                 query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -257,8 +257,6 @@ public class FireBaseDBServices {
                         reff.setValue(numPoints);
                     }
                     observer.update(null, numPoints);
-
-
                 }
 
                 @Override
@@ -269,12 +267,16 @@ public class FireBaseDBServices {
             });
     }
 
-    public int startAttendanceForCourse(LoggedInUser instructor, Course nextClass) {
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public int startAttendanceForCourse(final Course nextClass) {
         final int[] attendanceCreated = {0};
+        final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        final LocalDateTime now = LocalDateTime.now();
         try{
-            final DatabaseReference reff = database.getReference("InstructorAttendance").child(nextClass.getCode());
+            final DatabaseReference reff = database.getReference("InstructorAttendance")
+                    .child(nextClass.getCode()).child(dtf.format(now));
             reff.addListenerForSingleValueEvent(new ValueEventListener() {
-                @RequiresApi(api = Build.VERSION_CODES.O)
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if(dataSnapshot.exists()){
@@ -282,10 +284,44 @@ public class FireBaseDBServices {
                         attendanceCreated[0] = 0;
                     }
                     else{
-                        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                        LocalDateTime now = LocalDateTime.now();
                         System.out.println("INSTRUCTOR HISTORY NOT FOUND");
-                        reff.child(dtf.format(now)).setValue("false");
+                        Query query = database.getReference("Course").orderByChild("code")
+                                .equalTo(nextClass.getCode());
+                        query.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                String key = "";
+                                for(DataSnapshot keyNode : dataSnapshot.getChildren()){
+                                    key = keyNode.getKey();
+
+                                }
+//                                System.out.println("KEY : " + key);
+                                database.getReference("Course").child(key).child("students")
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                for(DataSnapshot keyNode : dataSnapshot.getChildren()){
+//                                                    System.out.println("STUDENTS VALUE : " + keyNode.getValue());
+//                                                    System.out.println("STUDENTS KEY : " + keyNode.getKey());
+                                                    String studentKey = keyNode.getKey();
+                                                    database.getReference("InstructorHistory")
+                                                            .child(nextClass.getCode())
+                                                            .child(dtf.format(now))
+                                                            .child(studentKey).setValue("false");
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                            }
+                                        });
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
                         attendanceCreated[0] = 1;
                     }
                 }
