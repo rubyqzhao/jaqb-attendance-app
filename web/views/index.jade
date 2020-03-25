@@ -1,56 +1,72 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
 
-  h2 Course Listing
-  table(id="mytab", class="table table-striped table-bordered")
-    thead(align="left")
-      tr
-        th Code
-        th Course Name
-        th Days
-        th Time
-        th Instructor
-    tbody
-      each item in courses
-        tr
-          each row in item
-            td(id="class-" + row) #{row}
+  div(class = "wrapper")
+    div(class = "container"  id="courselist")
+      h2 Course Listing
+      div(id="tableDiv")
+        table(id="mytab", class="table table-striped table-bordered")
+          thead(align="left")
+            tr
+              th Code
+              th Course Name
+              th Days
+              th Time
+              th Instructor
+          tbody
+            each item in courses
+              tr
+                each row in item
+                  td(id="class-" + row) #{row}
 
-  h2 Change User Privileges
-  button(type="button", onclick="window.location.href = '/user_privileges_page';") User Privileges
+  div(class = "wrapper")
+    div(class = "container" id="addCourseDiv")
+      h2 Add Courses    
+      form(name="add-course", action="add-course", method="post")   
+        div.input 
+          div(class="field")  
+            span.label Course Code 
+            br
+            br
+            input(type="text", name="code"  placeholder="Ex. SER 517")    
+          div(class="field") 
+            span.label Course Name    
+            br
+            br
+            input(type="text", name="name")     
+          div(class="field") 
+            span.label Meeting Days (MO,TU,WE,TH,FR)  
+            br
+            br 
+            input(type="text", name="days")   
+          div(class="field") 
+            span.label Meeting Time  
+            br
+            br
+            input(type="time", name="time")    
+          div(class="field") 
+            span.label Course Instructor 
+            br
+            br   
+            input(type="text", name="instructor")   
+        div.actions    
+        input(type="submit", value="Add")
 
-  h2 Assign Courses to Instructors
-  button(type="button", onclick="window.location.href = '/assign_courses';") Assign Courses to Instructors
+    div(class = "container" id="changeCourseDiv")
+      h2 Change User Privileges
+      button(type="button", onclick="window.location.href = '/user_privileges_page';") User Privileges
 
-  h2 Add Courses
-  form(name="add-course", action="add-course", method="post")
-    div.input
-      span.label Course Code (eg SER 517)
-      input(type="text", name="code")
-      br
-      span.label Course Name
-      input(type="text", name="name")
-      br
-      span.label Meeting Days (MO,TU,WE,TH,FR)
-      input(type="text", name="days")
-      br
-      span.label Meeting Time
-      input(type="time", name="time")
-      br
-      span.label Course Instructor
-      input(type="text", name="instructor")
-      br
-    div.actions
-      input(type="submit", value="Add")
+    div(class = "container" id="assignCourseDiv")
+      h2 Assign Courses to Instructors
+      button(type="button", onclick="window.location.href = '/assign_courses';") Assign Courses to Instructors
 
-  h2 Delete Course
-  form(name="delete-course", action="delete-course" method="post")
-    div.input
-      span.label Course Code (eg SER 517)
-      input(type="text", name="courseCode")
-      br
-    div.actions
-      input(type="submit", value="Delete")
+    div(class = "container" id="delCourseDiv")
+      h2 Delete Course
+      form(name="delete-course", action="delete-course" method="post")
+        div.input(style="float:left;")
+          span.label Course Code 
+          input(type="text", name="courseCode" placeholder="Ex. SER 517")
+          br
+        div.actions
+          input(type="submit", value="Delete")

@@ -4,18 +4,20 @@ block content
   h1= title
   p Welcome to #{title}
 
-  h2 Users Listing
-  table(id="mytab", class="table table-striped table-bordered")
-    thead(align="left")
-      tr
-        th First Name
-        th Last Name
-        th Level
-        th
-    tbody
-      each row in users
-        tr
-          each item in row
-            td(id="class-" + item) #{item}  
-          td 
-            button(type='submit', onclick='changePrivilege("#{row}")') Change Privilege
+  div(class = "wrapper")
+    div(class = "container")
+      h2 Users Listing
+      table(id="mytab", class="table table-striped table-bordered")
+        thead(align="left")
+          tr
+            th First Name
+            th Last Name
+            th Level
+            th
+        tbody
+          each row in users
+            tr
+              each item in row
+                td(id="class-" + item) #{item}  
+              td 
+                button(type='submit', onclick='changePrivilege("#{row}")') Change Privilege
