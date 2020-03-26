@@ -260,6 +260,10 @@ public class FireBaseDBServices {
             });
     }
 
+    /**
+     * @param nextClass
+     * @return
+     */
     public int startAttendanceForCourse(final Course nextClass) {
         final int[] attendanceCreated = {0};
         Date date = new Date();
@@ -295,15 +299,15 @@ public class FireBaseDBServices {
                                                 for(DataSnapshot keyNode : dataSnapshot.getChildren()){
                                                     String studentKey = keyNode.getKey();
                                                     System.out.println("STUDENT KEYS: " + studentKey);
-                                                    database.getReference("InstructorHistory")
+                                                    database.getReference("InstructorAttendance")
                                                             .child(nextClass.getCode())
                                                             .child(strDate)
-                                                            .child(studentKey).setValue("false");
+                                                            .child(studentKey).setValue(false);
                                                     database.getReference("User")
                                                             .child(studentKey)
                                                             .child("attendanceHistory")
                                                             .child(nextClass.getCode())
-                                                            .child(strDate).setValue("false");
+                                                            .child(strDate).setValue(false);
                                                 }
                                             }
 
@@ -333,4 +337,5 @@ public class FireBaseDBServices {
         }
         return attendanceCreated[0];
     }
+
 }
