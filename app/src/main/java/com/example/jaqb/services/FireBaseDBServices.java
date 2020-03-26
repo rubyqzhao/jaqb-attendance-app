@@ -4,6 +4,8 @@ import android.content.Context;
 import android.util.Log;
 import androidx.annotation.NonNull;
 
+import com.example.jaqb.R;
+import com.example.jaqb.data.model.Badge;
 import com.example.jaqb.data.model.Course;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.data.model.RegisteredUser;
@@ -20,6 +22,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -110,6 +113,7 @@ public class FireBaseDBServices {
                                                             }
                                             currentUser.setRegisteredCourses(getUserCourses(currentUser, allCourses));
                                             observer.update(currentUser, currentUser.getLevel());
+                                            getBadges();
                                         }
 
                                         @Override
@@ -238,4 +242,70 @@ public class FireBaseDBServices {
 
             });
     }
+
+    public void getBadges() {
+        final int notEarnedIcon = R.drawable.mystery_badgexhdpi;
+        DatabaseReference statsRef = database.getReference("User").child(currentUser.getuID()).child("stats");
+        statsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<Badge> badgeList = new ArrayList<>();
+                badgeList.add(new Badge(0, "firstClass", notEarnedIcon));
+                badgeList.add(new Badge(1, "fiveStreak", notEarnedIcon));
+                badgeList.add(new Badge(2, "perfectAttendance", notEarnedIcon));
+                badgeList.add(new Badge(3, "perfectAttendanceOneCourse", notEarnedIcon));
+
+                int allClassTotal = 0;
+                int allClassAttended = 0;
+
+                for(DataSnapshot course : dataSnapshot.getChildren()) {
+                    int classesAttended = 0;
+                    int totalClasses = 0;
+
+                    for(DataSnapshot stats : course.getChildren()) {
+                        if (stats.getKey().equals("currentStreak")) {
+                            //determine whether five streak achieved
+                            Log.d("database streak", stats.getValue().toString());
+                            if (Integer.parseInt(stats.getValue().toString()) >= 5)
+                                badgeList.get(1).setImage(R.drawable.go_5_days_a_week_2x);
+                        } else if (stats.getKey().equals("numAttended")) {
+                            //determine whether first class was attended
+                            classesAttended = Integer.parseInt(stats.getValue().toString());
+                            allClassAttended += classesAttended;
+
+                            Log.d("database numAttended", stats.getValue().toString());
+                            if (classesAttended > 0)
+                                badgeList.get(0).setImage(R.drawable.attend_first_class_2x);
+                        } else if (stats.getKey().equals("totalClasses")) {
+                            //get the sum of attendance in each class
+                            totalClasses = Integer.parseInt(stats.getValue().toString());
+                            allClassTotal += totalClasses;
+                        }
+
+                        //determine whether perfect attendance in this class
+                        Log.d("database one class", classesAttended + " " + totalClasses);
+                        if (classesAttended == 0 && totalClasses == 0) {}
+                        else if (classesAttended == totalClasses) {
+                            badgeList.get(3).setImage(R.drawable.all_classes_of_a_course_2x);
+                        }
+                    }
+                }
+
+                //determine whether perfect attendance for all classes
+                Log.d("database all classes", allClassAttended + " " + allClassTotal);
+                if(allClassAttended == allClassTotal) {
+                    badgeList.get(2).setImage(R.drawable.all_classes_attended_2x);
+                }
+
+                Log.d("database", badgeList.toString());
+                currentUser.setBadges(badgeList);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
+        });
+    }
+
+
+
 }
