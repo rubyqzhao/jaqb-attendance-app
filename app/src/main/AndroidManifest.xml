@@ -42,6 +42,8 @@
         <activity android:name=".ui.instructor.DisplayQRCodeActivity" />
         <activity android:name=".ui.instructor.AttendanceHistoryInstructorActivity" />
         <activity android:name=".ui.instructor.ClassDatesActivity" />
+        <activity android:name=".ui.instructor.CheckAttendance" />
+
         <meta-data
             android:name="com.google.android.gms.vision.DEPENDENCIES"
             android:value="barcode" />
