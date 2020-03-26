@@ -1,20 +1,20 @@
 package com.example.jaqb;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.icu.util.Calendar;
-import android.icu.util.GregorianCalendar;
 import android.icu.util.TimeZone;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.view.View;
-import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -22,13 +22,14 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.jaqb.data.model.Course;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.services.FireBaseDBServices;
 
 import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -54,12 +55,14 @@ public class RegisteredCourseDetailsActivity extends AppCompatActivity implement
     private TextView courseInstructorTextView;
     private TextView courseLocation;
     private TextView courseTime;
+    private TextView currentAlarm;
     private EditText alertMinutesText;
     private DialogInterface.OnClickListener dialogClickListener;
     private Button setAlarmButton, deleteAlarmButton;
     private FireBaseDBServices fireBaseDBServices;
     private LoggedInUser currentUser;
     private Course registerCourse;
+    private int hashCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +81,9 @@ public class RegisteredCourseDetailsActivity extends AppCompatActivity implement
         courseLocation = (TextView) findViewById(R.id.location);
         courseTime = (TextView) findViewById(R.id.time);
         alertMinutesText = (EditText) findViewById(R.id.numMinutes);
+        currentAlarm = (TextView) findViewById(R.id.currentAlarm);
+
+        hashCode = Math.abs((courseName + courseCode + courseDays + time).hashCode());
 
         courseCodeTextView.setText(courseCode);
         courseNameTextView.setText(courseName);
@@ -128,18 +134,130 @@ public class RegisteredCourseDetailsActivity extends AppCompatActivity implement
                 }
             }
         };
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_CALENDAR)
+                != PackageManager.PERMISSION_GRANTED) {
+            deleteAlarmButton.setEnabled(false);
+            setAlarmButton.setEnabled(false);
+            // Permission is not granted
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_CALENDAR, Manifest.permission.READ_CALENDAR},
+                    1);
+        } else {
+            // Permission has already been granted
+            changeAlarm(getCurrentAlarm());
+        }
+    }
+
+    private int getCurrentAlarm()
+    {
+        ContentResolver cr = getContentResolver();
+        try {
+            Cursor cursor = cr.query(Uri.parse(getCalendarUriBase(true) + "reminders"),
+                    new String[]{ CalendarContract.Reminders.MINUTES },
+                    CalendarContract.Reminders.EVENT_ID + "=" + hashCode, null , null);
+            cursor.moveToFirst();
+            return cursor.getInt(0);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    private void changeAlarm(int alarm) {
+        if (alarm == -1)
+            currentAlarm.setText("No Alarm Set");
+        else
+            currentAlarm.setText("Alarm set to " + alarm + " minute(s) before class");
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onClick(View v)
     {
-        addCalendarEvent(v);
+            if(v.equals(setAlarmButton))
+                addReminder();
+            else if(v.equals(deleteAlarmButton))
+                removeCalendarReminder();
+    }
+
+    public void removeCalendarReminder()
+    {
+        ContentResolver cr = getContentResolver();
+        int numDeleted = cr.delete(Uri.parse(getCalendarUriBase(true) + "reminders"),
+           CalendarContract.Reminders.EVENT_ID + "=" + hashCode,
+      null);
+        if(numDeleted > 0) {
+            Toast.makeText(this, "Reminder Removed!", Toast.LENGTH_SHORT).show();
+            changeAlarm(-1);
+        }
+        else
+            Toast.makeText(this, "Alarm is already not set!", Toast.LENGTH_SHORT).show();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void addReminder()
+    {
+        int alertMinutes = 0;
+        try {
+            alertMinutes = Integer.parseInt(String.valueOf(alertMinutesText.getText()));
+        }
+        catch (Exception e)
+        {
+            Toast.makeText(this, "Must enter the number of minutes for a reminder!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        ContentResolver cr = getContentResolver();
+        Cursor cursor = cr.query(Uri.parse(getCalendarUriBase(true) + "events"),
+                new String[]{ CalendarContract.Events._ID },
+                CalendarContract.Events._ID + "=" + hashCode, null , null);
+        cursor.moveToFirst();
+        boolean result;
+        if(cursor.getCount() > 0)
+            result = editReminder(alertMinutes);
+        else
+            result = addCalendarEvent(alertMinutes);
+
+        if(result) {
+            Toast.makeText(this, "Reminder Created!", Toast.LENGTH_SHORT).show();
+            changeAlarm(alertMinutes);
+        }
+        else
+            Toast.makeText(this, "Error Creating Reminder", Toast.LENGTH_SHORT).show();
+    }
+
+    public boolean editReminder(int alertMinutes)
+    {
+        ContentResolver cr = getContentResolver();
+        ContentValues values = new ContentValues();
+
+        values.put(CalendarContract.Reminders.MINUTES, alertMinutes);
+        int rows = cr.update(Uri.parse(getCalendarUriBase(true) + "reminders"), values,
+                CalendarContract.Reminders.EVENT_ID + "=" + hashCode,
+                null);
+        if(rows == 0)
+            return createReminder(alertMinutes);
+        return true;
+    }
+
+    public boolean createReminder(int alertMinutes)
+    {
+        ContentResolver cr = getContentResolver();
+        ContentValues values = new ContentValues();
+        Uri REMINDERS_URI = Uri.parse(getCalendarUriBase(true) + "reminders");
+        values.put(CalendarContract.Reminders.EVENT_ID, hashCode);
+        values.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT);
+        values.put(CalendarContract.Reminders.MINUTES, alertMinutes);
+        cr.insert(REMINDERS_URI, values);
+        return true;
     }
 
     @SuppressLint("NewApi")
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public void addCalendarEvent(View view) {
+    public boolean addCalendarEvent(int alertMinutes) {
         Calendar calendarEvent = Calendar.getInstance();
         Uri EVENTS_URI = Uri.parse(getCalendarUriBase(true) + "events");
 
@@ -151,6 +269,7 @@ public class RegisteredCourseDetailsActivity extends AppCompatActivity implement
 
         Uri event = null;
         values.put(CalendarContract.Events.CALENDAR_ID, 1);
+        values.put(CalendarContract.Events._ID, hashCode);
         values.put(CalendarContract.Events.TITLE, courseName);
         values.put(CalendarContract.EXTRA_EVENT_ALL_DAY, false);
         values.put(CalendarContract.Events.DTSTART, nextDay);
@@ -165,26 +284,19 @@ public class RegisteredCourseDetailsActivity extends AppCompatActivity implement
         values.put(CalendarContract.Events.RRULE, "FREQ=WEEKLY;COUNT=4;BYDAY=" + courseDays); // Recurrence rule
         values.put(CalendarContract.Events.ACCESS_LEVEL, CalendarContract.Events.ACCESS_PRIVATE);
         values.put(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_FREE);
-        if(view.equals(deleteAlarmButton))
-            values.put(CalendarContract.Events.HAS_ALARM, 0);
         event = cr.insert(EVENTS_URI, values);
 
         if(event != null) {
-            if(view.equals(setAlarmButton)) {
-                int alertMinutes = Integer.parseInt(String.valueOf(alertMinutesText.getText()));
-                Uri REMINDERS_URI = Uri.parse(getCalendarUriBase(true) + "reminders");
-                values = new ContentValues();
-                values.put(CalendarContract.Reminders.EVENT_ID, Long.parseLong(event.getLastPathSegment()));
-                values.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT);
-                values.put(CalendarContract.Reminders.MINUTES, alertMinutes);
-                cr.insert(REMINDERS_URI, values);
-                Toast.makeText(this, "Reminder Created!", Toast.LENGTH_SHORT).show();
-            }
-            else
-                Toast.makeText(this, "Reminder Removed!", Toast.LENGTH_SHORT).show();
+            Uri REMINDERS_URI = Uri.parse(getCalendarUriBase(true) + "reminders");
+            values = new ContentValues();
+            values.put(CalendarContract.Reminders.EVENT_ID, Long.parseLong(event.getLastPathSegment()));
+            values.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT);
+            values.put(CalendarContract.Reminders.MINUTES, alertMinutes);
+            cr.insert(REMINDERS_URI, values);
+            return true;
         }
 
-
+        return false;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -248,5 +360,28 @@ public class RegisteredCourseDetailsActivity extends AppCompatActivity implement
             e.printStackTrace();
         }
         return calendarURI.toString();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay!
+                    deleteAlarmButton.setEnabled(true);
+                    setAlarmButton.setEnabled(true);
+                    changeAlarm(getCurrentAlarm());
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(getApplicationContext(), "Needs Calendar Permission to set Alarm!", Toast.LENGTH_LONG).show();
+                }
+                return;
+            }
+        }
     }
 }
