@@ -40,7 +40,8 @@
         <activity android:name=".ui.instructor.HomeActivity"/>
         <activity android:name=".ui.student.BadgeActivity" />
         <activity android:name=".ui.instructor.DisplayQRCodeActivity" />
-
+        <activity android:name=".ui.instructor.AttendanceHistoryInstructorActivity" />
+        <activity android:name=".ui.instructor.ClassDatesActivity" />
         <meta-data
             android:name="com.google.android.gms.vision.DEPENDENCIES"
             android:value="barcode" />
