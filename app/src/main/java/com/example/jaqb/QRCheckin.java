@@ -7,8 +7,10 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -17,22 +19,34 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.example.jaqb.data.model.LoggedInUser;
+import com.example.jaqb.services.FireBaseDBServices;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
+
 
 /**
  * @author Bharat Goel
@@ -55,6 +69,9 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
     double Lat;
     double currentLongitude;
     double currentLatitude;
+    private DatabaseReference databaseReference;
+    private LoggedInUser currentUser;
+    private FireBaseDBServices fireBaseDBServices;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +82,9 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
         currentLongitude = receiveIntent.getDoubleExtra("courseLongitude", 0.0);
         currentLatitude = receiveIntent.getDoubleExtra("courseLatitude", 0.0);
         currentQR = receiveIntent.getStringExtra("courseQR");
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        fireBaseDBServices = FireBaseDBServices.getInstance();
+        currentUser = fireBaseDBServices.getCurrentUser();
 
         editText = findViewById(R.id.codeArea);
 
@@ -144,13 +164,75 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
         boolean codeOk = (currentQR.equals(code));
         /*QR check ends*/
 
-        takeDecision(distOk, codeOk);
+        //takeDecision(distOk, codeOk);
+        takeDecision(true, true);
     }
 
     private void takeDecision(boolean distOk, boolean codeOk) {
         if (distOk && codeOk) {
             Toast.makeText(this, "CheckIn Successful", Toast.LENGTH_LONG).show();
-            /*todo: Do other necessary updates*/
+
+            //create new attendance history in student and instructorAttendance
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = new Date();
+            final Boolean bool = true;
+            final String currDate = formatter.format(date);
+
+            //todo: get the upcoming class
+            //String upcomingClass = currentUser.getUpcomingCourse();
+            final String upcomingClass = "SER 515";
+
+            final DatabaseReference userRef = databaseReference.child("User").child(currentUser.getuID())
+                    .child("attendanceHistory").child(upcomingClass);
+            final DatabaseReference instRef = databaseReference.child("InstructorAttendance")
+                    .child(upcomingClass).child(currDate);
+
+            // update table for student
+            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Map<String, Object> attendance = new HashMap<>();
+
+                    if (dataSnapshot.exists()) {
+                        Log.d("database", "Exists");
+                        for(DataSnapshot keyNode : dataSnapshot.getChildren()) {
+                            attendance.put(keyNode.getKey(), keyNode.getValue());
+                        }
+                        attendance.put(currDate, bool);
+                        userRef.updateChildren(attendance);
+                    } else {
+                        Log.d("database", "Doesn't exist");
+                        attendance.put(currDate, bool);
+                        userRef.updateChildren(attendance);
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {}
+            });
+
+            // update table for instructorAttendance
+            instRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Map<String, Object> instructor = new HashMap<>();
+
+                    if (dataSnapshot.exists()) {
+                        Log.d("database", "Exists");
+                        for(DataSnapshot keyNode : dataSnapshot.getChildren()) {
+                            instructor.put(keyNode.getKey(), keyNode.getValue());
+                        }
+                        instructor.put(currentUser.getuID(), true);
+                        instRef.updateChildren(instructor);
+                    } else {
+                        Log.d("database", "Doesn't exist");
+                        instructor.put(currentUser.getuID(), true);
+                        instRef.updateChildren(instructor);
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {}
+            });
+
             finish();
         }
         if (distOk && !codeOk) {
