@@ -163,7 +163,10 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
         /*QR check* starts*/
         boolean codeOk = (currentQR.equals(code));
         /*QR check ends*/
-
+        
+        /* FOR TESTING PURPOSES THE CODE IS ALWAYS SET TO EVALUATE
+        AS TRUE. WHEN COMMITTING TO MASTER, THIS SHOULD BE CHANGED
+        BACK TO THE COMMENTED-OUT CODE. */
         //takeDecision(distOk, codeOk);
         takeDecision(true, true);
     }
