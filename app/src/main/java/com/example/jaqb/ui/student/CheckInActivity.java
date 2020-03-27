@@ -2,6 +2,7 @@ package com.example.jaqb.ui.student;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,7 @@ import com.example.jaqb.MyCoursesActivity;
 import com.example.jaqb.QRCheckin;
 import com.example.jaqb.R;
 import com.example.jaqb.data.model.Course;
+import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.services.FireBaseDBServices;
 import com.example.jaqb.ui.menu.MenuOptionsActivity;
 import com.example.jaqb.ui.student.BadgeActivity;
@@ -24,10 +26,15 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Activity class that acts as a landing page after the user logs in. It routes the user
@@ -38,6 +45,8 @@ public class CheckInActivity extends MenuOptionsActivity {
     private TextView upcomingClass;
     private DatabaseReference databaseReference;
     private List<Course> courseList;
+    private LoggedInUser currentUser;
+    private FireBaseDBServices fireBaseDBServices;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,29 +55,15 @@ public class CheckInActivity extends MenuOptionsActivity {
         Toolbar myToolbar = findViewById(R.id.checkin_toolbar);
         setSupportActionBar(myToolbar);
         upcomingClass = findViewById(R.id.upcoming_class);
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Course");
-        courseList = new ArrayList<>();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        fireBaseDBServices = FireBaseDBServices.getInstance();
+        currentUser = fireBaseDBServices.getCurrentUser();
+        courseList = currentUser.getRegisteredCourses();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        ValueEventListener courseListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                List<String> keys = new ArrayList<String>();
-                for(DataSnapshot keyNode : dataSnapshot.getChildren()){
-                    keys.add(keyNode.getKey());
-                    Course course = keyNode.getValue(Course.class);
-                    courseList.add(course);
-                }
-                upcomingClass.setText(determineClassToDisplay());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) { }
-        };
-        databaseReference.addValueEventListener(courseListener);
     }
 
     @Override
@@ -124,6 +119,10 @@ public class CheckInActivity extends MenuOptionsActivity {
     }
 
     public void seeRewardsButtonOnClick(View view) {
+        for(Course c : courseList) {
+            Log.d("database", c.getCode());
+            calculateStats(c.getCode());
+        }
         Intent intent = new Intent(this, BadgeActivity.class);
         startActivity(intent);
     }
@@ -153,5 +152,66 @@ public class CheckInActivity extends MenuOptionsActivity {
         }
 
         return message;
+    }
+
+    protected void calculateStats(String course) {
+        final String courseName = course;
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
+        final String currDate = formatter.format(date);
+
+        final Query userRef = databaseReference.child("User").child(currentUser.getuID())
+                .child("attendanceHistory").child(courseName).orderByKey();
+        final DatabaseReference statsRef = databaseReference.child("User").child(currentUser.getuID())
+                .child("stats").child(courseName);
+
+        // calculate and update stats
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Map<String, Object> attendance = new HashMap<>();
+                Map<String, Object> stats = new HashMap<>();
+                List<String> attendDates = new ArrayList<>();
+
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot keyNode : dataSnapshot.getChildren()) {
+                        attendance.put(keyNode.getKey(), keyNode.getValue());
+                        attendDates.add(keyNode.getKey());
+                    }
+                    int currentStreak = 0;
+                    int numAttended = 0;
+                    int totalClasses = attendance.size();;
+                    Log.d("database", attendance.toString());
+                    int tempStreak = 0;
+                    for(int i = 0; i < attendDates.size(); i++) {
+                        if(attendance.get(attendDates.get(i)).toString().equals("true")) {
+                            tempStreak++;
+                            numAttended++;
+                        }
+                        else {
+                            if(tempStreak > currentStreak)
+                                currentStreak = tempStreak;
+                            tempStreak = 0;
+                        }
+                    }
+                    if(tempStreak > currentStreak)
+                        currentStreak = tempStreak;
+
+                    stats.put("currentStreak", Integer.valueOf(currentStreak));
+                    stats.put("numAttended", Integer.valueOf(numAttended));
+                    stats.put("totalClasses", Integer.valueOf(totalClasses));
+                }
+                else {
+                    stats.put("currentStreak", Integer.valueOf(0));
+                    stats.put("numAttended", Integer.valueOf(0));
+                    stats.put("totalClasses", Integer.valueOf(0));
+                }
+                Log.d("database stats", stats.toString());
+                statsRef.updateChildren(stats);
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
+        });
     }
 }
