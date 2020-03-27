@@ -1,8 +1,82 @@
 body {
-  padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background-color: #8C1D40;
 }
 
 a {
   color: #00B7FF;
+}
+
+.box {
+  height: 100px;
+}
+
+.wrapper {
+  margin: auto;
+  width: 90%;
+}
+
+.container{
+  margin: auto;
+  margin-bottom: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  background-color: #eee;
+}
+
+.navbar {
+  text-align: center;
+  margin-top: 0;
+  padding: 5px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  width: 100%;
+  position: fixed;
+  z-index: 999;
+  background-color: #eee;
+}
+
+#courselist {
+  overflow-y: auto;
+  height: 450px;
+}
+
+#addCourseDiv {
+  width: 65%;
+  float: left;
+  padding: 20px;
+  height: 150px;
+  margin-right: 21px;
+}
+
+#addMultiple {
+  width: 29%;
+  float: left;
+  padding: 20px;
+  height: 150px;
+}
+
+#changeCourseDiv {
+  width: 32%;
+  float: left;
+  padding: 20px;
+  margin-right: 11px;
+}
+
+#assignCourseDiv {
+  width: 30%;
+  float: left;
+  padding: 20px;
+  margin-right: 20px;
+}
+
+#delCourseDiv {
+  width: 29%;
+  float: left;
+}
+
+.field {
+  float: left;
+  padding: 5px;
+  width: 15%;
+  margin: auto;
 }
