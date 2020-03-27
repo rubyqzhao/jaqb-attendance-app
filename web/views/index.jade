@@ -70,3 +70,14 @@ block content
           br
         div.actions
           input(type="submit", value="Delete")
+
+    h2 Add Multiple Courses
+    form(method="post", action="/upload-csv", enctype="multipart/form-data")
+      div.input
+        span.label Upload a CSV file
+        br
+        input(type="file", name="document")
+        br
+      div.actions
+        input(type="submit", value = "Submit")
+
