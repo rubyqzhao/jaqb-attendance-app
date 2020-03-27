@@ -1,5 +1,7 @@
 package com.example.jaqb.data.model;
 
+import android.util.Log;
+
 import java.util.TimeZone;
 
 /**
@@ -11,12 +13,14 @@ import java.util.TimeZone;
 public class Semester {
 
     private TimeZone timeZone;
-    private String startDate, endDate;
+    private Date startDate, endDate;
+    private Date[] offDays;
 
-    public Semester(String tz, String startDate, String endDate){
+    public Semester(String tz, Date startDate, Date endDate, Date[] offDays){
         timeZone = TimeZone.getTimeZone(tz);
         this.startDate = startDate;
         this.endDate = endDate;
+        this.offDays = offDays;
     }
 
     public String getTimeZoneID()
@@ -24,13 +28,29 @@ public class Semester {
         return timeZone.getID();
     }
 
-    public String getStartDate()
+    public Date getStartDate()
     {
         return startDate;
     }
 
-    public String getEndDate()
+    public Date getEndDate()
     {
         return endDate;
+    }
+
+    public String getOffDaysFormatted()
+    {
+        if(offDays.length == 0)
+            return "";
+        String days = offDays[0].toString();
+        for(int i = 1; i < offDays.length; i++)
+            days += "," + offDays[i];
+        Log.i("DAYS", days);
+        return days;
+    }
+
+    public Date[] getDays()
+    {
+        return offDays;
     }
 }

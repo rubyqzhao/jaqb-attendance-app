@@ -5,6 +5,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.example.jaqb.data.model.Course;
+import com.example.jaqb.data.model.Date;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.data.model.RegisteredUser;
 import com.example.jaqb.data.model.Semester;
@@ -114,9 +115,16 @@ public class FireBaseDBServices {
                                                         @Override
                                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                             String timeZone = (String) dataSnapshot.child("TimeZone").getValue();
-                                                            String startDate = (String) dataSnapshot.child("StartDate").getValue();
-                                                            String endDate = (String) dataSnapshot.child("EndDate").getValue();
-                                                            currentUser.setSemester(new Semester(timeZone, startDate, endDate));
+                                                            Date startDate = new Date(dataSnapshot.child("StartDate").getValue(String.class));
+                                                            Date endDate = new Date(dataSnapshot.child("EndDate").getValue(String.class));
+                                                            Date[] offDays = new Date[(int) dataSnapshot.child("Offdays").getChildrenCount()];
+                                                            int i = 0;
+                                                            for (DataSnapshot keyNode : dataSnapshot.child("Offdays").getChildren()) {
+                                                                String date = keyNode.getKey();
+                                                                offDays[i] = new Date(date);
+                                                                i++;
+                                                            }
+                                                            currentUser.setSemester(new Semester(timeZone, startDate, endDate, offDays));
                                                         }
 
                                                 @Override

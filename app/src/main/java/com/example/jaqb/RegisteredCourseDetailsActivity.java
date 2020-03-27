@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,6 +27,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.jaqb.data.model.Course;
+import com.example.jaqb.data.model.Date;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.services.FireBaseDBServices;
 
@@ -281,14 +283,6 @@ public class RegisteredCourseDetailsActivity extends AppCompatActivity implement
         long startTime = getNextDay() + (hour * 60 + minute) * 60000;
         ContentValues values = new ContentValues();
 
-        String date[] = currentUser.getSemester().getEndDate().split("[-/]");
-        //ZoneId zone = ZoneId.of(currentUser.getSemester().getTimeZoneID());
-        int year = Integer.parseInt(date[2]);
-        int month = Integer.parseInt(date[0]);
-        int day = Integer.parseInt(date[1]);
-        //long endTime = ZonedDateTime.of(year, month, day, 0, 0, 0, 0, zone).toInstant().getEpochSecond() * 1000;
-        String endTime = "" + year + ((month < 10) ? "0" : "") + month + ((day < 10) ? "0" : "") + day + "T000000Z";
-
         Uri event = null;
         values.put(CalendarContract.Events.CALENDAR_ID, 1);
         values.put(CalendarContract.Events._ID, hashCode);
@@ -302,10 +296,11 @@ public class RegisteredCourseDetailsActivity extends AppCompatActivity implement
             //.putExtra(CalendarContract.Events.EVENT_LOCATION, "Location")
             //.putExtra(CalendarContract.Events.DESCRIPTION, "DESCRIPTION") // Description
             //.putExtra(Intent.EXTRA_EMAIL, currentUser.get)
-        values.put(CalendarContract.Events.EXDATE, "");
-        values.put(CalendarContract.Events.RRULE, "FREQ=WEEKLY;BYDAY=" + courseDays + ";UNTIL=" + endTime); // Recurrence rule
+        //values.put(CalendarContract.Events.EXDATE, currentUser.getSemester().getOffDaysFormatted());
+        values.put(CalendarContract.Events.RRULE, "FREQ=WEEKLY;BYDAY=" + courseDays + ";UNTIL=" + currentUser.getSemester().getEndDate()); // Recurrence rule
         values.put(CalendarContract.Events.ACCESS_LEVEL, CalendarContract.Events.ACCESS_PRIVATE);
         values.put(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_FREE);
+        Log.i("VALUES", values.toString());
         event = cr.insert(EVENTS_URI, values);
 
         if(event != null) {
@@ -365,12 +360,9 @@ public class RegisteredCourseDetailsActivity extends AppCompatActivity implement
             default:
                 dayOfWeek = null;
         }
-        String date[] = currentUser.getSemester().getStartDate().split("[-/]");
+        Date date = currentUser.getSemester().getStartDate();
         ZoneId zone = ZoneId.of(currentUser.getSemester().getTimeZoneID());
-        int year = Integer.parseInt(date[2]);
-        int month = Integer.parseInt(date[0]);
-        int day = Integer.parseInt(date[1]);
-        return ZonedDateTime.of(year, month, day, 0, 0, 0, 0, zone).toLocalDate().with(TemporalAdjusters.nextOrSame(dayOfWeek)).atStartOfDay().toInstant(zone.getRules().getOffset(LocalDateTime.now())).getEpochSecond() * 1000;
+        return ZonedDateTime.of(date.getYear(), date.getMonth(), date.getDay(), 0, 0, 0, 0, zone).toLocalDate().with(TemporalAdjusters.nextOrSame(dayOfWeek)).atStartOfDay().toInstant(zone.getRules().getOffset(LocalDateTime.now())).getEpochSecond() * 1000;
     }
 
     private String getCalendarUriBase(boolean eventUri) {
