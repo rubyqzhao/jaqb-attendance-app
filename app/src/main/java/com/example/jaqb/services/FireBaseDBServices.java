@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import com.example.jaqb.data.model.Course;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.data.model.RegisteredUser;
+import com.example.jaqb.data.model.Semester;
 import com.example.jaqb.data.model.User;
 import com.example.jaqb.data.model.UserLevel;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -108,6 +109,21 @@ public class FireBaseDBServices {
                                                                 Course course = keyNode.getValue(Course.class);
                                                                 allCourses.add(course);
                                                             }
+                                            database.getReference("SemesterInfo")
+                                                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                            String timeZone = (String) dataSnapshot.child("TimeZone").getValue();
+                                                            String startDate = (String) dataSnapshot.child("StartDate").getValue();
+                                                            String endDate = (String) dataSnapshot.child("EndDate").getValue();
+                                                            currentUser.setSemester(new Semester(timeZone, startDate, endDate));
+                                                        }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                }
+                                            });
                                             currentUser.setRegisteredCourses(getUserCourses(currentUser, allCourses));
                                             observer.update(currentUser, currentUser.getLevel());
                                         }

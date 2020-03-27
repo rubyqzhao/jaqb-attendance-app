@@ -264,24 +264,46 @@ public class RegisteredCourseDetailsActivity extends AppCompatActivity implement
         ContentResolver cr = getContentResolver();
         TimeZone timeZone = TimeZone.getDefault();
 
-        long nextDay = getNextDay();
+        String timeSplit[] = time.split("[:]");
+        if(timeSplit.length != 2)
+            return false;
+
+        int hour, minute;
+        try {
+            hour = Integer.parseInt(timeSplit[0]);
+            minute = Integer.parseInt(timeSplit[1]);
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        long startTime = getNextDay() + (hour * 60 + minute) * 60000;
         ContentValues values = new ContentValues();
+
+        String date[] = currentUser.getSemester().getEndDate().split("[-/]");
+        //ZoneId zone = ZoneId.of(currentUser.getSemester().getTimeZoneID());
+        int year = Integer.parseInt(date[2]);
+        int month = Integer.parseInt(date[0]);
+        int day = Integer.parseInt(date[1]);
+        //long endTime = ZonedDateTime.of(year, month, day, 0, 0, 0, 0, zone).toInstant().getEpochSecond() * 1000;
+        String endTime = "" + year + ((month < 10) ? "0" : "") + month + ((day < 10) ? "0" : "") + day + "T000000Z";
 
         Uri event = null;
         values.put(CalendarContract.Events.CALENDAR_ID, 1);
         values.put(CalendarContract.Events._ID, hashCode);
         values.put(CalendarContract.Events.TITLE, courseName);
         values.put(CalendarContract.EXTRA_EVENT_ALL_DAY, false);
-        values.put(CalendarContract.Events.DTSTART, nextDay);
-        values.put(CalendarContract.Events.DTEND, nextDay + 60 * 60 * 1000);
-        values.put(CalendarContract.Events.EVENT_TIMEZONE, String.valueOf(timeZone));
+        values.put(CalendarContract.Events.DTSTART, startTime);
+        values.put(CalendarContract.Events.DTEND, startTime + 60 * 60 * 1000);
+        values.put(CalendarContract.Events.EVENT_TIMEZONE, currentUser.getSemester().getTimeZoneID());
         //values.put(CalendarContract.EXTRA_EVENT_BEGIN_TIME,calendarEvent.getTimeInMillis()); // Only date part is considered when ALL_DAY is true; Same as DTSTART
             //.putExtra(CalendarContract.EXTRA_EVENT_END_TIME,calendarEvent.getTimeInMillis() + 60 * 60 * 1000) // Only date part is considered when ALL_DAY is true
             //.putExtra(CalendarContract.Events.EVENT_LOCATION, "Location")
             //.putExtra(CalendarContract.Events.DESCRIPTION, "DESCRIPTION") // Description
             //.putExtra(Intent.EXTRA_EMAIL, currentUser.get)
         values.put(CalendarContract.Events.EXDATE, "");
-        values.put(CalendarContract.Events.RRULE, "FREQ=WEEKLY;COUNT=4;BYDAY=" + courseDays); // Recurrence rule
+        values.put(CalendarContract.Events.RRULE, "FREQ=WEEKLY;BYDAY=" + courseDays + ";UNTIL=" + endTime); // Recurrence rule
         values.put(CalendarContract.Events.ACCESS_LEVEL, CalendarContract.Events.ACCESS_PRIVATE);
         values.put(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_FREE);
         event = cr.insert(EVENTS_URI, values);
@@ -343,7 +365,12 @@ public class RegisteredCourseDetailsActivity extends AppCompatActivity implement
             default:
                 dayOfWeek = null;
         }
-        return ZonedDateTime.now().toLocalDate().with(TemporalAdjusters.nextOrSame(dayOfWeek)).atStartOfDay().toInstant(ZoneId.systemDefault().getRules().getOffset(LocalDateTime.now())).getEpochSecond() * 1000;
+        String date[] = currentUser.getSemester().getStartDate().split("[-/]");
+        ZoneId zone = ZoneId.of(currentUser.getSemester().getTimeZoneID());
+        int year = Integer.parseInt(date[2]);
+        int month = Integer.parseInt(date[0]);
+        int day = Integer.parseInt(date[1]);
+        return ZonedDateTime.of(year, month, day, 0, 0, 0, 0, zone).toLocalDate().with(TemporalAdjusters.nextOrSame(dayOfWeek)).atStartOfDay().toInstant(zone.getRules().getOffset(LocalDateTime.now())).getEpochSecond() * 1000;
     }
 
     private String getCalendarUriBase(boolean eventUri) {
