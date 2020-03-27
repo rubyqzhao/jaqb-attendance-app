@@ -41,22 +41,32 @@ a {
 }
 
 #addCourseDiv {
+  width: 65%;
+  float: left;
+  padding: 20px;
+  height: 150px;
+  margin-right: 21px;
+}
+
+#addMultiple {
+  width: 29%;
+  float: left;
   padding: 20px;
   height: 150px;
 }
 
 #changeCourseDiv {
-  width: 31%;
+  width: 32%;
   float: left;
   padding: 20px;
-  margin-right: 16px;
+  margin-right: 11px;
 }
 
 #assignCourseDiv {
-  width: 31%;
+  width: 30%;
   float: left;
   padding: 20px;
-  margin-right: 16px;
+  margin-right: 20px;
 }
 
 #delCourseDiv {

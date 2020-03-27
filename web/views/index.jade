@@ -29,9 +29,11 @@ block content
             span.label Course Code 
             br
             br
+            br
             input(type="text", name="code"  placeholder="Ex. SER 517")    
           div(class="field") 
             span.label Course Name    
+            br
             br
             br
             input(type="text", name="name")     
@@ -44,14 +46,29 @@ block content
             span.label Meeting Time  
             br
             br
+            br
             input(type="time", name="time")    
           div(class="field") 
             span.label Course Instructor 
             br
-            br   
+            br  
+            br 
             input(type="text", name="instructor")   
         div.actions    
         input(type="submit", value="Add")
+
+    div(class = "container" id="addMultiple")
+      h2 Add Multiple Courses
+      form(method="post", action="/upload-csv", enctype="multipart/form-data")
+        div.input
+          span.label Upload a CSV file
+          br
+          br
+          input(type="file", name="document")
+          br
+          br
+        div.actions
+          input(type="submit", value = "Submit")
 
     div(class = "container" id="changeCourseDiv")
       h2 Change User Privileges
@@ -70,14 +87,4 @@ block content
           br
         div.actions
           input(type="submit", value="Delete")
-
-    h2 Add Multiple Courses
-    form(method="post", action="/upload-csv", enctype="multipart/form-data")
-      div.input
-        span.label Upload a CSV file
-        br
-        input(type="file", name="document")
-        br
-      div.actions
-        input(type="submit", value = "Submit")
 
