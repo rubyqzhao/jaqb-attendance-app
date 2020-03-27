@@ -25,7 +25,7 @@ block content
   h2 Assign Courses to Instructors
   button(type="button", onclick="window.location.href = '/assign_courses';") Assign Courses to Instructors
 
-  h2 Add Courses
+  h2 Add a Course
   form(name="add-course", action="add-course", method="post")
     div.input
       span.label Course Code (eg SER 517)
@@ -46,6 +46,16 @@ block content
     div.actions
       input(type="submit", value="Add")
 
+  h2 Add Multiple Courses
+  form(method="post", action="/upload-csv", enctype="multipart/form-data")
+    div.input
+      span.label Upload a CSV file
+      br
+      input(type="file", name="document")
+      br
+    div.actions
+      input(type="submit", value = "Submit")
+
   h2 Delete Course
   form(name="delete-course", action="delete-course" method="post")
     div.input
@@ -54,3 +64,5 @@ block content
       br
     div.actions
       input(type="submit", value="Delete")
+
+

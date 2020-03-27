@@ -3,6 +3,12 @@ var router = express.Router();
 var firebase = require("firebase/app");
 require("firebase/database");
 require('dotenv').config();
+const multer = require('multer');
+const csv = require('fast-csv');
+const upload = multer({ dest: 'test/' });
+const http = require('http');
+const fs = require('fs');
+
 
 const firebaseConfig = {
     apiKey: process.env.API_KEY,
@@ -305,5 +311,32 @@ function updateUserPrivilege(callback) {
         return callback(userList);
     });
 }
+
+router.post('/upload-csv', upload.single('document'), function (req, res) {
+    const fileRows = [];
+
+    // open uploaded file
+    csv.parseFile(req.file.path)
+        .on("data", function (data) {
+            fileRows.push(data); // push each row
+        })
+        .on("end", function () {
+            fs.unlinkSync(req.file.path);   // remove temp file
+            //process "fileRows" and respond
+            fileRows.forEach(loopthru);
+            function loopthru(row, index)
+            {
+                database.ref('Course').push().set({
+                    code: row[0],
+                    courseName: row[1],
+                    days: row[2],
+                    time: row[3],
+                    instructorName: row[4]
+                });
+            }
+
+            res.send('Uploaded');
+        })
+});
 
 module.exports = router;

@@ -20,11 +20,13 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
-import java.util.Observable;
 import java.util.Observer;
 
 /**
@@ -173,11 +175,33 @@ public class FireBaseDBServices {
         //goToUserHomepage(context);
     }
 
-    public int registerCourse(final Course newCourse, LoggedInUser user) {
+    public int registerCourse(final Course newCourse, final LoggedInUser user) {
         int res = 0;
         try {
             DatabaseReference reff = database.getReference("User").child(user.getuID());
             reff.child("courses").child(newCourse.getCode()).setValue("true");
+            boolean isStudent = "STUDENT" == user.getLevel().toString();
+            if(isStudent) {
+                Query query = database.getReference("Course/").orderByChild("code")
+                        .equalTo(newCourse.getCode());
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (final DataSnapshot keyNode : dataSnapshot.getChildren()) {
+                            Course course = keyNode.getValue(Course.class);
+                            if(newCourse.getCode().equalsIgnoreCase(course.getCode())) {
+                                database.getReference("Course").child(keyNode.getKey())
+                                        .child("students").child(user.getuID()).setValue("true");
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
             res = 1;
         } catch (Exception e) {
             e.printStackTrace();
@@ -231,8 +255,6 @@ public class FireBaseDBServices {
                         reff.setValue(numPoints);
                     }
                     observer.update(null, numPoints);
-
-
                 }
 
                 @Override
@@ -307,5 +329,84 @@ public class FireBaseDBServices {
     }
 
 
+
+=======
+    /**
+     * @param nextClass
+     * @return
+     */
+    public int startAttendanceForCourse(final Course nextClass) {
+        final int[] attendanceCreated = {0};
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        final String strDate= formatter.format(date);
+        System.out.println("THE DATE IS : " + strDate);
+        try{
+            final DatabaseReference reff = database.getReference("InstructorAttendance")
+                    .child(nextClass.getCode()).child(strDate);
+            reff.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.exists()){
+                        System.out.println("IT EXISTS");
+                        attendanceCreated[0] = 0;
+                    }
+                    else{
+                        System.out.println("IT DOESN'T EXISTS");
+                        Query query = database.getReference("Course").orderByChild("code")
+                                .equalTo(nextClass.getCode());
+                        query.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                String key = "";
+                                for(DataSnapshot keyNode : dataSnapshot.getChildren()){
+                                    key = keyNode.getKey();
+                                    System.out.println("KEY IS : " + key);
+                                }
+                                database.getReference("Course").child(key).child("students")
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                for(DataSnapshot keyNode : dataSnapshot.getChildren()){
+                                                    String studentKey = keyNode.getKey();
+                                                    System.out.println("STUDENT KEYS: " + studentKey);
+                                                    database.getReference("InstructorAttendance")
+                                                            .child(nextClass.getCode())
+                                                            .child(strDate)
+                                                            .child(studentKey).setValue(false);
+                                                    database.getReference("User")
+                                                            .child(studentKey)
+                                                            .child("attendanceHistory")
+                                                            .child(nextClass.getCode())
+                                                            .child(strDate).setValue(false);
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                            }
+                                        });
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                        attendanceCreated[0] = 1;
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return attendanceCreated[0];
+    }
 
 }
