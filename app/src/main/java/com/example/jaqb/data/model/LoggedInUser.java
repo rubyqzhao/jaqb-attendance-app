@@ -1,9 +1,11 @@
 package com.example.jaqb.data.model;
 
+import com.example.jaqb.services.FireBaseDBServices;
 import com.google.firebase.auth.FirebaseUser;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
+import com.example.jaqb.data.model.Badge;
 
 /**
  * This class contains the attributes for the logged-in user
@@ -15,6 +17,7 @@ public class LoggedInUser extends Observable {
     private List<Course> registeredCourses = new ArrayList<>();
     private List<String> courseNames = new ArrayList<>();
     private Semester semester;
+    private List<Badge> badgeList = new ArrayList<>();
 
     public void updateCourse(Course course){
         this.courseNames.add(course.getCode());
@@ -27,6 +30,14 @@ public class LoggedInUser extends Observable {
 
     public void setRegisteredCourses(List<Course> registeredCourses) {
         this.registeredCourses = registeredCourses;
+    }
+
+    public List<Badge> getBadges() {
+        return badgeList;
+    }
+
+    public void setBadges(List<Badge> badgeList) {
+        this.badgeList = badgeList;
     }
 
     public LoggedInUser(FirebaseUser firebaseUser, RegisteredUser registeredUser)
