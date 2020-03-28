@@ -16,6 +16,7 @@ public class LoggedInUser extends Observable {
     private RegisteredUser registeredUser;
     private List<Course> registeredCourses = new ArrayList<>();
     private List<String> courseNames = new ArrayList<>();
+    private Semester semester;
     private List<Badge> badgeList = new ArrayList<>();
 
     public void updateCourse(Course course){
@@ -73,5 +74,14 @@ public class LoggedInUser extends Observable {
 
     public List<String> getCourseNames() {
         return courseNames;
+    }
+
+    public void setSemester(Semester semester) {
+        this.semester = semester;
+    }
+
+    public Semester getSemester()
+    {
+        return semester;
     }
 }

@@ -6,8 +6,10 @@ import androidx.annotation.NonNull;
 import com.example.jaqb.R;
 import com.example.jaqb.data.model.Badge;
 import com.example.jaqb.data.model.Course;
+import com.example.jaqb.data.model.SemesterDate;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.data.model.RegisteredUser;
+import com.example.jaqb.data.model.Semester;
 import com.example.jaqb.data.model.User;
 import com.example.jaqb.data.model.UserLevel;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -111,6 +113,28 @@ public class FireBaseDBServices {
                                                                 Course course = keyNode.getValue(Course.class);
                                                                 allCourses.add(course);
                                                             }
+                                            database.getReference("SemesterInfo")
+                                                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                            String timeZone = (String) dataSnapshot.child("TimeZone").getValue();
+                                                            SemesterDate startSemesterDate = new SemesterDate(dataSnapshot.child("StartDate").getValue(String.class));
+                                                            SemesterDate endSemesterDate = new SemesterDate(dataSnapshot.child("EndDate").getValue(String.class));
+                                                            SemesterDate[] offDays = new SemesterDate[(int) dataSnapshot.child("Offdays").getChildrenCount()];
+                                                            int i = 0;
+                                                            for (DataSnapshot keyNode : dataSnapshot.child("Offdays").getChildren()) {
+                                                                String date = keyNode.getKey();
+                                                                offDays[i] = new SemesterDate(date);
+                                                                i++;
+                                                            }
+                                                            currentUser.setSemester(new Semester(timeZone, startSemesterDate, endSemesterDate, offDays));
+                                                        }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                }
+                                            });
                                             currentUser.setRegisteredCourses(getUserCourses(currentUser, allCourses));
                                             observer.update(currentUser, currentUser.getLevel());
                                             getBadges();
