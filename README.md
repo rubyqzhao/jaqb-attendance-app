@@ -23,10 +23,7 @@ The apk file for the sprint 2 increment can be downloaded from [here](./delivera
 
 ## Installation: Admin Web App
 
-1. Install Node.js on your machine.
-2. In the terminal, navigate to the `jaqb-attendance-app/web` folder.
-3. Run the command: `npm start app.js`
-4. In a web browser, go to the address: `localhost:3000/`
+1. Access the admin web app at: https://jaqb-attendance-app.herokuapp.com/
 
 ## Authors
 

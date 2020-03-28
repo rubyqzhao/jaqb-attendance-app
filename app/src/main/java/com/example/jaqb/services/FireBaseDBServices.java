@@ -3,10 +3,13 @@ package com.example.jaqb.services;
 import android.content.Context;
 import android.util.Log;
 import androidx.annotation.NonNull;
-
+import com.example.jaqb.R;
+import com.example.jaqb.data.model.Badge;
 import com.example.jaqb.data.model.Course;
+import com.example.jaqb.data.model.SemesterDate;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.data.model.RegisteredUser;
+import com.example.jaqb.data.model.Semester;
 import com.example.jaqb.data.model.User;
 import com.example.jaqb.data.model.UserLevel;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -18,10 +21,12 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Observable;
 import java.util.Observer;
 
 /**
@@ -108,8 +113,31 @@ public class FireBaseDBServices {
                                                                 Course course = keyNode.getValue(Course.class);
                                                                 allCourses.add(course);
                                                             }
+                                            database.getReference("SemesterInfo")
+                                                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                            String timeZone = (String) dataSnapshot.child("TimeZone").getValue();
+                                                            SemesterDate startSemesterDate = new SemesterDate(dataSnapshot.child("StartDate").getValue(String.class));
+                                                            SemesterDate endSemesterDate = new SemesterDate(dataSnapshot.child("EndDate").getValue(String.class));
+                                                            SemesterDate[] offDays = new SemesterDate[(int) dataSnapshot.child("Offdays").getChildrenCount()];
+                                                            int i = 0;
+                                                            for (DataSnapshot keyNode : dataSnapshot.child("Offdays").getChildren()) {
+                                                                String date = keyNode.getKey();
+                                                                offDays[i] = new SemesterDate(date);
+                                                                i++;
+                                                            }
+                                                            currentUser.setSemester(new Semester(timeZone, startSemesterDate, endSemesterDate, offDays));
+                                                        }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                }
+                                            });
                                             currentUser.setRegisteredCourses(getUserCourses(currentUser, allCourses));
                                             observer.update(currentUser, currentUser.getLevel());
+                                            getBadges();
                                         }
 
                                         @Override
@@ -169,11 +197,33 @@ public class FireBaseDBServices {
         //goToUserHomepage(context);
     }
 
-    public int registerCourse(final Course newCourse, LoggedInUser user) {
+    public int registerCourse(final Course newCourse, final LoggedInUser user) {
         int res = 0;
         try {
             DatabaseReference reff = database.getReference("User").child(user.getuID());
             reff.child("courses").child(newCourse.getCode()).setValue("true");
+            boolean isStudent = "STUDENT" == user.getLevel().toString();
+            if(isStudent) {
+                Query query = database.getReference("Course/").orderByChild("code")
+                        .equalTo(newCourse.getCode());
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (final DataSnapshot keyNode : dataSnapshot.getChildren()) {
+                            Course course = keyNode.getValue(Course.class);
+                            if(newCourse.getCode().equalsIgnoreCase(course.getCode())) {
+                                database.getReference("Course").child(keyNode.getKey())
+                                        .child("students").child(user.getuID()).setValue("true");
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
             res = 1;
         } catch (Exception e) {
             e.printStackTrace();
@@ -227,8 +277,6 @@ public class FireBaseDBServices {
                         reff.setValue(numPoints);
                     }
                     observer.update(null, numPoints);
-
-
                 }
 
                 @Override
@@ -238,4 +286,146 @@ public class FireBaseDBServices {
 
             });
     }
+
+    public void getBadges() {
+        final int notEarnedIcon = R.drawable.mystery_badgexhdpi;
+        DatabaseReference statsRef = database.getReference("User").child(currentUser.getuID()).child("stats");
+        statsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<Badge> badgeList = new ArrayList<>();
+                badgeList.add(new Badge(0, "firstClass", notEarnedIcon));
+                badgeList.add(new Badge(1, "fiveStreak", notEarnedIcon));
+                badgeList.add(new Badge(2, "perfectAttendance", notEarnedIcon));
+                badgeList.add(new Badge(3, "perfectAttendanceOneCourse", notEarnedIcon));
+
+                int allClassTotal = 0;
+                int allClassAttended = 0;
+
+                for(DataSnapshot course : dataSnapshot.getChildren()) {
+                    int classesAttended = 0;
+                    int totalClasses = 0;
+
+                    for(DataSnapshot stats : course.getChildren()) {
+                        if (stats.getKey().equals("currentStreak")) {
+                            //determine whether five streak achieved
+                            Log.d("database streak", stats.getValue().toString());
+                            if (Integer.parseInt(stats.getValue().toString()) >= 5)
+                                badgeList.get(1).setImage(R.drawable.go_5_days_a_week_2x);
+                        } else if (stats.getKey().equals("numAttended")) {
+                            //determine whether first class was attended
+                            classesAttended = Integer.parseInt(stats.getValue().toString());
+                            allClassAttended += classesAttended;
+
+                            Log.d("database numAttended", stats.getValue().toString());
+                            if (classesAttended > 0)
+                                badgeList.get(0).setImage(R.drawable.attend_first_class_2x);
+                        } else if (stats.getKey().equals("totalClasses")) {
+                            //get the sum of attendance in each class
+                            totalClasses = Integer.parseInt(stats.getValue().toString());
+                            allClassTotal += totalClasses;
+                        }
+
+                        //determine whether perfect attendance in this class
+                        Log.d("database one class", classesAttended + " " + totalClasses);
+                        if (classesAttended == 0 && totalClasses == 0) {}
+                        else if (classesAttended == totalClasses) {
+                            badgeList.get(3).setImage(R.drawable.all_classes_of_a_course_2x);
+                        }
+                    }
+                }
+
+                //determine whether perfect attendance for all classes
+                Log.d("database all classes", allClassAttended + " " + allClassTotal);
+                if(allClassAttended == allClassTotal) {
+                    badgeList.get(2).setImage(R.drawable.all_classes_attended_2x);
+                }
+
+                Log.d("database", badgeList.toString());
+                currentUser.setBadges(badgeList);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
+        });
+    }
+
+    /**
+     * @param nextClass
+     * @return
+     */
+    public int startAttendanceForCourse(final Course nextClass) {
+        final int[] attendanceCreated = {0};
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        final String strDate= formatter.format(date);
+        System.out.println("THE DATE IS : " + strDate);
+        try{
+            final DatabaseReference reff = database.getReference("InstructorAttendance")
+                    .child(nextClass.getCode()).child(strDate);
+            reff.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.exists()){
+                        System.out.println("IT EXISTS");
+                        attendanceCreated[0] = 0;
+                    }
+                    else{
+                        System.out.println("IT DOESN'T EXISTS");
+                        Query query = database.getReference("Course").orderByChild("code")
+                                .equalTo(nextClass.getCode());
+                        query.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                String key = "";
+                                for(DataSnapshot keyNode : dataSnapshot.getChildren()){
+                                    key = keyNode.getKey();
+                                    System.out.println("KEY IS : " + key);
+                                }
+                                database.getReference("Course").child(key).child("students")
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                for(DataSnapshot keyNode : dataSnapshot.getChildren()){
+                                                    String studentKey = keyNode.getKey();
+                                                    System.out.println("STUDENT KEYS: " + studentKey);
+                                                    database.getReference("InstructorAttendance")
+                                                            .child(nextClass.getCode())
+                                                            .child(strDate)
+                                                            .child(studentKey).setValue(false);
+                                                    database.getReference("User")
+                                                            .child(studentKey)
+                                                            .child("attendanceHistory")
+                                                            .child(nextClass.getCode())
+                                                            .child(strDate).setValue(false);
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                            }
+                                        });
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                        attendanceCreated[0] = 1;
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return attendanceCreated[0];
+    }
+
 }

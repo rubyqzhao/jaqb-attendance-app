@@ -14,8 +14,16 @@ public class Course {
     private String instructorName;
     private String time;
     private String days;
+    private String courseQRCode;
+    private double longitude;
+    private double latitude;
 
     public Course(){
+    }
+
+    public Course(String code, String courseName) {
+        this.code = code;
+        this.courseName = courseName;
     }
 
     public String getCode() {
@@ -57,4 +65,16 @@ public class Course {
     public void setTime(String time) {
         this.time = time;
     }
+
+    public double getLongitude() { return longitude; }
+
+    public void setLongitude(double longitude) { this.longitude = longitude; }
+
+    public double getLatitude() { return latitude; }
+
+    public void setLatitude(double latitude) { this.latitude = latitude; }
+
+    public String getCourseQRCode() { return courseQRCode; }
+
+    public void setCourseQRCode(String courseQRCode) { this.courseQRCode = courseQRCode; }
 }
