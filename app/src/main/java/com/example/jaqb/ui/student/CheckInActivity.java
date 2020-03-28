@@ -9,6 +9,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.jaqb.IncompleteActivity;
 import com.example.jaqb.MainActivity;
@@ -98,8 +99,24 @@ public class CheckInActivity extends MenuOptionsActivity {
     }
 
     public void checkinButtonOnClick(View view) {
-        Intent intent = new Intent(this, QRCheckin.class);
-        startActivity(intent);
+        Double courseLongitude;
+        Double courseLatitude;
+        String courseQR;
+        //todo: change decision logic to get closest upcoming class
+        if(!courseList.isEmpty()) {
+            Course course = courseList.get(1);
+            courseLongitude = course.getLongitude();
+            courseLatitude = course.getLatitude();
+            courseQR = course.getCourseQRCode();
+            Intent intent = new Intent(this, QRCheckin.class);
+            intent.putExtra("courseLongitude", courseLongitude);
+            intent.putExtra("courseLatitude", courseLatitude);
+            intent.putExtra("courseQR", courseQR);
+            startActivity(intent);
+        }
+        else {
+            Toast.makeText( this, "No available courses to check", Toast.LENGTH_LONG).show();
+        }
     }
 
     public void setAlarmButtonOnClick(View view) {
