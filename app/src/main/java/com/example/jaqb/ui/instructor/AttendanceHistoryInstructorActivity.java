@@ -11,6 +11,7 @@ import com.example.jaqb.data.model.Course;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.services.FireBaseDBServices;
 import com.example.jaqb.ui.courses.CourseAdapter;
+import com.example.jaqb.ui.student.AttendanceHistoryStudentActivity;
 
 /**
  * @author amanjotsingh
@@ -48,7 +49,13 @@ public class AttendanceHistoryInstructorActivity extends AppCompatActivity
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Course course = courseAdapter.getItem(position);
-        Intent intent = new Intent(this, ClassDatesActivity.class);
+        Intent intent = new Intent();
+        if("INSTRUCTOR".equals(currentUser.getLevel().toString())){
+            intent.setClass(this, ClassDatesActivity.class);
+        }
+        else if("STUDENT".equals(currentUser.getLevel().toString())){
+            intent.setClass(this, AttendanceHistoryStudentActivity.class);
+        }
         intent.putExtra("code", (String) course.getCode());
         startActivity(intent);
     }

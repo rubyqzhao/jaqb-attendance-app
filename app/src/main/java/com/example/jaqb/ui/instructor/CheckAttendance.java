@@ -75,9 +75,6 @@ public class CheckAttendance extends AppCompatActivity {
                     String key = keyNode.getKey();
                     String fname = (String) keyNode.child("fname").getValue();
                     String lname = (String) keyNode.child("lname").getValue();
-//                    System.out.println("THIS IS TEH VALUE : " + keyNode.getValue());
-                    System.out.println("THIS IS FIRST NAME : " + keyNode.child("fname").getValue());
-                    System.out.println("THIS IS LAST NAME : " + keyNode.child("lname").getValue());
                     RegisteredUser user = new RegisteredUser(fname, lname);
                     studentData.put(key, user);
                 }
@@ -90,11 +87,6 @@ public class CheckAttendance extends AppCompatActivity {
 
             }
         });
-
-        for(Map.Entry<String, RegisteredUser> entry : studentData.entrySet()){
-            System.out.println("READING MAP KEY INSIDE : " + entry.getKey());
-            System.out.println("READING MAP VALUE INSIDE : " + entry.getValue());
-        }
     }
 
     private void getDisplayDate(){
