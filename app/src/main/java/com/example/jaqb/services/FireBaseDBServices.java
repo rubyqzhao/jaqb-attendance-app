@@ -3,7 +3,6 @@ package com.example.jaqb.services;
 import android.content.Context;
 import android.util.Log;
 import androidx.annotation.NonNull;
-
 import com.example.jaqb.R;
 import com.example.jaqb.data.model.Badge;
 import com.example.jaqb.data.model.Course;
@@ -24,7 +23,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Date;
 import java.util.List;
 import java.util.Observer;
