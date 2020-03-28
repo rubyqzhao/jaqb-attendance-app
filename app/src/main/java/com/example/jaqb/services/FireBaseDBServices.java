@@ -328,9 +328,6 @@ public class FireBaseDBServices {
         });
     }
 
-
-
-=======
     /**
      * @param nextClass
      * @return
