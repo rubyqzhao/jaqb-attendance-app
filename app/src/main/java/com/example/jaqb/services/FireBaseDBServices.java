@@ -5,7 +5,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.example.jaqb.data.model.Course;
-import com.example.jaqb.data.model.Date;
+import com.example.jaqb.data.model.SemesterDate;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.data.model.RegisteredUser;
 import com.example.jaqb.data.model.Semester;
@@ -23,7 +23,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
 import java.util.Observer;
 
 /**
@@ -115,16 +114,16 @@ public class FireBaseDBServices {
                                                         @Override
                                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                             String timeZone = (String) dataSnapshot.child("TimeZone").getValue();
-                                                            Date startDate = new Date(dataSnapshot.child("StartDate").getValue(String.class));
-                                                            Date endDate = new Date(dataSnapshot.child("EndDate").getValue(String.class));
-                                                            Date[] offDays = new Date[(int) dataSnapshot.child("Offdays").getChildrenCount()];
+                                                            SemesterDate startSemesterDate = new SemesterDate(dataSnapshot.child("StartDate").getValue(String.class));
+                                                            SemesterDate endSemesterDate = new SemesterDate(dataSnapshot.child("EndDate").getValue(String.class));
+                                                            SemesterDate[] offDays = new SemesterDate[(int) dataSnapshot.child("Offdays").getChildrenCount()];
                                                             int i = 0;
                                                             for (DataSnapshot keyNode : dataSnapshot.child("Offdays").getChildren()) {
                                                                 String date = keyNode.getKey();
-                                                                offDays[i] = new Date(date);
+                                                                offDays[i] = new SemesterDate(date);
                                                                 i++;
                                                             }
-                                                            currentUser.setSemester(new Semester(timeZone, startDate, endDate, offDays));
+                                                            currentUser.setSemester(new Semester(timeZone, startSemesterDate, endSemesterDate, offDays));
                                                         }
 
                                                 @Override

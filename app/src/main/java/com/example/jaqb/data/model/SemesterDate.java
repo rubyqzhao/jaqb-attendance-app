@@ -1,11 +1,11 @@
 package com.example.jaqb.data.model;
 
-public class Date
+public class SemesterDate
 {
     private int year, month, day;
     private String formattedString;
 
-    public Date(String date)
+    public SemesterDate(String date)
     {
         String dateInfo[] = date.split("[-/]");
         year = Integer.parseInt(dateInfo[2]);

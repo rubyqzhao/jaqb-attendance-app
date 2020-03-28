@@ -27,7 +27,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.jaqb.data.model.Course;
-import com.example.jaqb.data.model.Date;
+import com.example.jaqb.data.model.SemesterDate;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.services.FireBaseDBServices;
 
@@ -297,7 +297,7 @@ public class RegisteredCourseDetailsActivity extends AppCompatActivity implement
             //.putExtra(CalendarContract.Events.DESCRIPTION, "DESCRIPTION") // Description
             //.putExtra(Intent.EXTRA_EMAIL, currentUser.get)
         //values.put(CalendarContract.Events.EXDATE, currentUser.getSemester().getOffDaysFormatted());
-        values.put(CalendarContract.Events.RRULE, "FREQ=WEEKLY;BYDAY=" + courseDays + ";UNTIL=" + currentUser.getSemester().getEndDate()); // Recurrence rule
+        values.put(CalendarContract.Events.RRULE, "FREQ=WEEKLY;BYDAY=" + courseDays + ";UNTIL=" + currentUser.getSemester().getEndSemesterDate()); // Recurrence rule
         values.put(CalendarContract.Events.ACCESS_LEVEL, CalendarContract.Events.ACCESS_PRIVATE);
         values.put(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_FREE);
         Log.i("VALUES", values.toString());
@@ -360,9 +360,9 @@ public class RegisteredCourseDetailsActivity extends AppCompatActivity implement
             default:
                 dayOfWeek = null;
         }
-        Date date = currentUser.getSemester().getStartDate();
+        SemesterDate semesterDate = currentUser.getSemester().getStartSemesterDate();
         ZoneId zone = ZoneId.of(currentUser.getSemester().getTimeZoneID());
-        return ZonedDateTime.of(date.getYear(), date.getMonth(), date.getDay(), 0, 0, 0, 0, zone).toLocalDate().with(TemporalAdjusters.nextOrSame(dayOfWeek)).atStartOfDay().toInstant(zone.getRules().getOffset(LocalDateTime.now())).getEpochSecond() * 1000;
+        return ZonedDateTime.of(semesterDate.getYear(), semesterDate.getMonth(), semesterDate.getDay(), 0, 0, 0, 0, zone).toLocalDate().with(TemporalAdjusters.nextOrSame(dayOfWeek)).atStartOfDay().toInstant(zone.getRules().getOffset(LocalDateTime.now())).getEpochSecond() * 1000;
     }
 
     private String getCalendarUriBase(boolean eventUri) {

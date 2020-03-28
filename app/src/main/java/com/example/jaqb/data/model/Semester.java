@@ -13,13 +13,13 @@ import java.util.TimeZone;
 public class Semester {
 
     private TimeZone timeZone;
-    private Date startDate, endDate;
-    private Date[] offDays;
+    private SemesterDate startSemesterDate, endSemesterDate;
+    private SemesterDate[] offDays;
 
-    public Semester(String tz, Date startDate, Date endDate, Date[] offDays){
+    public Semester(String tz, SemesterDate startSemesterDate, SemesterDate endSemesterDate, SemesterDate[] offDays){
         timeZone = TimeZone.getTimeZone(tz);
-        this.startDate = startDate;
-        this.endDate = endDate;
+        this.startSemesterDate = startSemesterDate;
+        this.endSemesterDate = endSemesterDate;
         this.offDays = offDays;
     }
 
@@ -28,14 +28,14 @@ public class Semester {
         return timeZone.getID();
     }
 
-    public Date getStartDate()
+    public SemesterDate getStartSemesterDate()
     {
-        return startDate;
+        return startSemesterDate;
     }
 
-    public Date getEndDate()
+    public SemesterDate getEndSemesterDate()
     {
-        return endDate;
+        return endSemesterDate;
     }
 
     public String getOffDaysFormatted()
@@ -49,7 +49,7 @@ public class Semester {
         return days;
     }
 
-    public Date[] getDays()
+    public SemesterDate[] getDays()
     {
         return offDays;
     }
