@@ -29,7 +29,7 @@ The apk file for the sprint 3 increment can be downloaded from [here](./delivera
 
 The team delivered the increment for sprint 4 of the project as an android application. The app consists of student and instructors user profiles. The details of the functionalities implemented by the team can be found [here](https://drive.google.com/open?id=1tBCauL43rOLzWo-QUAWThuL-MhHJE4_xhgrLW9GAAnY)
 
-The apk file for the sprint 4 increment can be downloaded from [here](./deliverables/). Download the JAQB_S4.apk by right click and save link as and run in an android device. [Link]() to youtube video.
+The apk file for the sprint 4 increment can be downloaded from [here](./deliverables/). Download the JAQB_S4.apk by right click and save link as and run in an android device. [Link](https://www.youtube.com/watch?v=PhNChG0-J1A) to youtube video.
 
 
 ## Installation: Android App
