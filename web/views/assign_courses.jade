@@ -1,0 +1,25 @@
+extends layout
+
+block content
+  div(class = "w3-row-padding")
+    div(class = "w3-col w3-white w3-padding")
+      h1 #{title}
+
+  div(class = "w3-row-padding")
+    div(class = "w3-col w3-white w3-padding")
+      h2 Available Courses
+      table(id="mytab", class="table table-striped table-bordered")
+        thead(align="left")
+          tr
+            th First Name
+            th Last Name
+            th Level
+            th Courses
+            th
+        tbody
+          each row in available_courses
+            tr
+              each item in row
+                td(id="class-" + item) #{item}
+              td 
+                button(type='submit', onclick='addCoursesToInstructor("#{row}", "#{title}")') Assign

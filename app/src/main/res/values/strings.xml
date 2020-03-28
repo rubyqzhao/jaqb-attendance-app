@@ -25,4 +25,5 @@
     <string name="action_get_qr">"Get QR Code"</string>
     <string name="class_list">"Class List"</string>
     <string name="action_submit_location">"Update Class Location"</string>
+    <string name="badges">Badges</string>
 </resources>

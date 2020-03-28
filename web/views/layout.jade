@@ -1,0 +1,20 @@
+doctype html
+html
+  head
+    title= title
+    link(rel='stylesheet', href='https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href="https://www.w3schools.com/w3css/4/w3.css")
+    
+    script(src='https://code.jquery.com/jquery-3.3.1.js')
+    script(src='https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js')
+    script(type='text/javascript', src='/js/datatable.js')
+    script(type='text/javascript', src='/js/changePrivilege.js')
+    script(type='text/javascript', src='/js/assignCourses.js')
+  body
+    div(class = "w3-top w3-bar w3-border w3-gray")
+      a(href="/" class="w3-bar-item w3-button w3-pading-16")
+       h1 JAQB Admin
+
+    div(class = "box")
+    block content
