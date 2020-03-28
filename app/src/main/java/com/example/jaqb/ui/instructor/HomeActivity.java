@@ -3,20 +3,17 @@ package com.example.jaqb.ui.instructor;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.example.jaqb.CourseRegistrationActivity;
 import com.example.jaqb.IncompleteActivity;
-import com.example.jaqb.MainActivity;
 import com.example.jaqb.MyCoursesActivity;
 import com.example.jaqb.R;
 
+import com.example.jaqb.data.model.Course;
+import com.example.jaqb.services.FireBaseDBServices;
 import com.example.jaqb.ui.menu.MenuOptionsActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -27,6 +24,8 @@ public class HomeActivity extends MenuOptionsActivity {
     private double latitude;
     private double longitude;
     private TextView coordDisplay;
+    private FireBaseDBServices fireBaseDBServices;
+    private Course nextClass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +35,8 @@ public class HomeActivity extends MenuOptionsActivity {
         setSupportActionBar(myToolbar);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         coordDisplay = findViewById(R.id.gps_coord);
+        fireBaseDBServices = FireBaseDBServices.getInstance();
+        nextClass = new Course("SER 515", "Dummy Class");
     }
 
     protected void onResume() {
@@ -49,7 +50,9 @@ public class HomeActivity extends MenuOptionsActivity {
     }
 
     public void GetQRButtonOnClick(View view) {
-        Intent intent = new Intent(this, IncompleteActivity.class);
+        int res = fireBaseDBServices.startAttendanceForCourse(nextClass);
+        System.out.println("RESULT AFTER GENERATING ATTENDANCE: " + res);
+        Intent intent = new Intent(this, DisplayQRCodeActivity.class);
         startActivity(intent);
     }
 
@@ -69,6 +72,11 @@ public class HomeActivity extends MenuOptionsActivity {
 
     public void myCoursesButtonOnClick(View view) {
         Intent intent = new Intent(this, MyCoursesActivity.class);
+        startActivity(intent);
+    }
+
+    public void attendaceHistoryButtonOnClick(View view) {
+        Intent intent = new Intent(this, AttendanceHistoryInstructorActivity.class);
         startActivity(intent);
     }
 }

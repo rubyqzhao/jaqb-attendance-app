@@ -5,7 +5,7 @@ It also aides teachers and professors by providing statistics about student atte
 School administrators have the ability to access a web application that allows them to manage user accounts and course listings for the entire institution.
 
 ## Deliverables
-### Admin web portal can be accessed from [here]()
+### Admin web portal can be accessed from [here](https://jaqb-attendance-app.herokuapp.com/)
 
 ### Student and Instructor Android app
 
@@ -45,6 +45,7 @@ The apk file for the sprint 4 increment can be downloaded from [here](./delivera
 3. Run the command: `npm start app.js`
 4. In a web browser, go to the address: `localhost:3000/`
 5. If there's an error building the application, delete the folder node-modules under the web directory and run the command 'npm install -g' inside the web directory.
+
 
 ### Authors
 
