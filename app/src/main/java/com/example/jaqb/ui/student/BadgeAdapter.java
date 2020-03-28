@@ -11,11 +11,13 @@ import android.widget.TextView;
 import com.example.jaqb.R;
 import com.example.jaqb.data.model.Badge;
 
+import java.util.List;
+
 public class BadgeAdapter extends BaseAdapter {
     private Context context;
-    private Badge[] badges;
+    private List<Badge> badges;
 
-    public BadgeAdapter(Context context, Badge[] badges) {
+    public BadgeAdapter(Context context, List<Badge> badges) {
         this.context = context;
         this.badges = badges;
     }
@@ -23,7 +25,7 @@ public class BadgeAdapter extends BaseAdapter {
     // number of cells to be rendered
     @Override
     public int getCount() {
-        return badges.length;
+        return badges.size();
     }
 
     @Override
@@ -38,7 +40,7 @@ public class BadgeAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Badge badge = badges[position];
+        Badge badge = badges.get(position);
 
         if(convertView == null) {
             LayoutInflater layoutInflater = LayoutInflater.from(context);

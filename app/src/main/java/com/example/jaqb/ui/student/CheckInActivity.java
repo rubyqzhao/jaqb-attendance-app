@@ -20,6 +20,7 @@ import com.example.jaqb.R;
 import com.example.jaqb.data.model.Course;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.services.FireBaseDBServices;
+import com.example.jaqb.ui.instructor.AttendanceHistoryInstructorActivity;
 import com.example.jaqb.ui.menu.MenuOptionsActivity;
 import com.example.jaqb.ui.student.BadgeActivity;
 import com.google.firebase.database.DataSnapshot;
@@ -128,7 +129,7 @@ public class CheckInActivity extends MenuOptionsActivity {
     }
 
     public void seeAttendanceButtonOnClick(View view) {
-        Intent intent = new Intent(this, IncompleteActivity.class);
+        Intent intent = new Intent(this, AttendanceHistoryInstructorActivity.class);
         startActivity(intent);
     }
 
