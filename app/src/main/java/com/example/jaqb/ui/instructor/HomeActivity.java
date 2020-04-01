@@ -14,6 +14,7 @@ import com.example.jaqb.R;
 
 import com.example.jaqb.data.model.Course;
 import com.example.jaqb.services.FireBaseDBServices;
+import com.example.jaqb.services.InstructorServicesHelper;
 import com.example.jaqb.ui.menu.MenuOptionsActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -51,8 +52,13 @@ public class HomeActivity extends MenuOptionsActivity {
 
     public void GetQRButtonOnClick(View view) {
         int res = fireBaseDBServices.startAttendanceForCourse(nextClass);
-        System.out.println("RESULT AFTER GENERATING ATTENDANCE: " + res);
-        Intent intent = new Intent(this, DisplayQRCodeActivity.class);
+        Intent intent = new Intent();
+        // generate random code
+        InstructorServicesHelper instructorServicesHelper = new InstructorServicesHelper();
+        int code = instructorServicesHelper.generateRandomCode();
+        System.out.println("RANDOM CODE GENERATED : " + code);
+        intent.setClass(this, DisplayQRCodeActivity.class);
+        intent.putExtra("code", code);
         startActivity(intent);
     }
 
