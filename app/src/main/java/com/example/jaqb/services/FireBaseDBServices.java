@@ -428,4 +428,31 @@ public class FireBaseDBServices {
         return attendanceCreated[0];
     }
 
+    public void updateCode(final int code, String courseCode) {
+        try {
+            Query query = database.getReference("Course").orderByChild("code")
+                    .equalTo(courseCode);
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    String key = "";
+                    for(DataSnapshot keyNode : dataSnapshot.getChildren()){
+                        key = keyNode.getKey();
+                        database.getReference("Course")
+                                .child(key)
+                                .child("courseQRCode")
+                                .setValue(String.valueOf(code));
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 }
