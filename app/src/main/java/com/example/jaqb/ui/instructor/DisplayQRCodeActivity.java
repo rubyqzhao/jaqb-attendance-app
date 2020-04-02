@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,6 +39,7 @@ public class DisplayQRCodeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_display_qr_code);
         int code = getIntent().getIntExtra("code", 1234);
         qrCode = (TextView) findViewById(R.id.qrcode);
+        qrCode.setGravity(Gravity.CENTER);
         qrCode.setText(String.valueOf(code));
         imageView = (ImageView) findViewById(R.id.qrImage);
         fireBaseDBServices = FireBaseDBServices.getInstance();
@@ -49,14 +51,12 @@ public class DisplayQRCodeActivity extends AppCompatActivity {
         else{
             fireBaseDBServices.updateCode(code, courseCode);
             if(isWriteStoragePermissionGranted()){
-                //byte[] data = instructorServicesHelper.getQRCodeImageByteArray(String.valueOf(code), 350, 350);
                 Bitmap bitmap = QRCodeHelper
                         .newInstance(this)
                         .setContent(String.valueOf(code))
                         .setErrorCorrectionLevel(ErrorCorrectionLevel.Q)
                         .setMargin(2).getQRCOde();
                 imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 300, 300, false));
-                //imageView.setImageBitmap(bitmap);
             }
         }
     }
