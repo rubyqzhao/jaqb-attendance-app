@@ -44,21 +44,13 @@ public class DisplayQRCodeActivity extends AppCompatActivity {
         imageView = (ImageView) findViewById(R.id.qrImage);
         fireBaseDBServices = FireBaseDBServices.getInstance();
         InstructorServicesHelper instructorServicesHelper = new InstructorServicesHelper();
-        boolean isCodeGenerated = instructorServicesHelper.checkForQRImage();
-        if(isCodeGenerated){
-            // read the image from directory and display
-        }
-        else{
-            fireBaseDBServices.updateCode(code, courseCode);
-            if(isWriteStoragePermissionGranted()){
-                Bitmap bitmap = QRCodeHelper
-                        .newInstance(this)
-                        .setContent(String.valueOf(code))
-                        .setErrorCorrectionLevel(ErrorCorrectionLevel.Q)
-                        .setMargin(2).getQRCOde();
-                imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 300, 300, false));
-            }
-        }
+        fireBaseDBServices.updateQRCode(code, courseCode);
+        Bitmap bitmap = QRCodeHelper
+                .newInstance(this)
+                .setContent(String.valueOf(code))
+                .setErrorCorrectionLevel(ErrorCorrectionLevel.Q)
+                .setMargin(2).getQRCOde();
+        imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 300, 300, false));
     }
 
     public  boolean isReadStoragePermissionGranted() {

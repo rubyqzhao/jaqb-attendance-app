@@ -428,7 +428,10 @@ public class FireBaseDBServices {
         return attendanceCreated[0];
     }
 
-    public void updateCode(final int code, String courseCode) {
+    public void updateQRCode(final int code, String courseCode) {
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        final String strDate= formatter.format(date);
         try {
             Query query = database.getReference("Course").orderByChild("code")
                     .equalTo(courseCode);
@@ -455,4 +458,34 @@ public class FireBaseDBServices {
             e.printStackTrace();
         }
     }
+
+    /*private String currentQRCode;
+
+    public String getCurrentQRCode(String courseCode){
+        try{
+            Query query = database.getReference("Course").orderByChild("code")
+                    .equalTo(courseCode);
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    String value = "";
+                    for(DataSnapshot keyNode : dataSnapshot.getChildren()){
+                        value = (String) keyNode.child("courseQRCode").getValue();
+                        System.out.println("CURRENT VALUE : " + value);
+                    }
+                    currentQRCode = value;
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        System.out.println("CURRENT CODE : " + currentQRCode);
+        return currentQRCode;
+    }*/
 }
