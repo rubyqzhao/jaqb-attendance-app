@@ -1,55 +1,35 @@
 package com.example.jaqb;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.util.Log;
-import android.util.SparseArray;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.services.FireBaseDBServices;
-import com.google.android.gms.vision.CameraSource;
-import com.google.android.gms.vision.Detector;
-import com.google.android.gms.vision.barcode.Barcode;
-import com.google.android.gms.vision.barcode.BarcodeDetector;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import java.io.IOException;
-import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
-
 
 /**
  * @author Bharat Goel
+ * @author amanjotsingh
  *
  * This Activity scans the QR code and verify the time and location of the student to decide
  * whether to mark attendance or not
@@ -57,10 +37,7 @@ import java.util.Random;
 
 public class QRCheckin extends AppCompatActivity implements LocationListener {
 
-    private static final double ALLOWED_DISTANCE = 50;
-    SurfaceView surfaceView;
-    CameraSource cameraSource;
-    BarcodeDetector barcodeDetector;
+    private static final double ALLOWED_DISTANCE = 500;
     TextView textView;
     EditText editText;
     LocationManager locationManager;
@@ -85,63 +62,7 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
         databaseReference = FirebaseDatabase.getInstance().getReference();
         fireBaseDBServices = FireBaseDBServices.getInstance();
         currentUser = fireBaseDBServices.getCurrentUser();
-
         editText = findViewById(R.id.codeArea);
-
-        surfaceView = findViewById(R.id.cameraView);
-
-        barcodeDetector = new BarcodeDetector.Builder(this)
-                .setBarcodeFormats(Barcode.QR_CODE).build();
-
-        CameraSource.Builder builder = new CameraSource.Builder(this, barcodeDetector);
-        builder.setRequestedPreviewSize(640, 480);
-        builder.setAutoFocusEnabled(true);
-        cameraSource = builder.build();
-
-        surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
-            @Override
-            public void surfaceCreated(SurfaceHolder holder) {
-                if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    return;
-                }
-                try {
-                    cameraSource.start(holder);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
-
-            @Override
-            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
-            }
-
-            @Override
-            public void surfaceDestroyed(SurfaceHolder holder) {
-                cameraSource.stop();
-            }
-        });
-
-        barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
-            @Override
-            public void release() {
-
-            }
-
-            @Override
-            public void receiveDetections(Detector.Detections<Barcode> detections) {
-                final SparseArray<Barcode> qrCodes = detections.getDetectedItems();
-
-                if (qrCodes.size() != 0) {
-                    Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
-                    vibrator.vibrate(100);
-                    barcodeDetector.setProcessor(null);
-                    checkValues(qrCodes.valueAt(0).displayValue);
-                }
-            }
-        });
     }
 
     public void codeButtonOnClick(View view) throws ParseException {
@@ -150,25 +71,10 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
     }
 
     public void checkValues(String code) {
-
-        /*Location Check starts*/
-        checkLocation();
+        updateLocation();
         boolean distOk = checkDist();
-        /*Location Check ends*/
-
-        /*Time Check starts
-        boolean timeOk = checkTime();
-        Time Check ends*/
-
-        /*QR check* starts*/
         boolean codeOk = (currentQR.equals(code));
-        /*QR check ends*/
-        
-        /* FOR TESTING PURPOSES THE CODE IS ALWAYS SET TO EVALUATE
-        AS TRUE. WHEN COMMITTING TO MASTER, THIS SHOULD BE CHANGED
-        BACK TO THE COMMENTED-OUT CODE. */
-        //takeDecision(distOk, codeOk);
-        takeDecision(true, true);
+        takeDecision(distOk, codeOk);
     }
 
     private void takeDecision(boolean distOk, boolean codeOk) {
@@ -235,7 +141,6 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {}
             });
-
             finish();
         }
         if (distOk && !codeOk) {
@@ -252,7 +157,8 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
         }
     }
 
-    /*
+
+/*
     private boolean checkTime() throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
         String dateInString = "22-01-2015 10:20:56";
@@ -269,7 +175,8 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
             return true;
         return false;
 
-    }*/
+    }
+*/
 
     private boolean checkDist() {
         final int R = 6371;
@@ -285,12 +192,11 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
         if (dist <= ALLOWED_DISTANCE) {
             return true;
         }
-   
         return false;
     }
 
 
-    public boolean checkLocation() {
+    public void updateLocation() {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Location location = null;
         try {
@@ -300,9 +206,6 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
         }
         assert location != null;
         onLocationChanged(location);
-
-        /* Get Location from database and compare */
-        return false;
     }
 
     @Override
