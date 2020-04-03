@@ -6,7 +6,11 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.util.Log;
+import android.util.SparseArray;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -15,14 +19,19 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.services.FireBaseDBServices;
+import com.google.android.gms.vision.CameraSource;
+import com.google.android.gms.vision.Detector;
+import com.google.android.gms.vision.barcode.Barcode;
+import com.google.android.gms.vision.barcode.BarcodeDetector;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +47,6 @@ import java.util.Map;
 public class QRCheckin extends AppCompatActivity implements LocationListener {
 
     private static final double ALLOWED_DISTANCE = 500;
-    TextView textView;
     EditText editText;
     LocationManager locationManager;
     String currentQR;
@@ -49,6 +57,9 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
     private DatabaseReference databaseReference;
     private LoggedInUser currentUser;
     private FireBaseDBServices fireBaseDBServices;
+    private SurfaceView cameraSurfaceView;
+    private CameraSource cameraSource;
+    private BarcodeDetector barcodeDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +74,61 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
         fireBaseDBServices = FireBaseDBServices.getInstance();
         currentUser = fireBaseDBServices.getCurrentUser();
         editText = findViewById(R.id.codeArea);
+        cameraSurfaceView = (SurfaceView) findViewById(R.id.cameraView);
+        barcodeDetector = new BarcodeDetector.Builder(this)
+                .setBarcodeFormats(Barcode.QR_CODE).build();
+
+        cameraSource = new CameraSource.Builder(this, barcodeDetector)
+                .setRequestedPreviewSize(640, 480).build();
+
+        cameraSurfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
+            @Override
+            public void surfaceCreated(SurfaceHolder holder) {
+                if(!isCamerPermissionGranted()){
+                    return;
+                }
+                try {
+                    cameraSource.start(holder);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
+            }
+
+            @Override
+            public void surfaceDestroyed(SurfaceHolder holder) {
+                cameraSource.stop();
+            }
+        });
+
+        barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
+            @Override
+            public void release() {
+            }
+
+            @Override
+            public void receiveDetections(Detector.Detections<Barcode> detections) {
+                final SparseArray<Barcode> qrCodes = detections.getDetectedItems();
+                if(qrCodes.size() != 0){
+                    editText.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+                            vibrator.vibrate(1000);
+                            editText.setText(qrCodes.valueAt(0).displayValue);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    private boolean isCamerPermissionGranted() {
+        return true;
     }
 
     public void codeButtonOnClick(View view) throws ParseException {
