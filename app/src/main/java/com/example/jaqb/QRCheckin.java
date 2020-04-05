@@ -46,7 +46,7 @@ import java.util.Map;
 
 public class QRCheckin extends AppCompatActivity implements LocationListener {
 
-    private static final double ALLOWED_DISTANCE = 500;
+    private static final double ALLOWED_DISTANCE = 50;
     EditText editText;
     LocationManager locationManager;
     String currentQR;
@@ -145,8 +145,6 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
 
     private void takeDecision(boolean distOk, boolean codeOk) {
         if (distOk && codeOk) {
-            Toast.makeText(this, "CheckIn Successful", Toast.LENGTH_LONG).show();
-
             //create new attendance history in student and instructorAttendance
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
             Date date = new Date();
@@ -158,27 +156,22 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
             final String upcomingClass = "SER 515";
 
             final DatabaseReference userRef = databaseReference.child("User").child(currentUser.getuID())
-                    .child("attendanceHistory").child(upcomingClass);
+                    .child("attendanceHistory").child(upcomingClass).child(currDate);
             final DatabaseReference instRef = databaseReference.child("InstructorAttendance")
                     .child(upcomingClass).child(currDate);
-
             // update table for student
             userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     Map<String, Object> attendance = new HashMap<>();
-
                     if (dataSnapshot.exists()) {
                         Log.d("database", "Exists");
-                        for(DataSnapshot keyNode : dataSnapshot.getChildren()) {
-                            attendance.put(keyNode.getKey(), keyNode.getValue());
-                        }
-                        attendance.put(currDate, bool);
-                        userRef.updateChildren(attendance);
+                        databaseReference.child("User").child(currentUser.getuID())
+                                .child("attendanceHistory")
+                                .child(upcomingClass)
+                                .child(currDate).setValue(true);
                     } else {
                         Log.d("database", "Doesn't exist");
-                        attendance.put(currDate, bool);
-                        userRef.updateChildren(attendance);
                     }
                 }
                 @Override
@@ -198,16 +191,20 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
                         }
                         instructor.put(currentUser.getuID(), true);
                         instRef.updateChildren(instructor);
+                        Toast.makeText(getApplicationContext(), "check-in successful"
+                                , Toast.LENGTH_LONG).show();
+                        finish();
                     } else {
                         Log.d("database", "Doesn't exist");
-                        instructor.put(currentUser.getuID(), true);
-                        instRef.updateChildren(instructor);
+                        Toast.makeText(getApplicationContext()
+                                , "The instructor has not started the attendance yet."
+                                , Toast.LENGTH_LONG).show();
+                        finish();
                     }
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {}
             });
-            finish();
         }
         if (distOk && !codeOk) {
             Toast.makeText(this, "Invalid QR code. Please try with updated QR code", Toast.LENGTH_LONG).show();
