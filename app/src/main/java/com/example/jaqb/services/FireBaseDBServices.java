@@ -444,7 +444,7 @@ public class FireBaseDBServices {
                         database.getReference("Course")
                                 .child(key)
                                 .child("courseQRCode")
-                                .setValue(String.valueOf(code));
+                                .setValue(String.valueOf(code) + " " + strDate);
                     }
                 }
 

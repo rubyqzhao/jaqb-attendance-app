@@ -38,13 +38,15 @@ public class DisplayQRCodeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_qr_code);
         int code = getIntent().getIntExtra("code", 1234);
+        boolean isCodeValid = getIntent().getBooleanExtra("validCode", false);
         qrCode = (TextView) findViewById(R.id.qrcode);
         qrCode.setGravity(Gravity.CENTER);
         qrCode.setText(String.valueOf(code));
         imageView = (ImageView) findViewById(R.id.qrImage);
-        fireBaseDBServices = FireBaseDBServices.getInstance();
-        InstructorServicesHelper instructorServicesHelper = new InstructorServicesHelper();
-        fireBaseDBServices.updateQRCode(code, courseCode);
+        if(!isCodeValid){
+            fireBaseDBServices = FireBaseDBServices.getInstance();
+            fireBaseDBServices.updateQRCode(code, courseCode);
+        }
         Bitmap bitmap = QRCodeHelper
                 .newInstance(this)
                 .setContent(String.valueOf(code))

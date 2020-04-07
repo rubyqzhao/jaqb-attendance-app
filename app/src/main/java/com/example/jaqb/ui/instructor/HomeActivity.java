@@ -20,6 +20,8 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.util.concurrent.TimeUnit;
+
 public class HomeActivity extends MenuOptionsActivity {
     private FusedLocationProviderClient fusedLocationClient;
     private double latitude;
@@ -53,11 +55,21 @@ public class HomeActivity extends MenuOptionsActivity {
     public void GetQRButtonOnClick(View view) {
         int res = fireBaseDBServices.startAttendanceForCourse(nextClass);
         Intent intent = new Intent();
+        intent.setClass(this, DisplayQRCodeActivity.class);
         // generate random code
         InstructorServicesHelper instructorServicesHelper = new InstructorServicesHelper();
-        int code = instructorServicesHelper.generateRandomCode();
-        System.out.println("RANDOM CODE GENERATED : " + code);
-        intent.setClass(this, DisplayQRCodeActivity.class);
+//        boolean generateCode = instructorServicesHelper.isPreviousCodeValid(nextClass.getCourseQRCode(), TimeUnit.HOURS);
+        boolean isPrevCodeValid = instructorServicesHelper.isPreviousCodeValid("5115 2020-04-05 16:04:15", TimeUnit.HOURS);
+        int code = 0;
+        if(!isPrevCodeValid){
+            code = instructorServicesHelper.generateRandomCode();
+            intent.putExtra("validCode", false);
+        }
+        else{
+//            code = Integer.getInteger(nextClass.getCourseQRCode().split(" ")[0]);
+            code = Integer.valueOf("5115");
+            intent.putExtra("validCode", true);
+        }
         intent.putExtra("code", code);
         startActivity(intent);
     }
