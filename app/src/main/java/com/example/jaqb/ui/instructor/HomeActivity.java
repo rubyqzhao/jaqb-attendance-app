@@ -14,10 +14,13 @@ import com.example.jaqb.R;
 
 import com.example.jaqb.data.model.Course;
 import com.example.jaqb.services.FireBaseDBServices;
+import com.example.jaqb.services.InstructorServicesHelper;
 import com.example.jaqb.ui.menu.MenuOptionsActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+
+import java.util.concurrent.TimeUnit;
 
 public class HomeActivity extends MenuOptionsActivity {
     private FusedLocationProviderClient fusedLocationClient;
@@ -51,8 +54,23 @@ public class HomeActivity extends MenuOptionsActivity {
 
     public void GetQRButtonOnClick(View view) {
         int res = fireBaseDBServices.startAttendanceForCourse(nextClass);
-        System.out.println("RESULT AFTER GENERATING ATTENDANCE: " + res);
-        Intent intent = new Intent(this, DisplayQRCodeActivity.class);
+        Intent intent = new Intent();
+        intent.setClass(this, DisplayQRCodeActivity.class);
+        // generate random code
+        InstructorServicesHelper instructorServicesHelper = new InstructorServicesHelper();
+//        boolean generateCode = instructorServicesHelper.isPreviousCodeValid(nextClass.getCourseQRCode(), TimeUnit.HOURS);
+        boolean isPrevCodeValid = instructorServicesHelper.isPreviousCodeValid("5115 2020-04-05 16:04:15", TimeUnit.HOURS);
+        int code = 0;
+        if(!isPrevCodeValid){
+            code = instructorServicesHelper.generateRandomCode();
+            intent.putExtra("validCode", false);
+        }
+        else{
+//            code = Integer.getInteger(nextClass.getCourseQRCode().split(" ")[0]);
+            code = Integer.valueOf("5115");
+            intent.putExtra("validCode", true);
+        }
+        intent.putExtra("code", code);
         startActivity(intent);
     }
 
