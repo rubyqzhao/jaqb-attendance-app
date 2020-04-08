@@ -13,7 +13,6 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,7 +27,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -61,6 +59,9 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
     private CameraSource cameraSource;
     private BarcodeDetector barcodeDetector;
 
+    /**
+     * @param savedInstanceState saved application context passed into activity when it is created
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,6 +111,9 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
             public void release() {
             }
 
+            /**
+             * @param detections Event listener for the camera scanning the QR code
+             */
             @Override
             public void receiveDetections(Detector.Detections<Barcode> detections) {
                 final SparseArray<Barcode> qrCodes = detections.getDetectedItems();
@@ -131,11 +135,21 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
         return true;
     }
 
+    /**
+     * @param view Event listener for the button click for QR code button
+     * @throws ParseException
+     */
     public void codeButtonOnClick(View view) throws ParseException {
         String textCode = editText.getText().toString();
         checkValues(textCode);
     }
 
+    /**
+     * This method checks the distance and QR code from the student's device to that of the
+     * data in the database
+     *
+     * @param code the QR code scanned by the camera of student's device
+     */
     public void checkValues(String code) {
         updateLocation();
         boolean distOk = checkDist();
@@ -143,6 +157,13 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
         takeDecision(distOk, codeOk);
     }
 
+    /**
+     * This method takes the decision about the student checkin based on the location and
+     * QR code entered by the student
+     *
+     * @param distOk true if the distance check is true i.e. the student is within 50 feet else false
+     * @param codeOk true if the QR code matches with the QR code for the course
+     */
     private void takeDecision(boolean distOk, boolean codeOk) {
         if (distOk && codeOk) {
             //create new attendance history in student and instructorAttendance
@@ -241,6 +262,12 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
     }
 */
 
+    /**
+     * This method checks the distance of the android device with the class co-ordinates
+     * when the students check-in for the class
+     *
+     * @return true if the distance is with-in 50 feet otherwise false
+     */
     private boolean checkDist() {
         final int R = 6371;
 
@@ -259,6 +286,9 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
     }
 
 
+    /**
+     * This method checks the location of the android device and updates the class variables
+     */
     public void updateLocation() {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Location location = null;

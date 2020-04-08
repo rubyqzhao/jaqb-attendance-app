@@ -8,7 +8,6 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.jaqb.data.model.Course;
-import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.services.FireBaseDBServices;
 import com.example.jaqb.ui.courses.CourseAdapter;
 import java.util.ArrayList;
@@ -30,6 +29,10 @@ public class CourseRegistrationActivity extends AppCompatActivity implements
     private CourseAdapter courseAdapter;
     private SearchView searchView;
 
+    /**
+     * @param savedInstanceState saved application context passed into the activity at the time
+     *                           it is created
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,12 +54,22 @@ public class CourseRegistrationActivity extends AppCompatActivity implements
         return false;
     }
 
+    /**
+     * @param newText text added in the search bar for the courses page
+     * @return true and sets the text in the filtered list
+     */
     @Override
     public boolean onQueryTextChange(String newText) {
         courseAdapter.getFilter().filter(newText);
         return true;
     }
 
+    /**
+     * @param parent parent view of the item clicked
+     * @param view current view of the application
+     * @param position position of the field selected in the current view
+     * @param id id of the view which is selected by the user
+     */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Intent intent = new Intent();
