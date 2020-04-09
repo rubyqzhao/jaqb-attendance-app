@@ -21,6 +21,13 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Activity to show the user a list of class dates based on the course code.
+ * Gets the days listed in the database.
+ *
+ * @author Amanjot Singh
+ * @version 1.0
+ */
 public class ClassDatesActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     private String courseCode;
@@ -29,6 +36,11 @@ public class ClassDatesActivity extends AppCompatActivity implements AdapterView
     private ArrayAdapter<String> arrayAdapter;
     private DatabaseReference databaseReference;
 
+    /**
+     * Triggers when the user first accesses the activity. Initializes values
+     * and gets data from the firebase database.
+     * @param savedInstanceState    the previous state of the app
+     */
     @SuppressLint("ResourceType")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +72,14 @@ public class ClassDatesActivity extends AppCompatActivity implements AdapterView
         listView.setOnItemClickListener(this);
     }
 
+    /**
+     * Determines the actions of the item shown on the page. When clicked,
+     * the button will take the user to the check attendance activity.
+     * @param parent    the parent adapterView object containing the course view
+     * @param view      the course view being displayed
+     * @param position  the current position of the item in the list
+     * @param id        the id of the item
+     */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         String dateSelected = (String) arrayAdapter.getItem(position);
