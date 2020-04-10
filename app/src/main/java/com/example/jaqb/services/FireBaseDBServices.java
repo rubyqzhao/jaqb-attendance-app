@@ -2,6 +2,8 @@ package com.example.jaqb.services;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import com.example.jaqb.R;
 import com.example.jaqb.data.model.Badge;
@@ -44,6 +46,7 @@ public class FireBaseDBServices {
     private FirebaseAuth mAuth;
     private LoggedInUser currentUser;
     private FirebaseDatabase database;
+    private DatabaseReference databaseReference;
     private List<Course> allCourses = new ArrayList<>();
 
     public List<Course> getAllCourses() {
@@ -53,6 +56,7 @@ public class FireBaseDBServices {
     private FireBaseDBServices() {
         mAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
+        databaseReference = database.getReference();
     }
 
     public static FireBaseDBServices getInstance() {
@@ -428,4 +432,33 @@ public class FireBaseDBServices {
         return attendanceCreated[0];
     }
 
+
+    public void updateDatabase(String courseCode, final LoggedInUser currentUser) {
+        try {
+            Query query = database.getReference("Course").orderByChild("code")
+                    .equalTo(courseCode);
+
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for(DataSnapshot keyNode : dataSnapshot.getChildren()){
+                        String key = "";
+                        key = keyNode.getKey();
+                        database.getReference("Course")
+                                .child(key)
+                                .child("instructorName")
+                                .setValue(currentUser.getfName() + " " + currentUser.getlName());
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 }

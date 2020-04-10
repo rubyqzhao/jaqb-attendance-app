@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -86,7 +87,6 @@ public class CourseDetailsActivity extends AppCompatActivity implements View.OnC
         registerCourse.setTime(time);
 
         fireBaseDBServices = FireBaseDBServices.getInstance();
-        databasereference = fireBaseDBServices.getReference();
         courseList = new ArrayList<>();
         courseList.addAll(fireBaseDBServices.getAllCourses());
         currentUser = fireBaseDBServices.getCurrentUser();
@@ -110,7 +110,7 @@ public class CourseDetailsActivity extends AppCompatActivity implements View.OnC
                         int res = fireBaseDBServices.registerCourse(registerCourse, currentUser);
                         Intent intent = new Intent();
                         if(res == 1){
-                            updateDatabase();
+                            fireBaseDBServices.getInstance().updateDatabase(courseCode, currentUser);
                             registerCourse.setInstructorName(currentUser.getfName() + " " + currentUser.getlName());
                             currentUser.updateCourse(registerCourse);
                             System.out.println("Registered in new course");
@@ -133,37 +133,11 @@ public class CourseDetailsActivity extends AppCompatActivity implements View.OnC
         };
     }
 
-    private void updateDatabase() {
-        final String[] updateKey = new String[1];
-        databasereference = FireBaseDBServices.getReference().child("Course");
-
-        databasereference.orderByChild("code").equalTo(courseCode).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot childShot: dataSnapshot.getChildren()) {
-                    updateKey[0] = childShot.child("code").getValue(String.class);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        Boolean ans =  (updateKey[0] == null);
-        Toast.makeText(getApplicationContext(), ans.toString(), Toast.LENGTH_LONG).show();
-        //databasereference.child("Course").child(updateKey[0]).child("courseInstructor").setValue(currentUser.getfName() + " " + currentUser.getlName());
-    }
-
     @Override
     public void onClick(View v) {
         AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-        if((courseInstructor.equals(currentUser.getfName() + " " + currentUser.getlName())) &&  (currentUser.getLevel()).equals("INSTRUCTOR")) {
-            Toast.makeText(getApplicationContext(), "You are already registered as instructor of this course", Toast.LENGTH_LONG).show();
-        } else {
-            builder.setMessage("Register for " + courseCode + "?").setPositiveButton("Register", dialogClickListener)
-                    .setNegativeButton("Cancel", dialogClickListener).show();
-        }
+        builder.setMessage("Register for " + courseCode + "?").setPositiveButton("Register", dialogClickListener)
+                .setNegativeButton("Cancel", dialogClickListener).show();
+
     }
 }
