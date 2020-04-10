@@ -1,11 +1,13 @@
 package com.example.jaqb.ui.student;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -67,6 +69,7 @@ public class CheckInActivity extends MenuOptionsActivity {
         super.onStart();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onResume() {
         super.onResume();
@@ -138,15 +141,17 @@ public class CheckInActivity extends MenuOptionsActivity {
         startActivity(intent);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     protected String determineClassToDisplay() {
         String message;
         //todo: change decision logic to get closest upcoming class
         if(!courseList.isEmpty()) {
-            Course course = courseList.get(0);
+            Course course = currentUser.getNextCourse();
             String code = course.getCode();
             String days = course.getDays();
+            String time = course.getTime();
 
-            message = code + "\n" + days;
+            message = code + "\n" + days + " @ " + time;
         }
         else {
             message = "Course list is empty";

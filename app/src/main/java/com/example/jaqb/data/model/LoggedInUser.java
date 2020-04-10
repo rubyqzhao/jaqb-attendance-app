@@ -1,5 +1,10 @@
 package com.example.jaqb.data.model;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
+import com.example.jaqb.services.CalendarServices;
 import com.example.jaqb.services.FireBaseDBServices;
 import com.google.firebase.auth.FirebaseUser;
 import java.util.ArrayList;
@@ -83,5 +88,11 @@ public class LoggedInUser extends Observable {
     public Semester getSemester()
     {
         return semester;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public Course getNextCourse()
+    {
+        return CalendarServices.getNextCourse(registeredCourses, this);
     }
 }

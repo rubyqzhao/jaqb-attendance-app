@@ -128,6 +128,7 @@ public class FireBaseDBServices {
                                                                 i++;
                                                             }
                                                             currentUser.setSemester(new Semester(timeZone, startSemesterDate, endSemesterDate, offDays));
+                                                            observer.update(currentUser, currentUser.getLevel());
                                                         }
 
                                                 @Override
@@ -136,7 +137,6 @@ public class FireBaseDBServices {
                                                 }
                                             });
                                             currentUser.setRegisteredCourses(getUserCourses(currentUser, allCourses));
-                                            observer.update(currentUser, currentUser.getLevel());
                                             getBadges();
                                         }
 

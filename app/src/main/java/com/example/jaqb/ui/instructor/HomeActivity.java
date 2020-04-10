@@ -2,10 +2,12 @@ package com.example.jaqb.ui.instructor;
 
 import android.content.Intent;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
 
 import com.example.jaqb.IncompleteActivity;
@@ -29,7 +31,9 @@ public class HomeActivity extends MenuOptionsActivity {
     private TextView coordDisplay;
     private FireBaseDBServices fireBaseDBServices;
     private Course nextClass;
+    private TextView upcomingClass;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,12 +43,31 @@ public class HomeActivity extends MenuOptionsActivity {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         coordDisplay = findViewById(R.id.gps_coord);
         fireBaseDBServices = FireBaseDBServices.getInstance();
-        nextClass = new Course("SER 515", "Dummy Class");
+        upcomingClass = findViewById(R.id.upcoming_class);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     protected void onResume() {
         super.onResume();
-        //todo: update coordDisplay using what's stored in the database
+        upcomingClass.setText(determineClassToDisplay());
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    protected String determineClassToDisplay() {
+        String message;
+        if(!fireBaseDBServices.getCurrentUser().getRegisteredCourses().isEmpty()) {
+            Course course = fireBaseDBServices.getCurrentUser().getNextCourse();
+            String code = course.getCode();
+            String days = course.getDays();
+            String time = course.getTime();
+
+            message = code + "\n" + days + " @ " + time;
+        }
+        else {
+            message = "Course list is empty";
+        }
+
+        return message;
     }
 
     public void SetRewardsButtonOnClick(View view) {
