@@ -43,6 +43,7 @@ public class FireBaseDBServices {
     private FirebaseAuth mAuth;
     private LoggedInUser currentUser;
     private FirebaseDatabase database;
+    private DatabaseReference reference;
     private List<Course> allCourses = new ArrayList<>();
 
     /**
@@ -58,6 +59,7 @@ public class FireBaseDBServices {
     private FireBaseDBServices() {
         mAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
+        reference = FirebaseDatabase.getInstance().getReference();
     }
 
     /**
@@ -66,6 +68,8 @@ public class FireBaseDBServices {
     public static FireBaseDBServices getInstance() {
         return dbService;
     }
+
+    public static DatabaseReference getReference() {return dbService.reference; }
 
     /**
      * This method registers a user in the firebase database as a student
