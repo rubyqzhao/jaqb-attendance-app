@@ -161,22 +161,46 @@ function addCourseToInstructor(request_body){
     var lname = details[1].split(' ')[1];
     console.log(course_code + "  --  " + fname + "  --  " + lname);
     var userQry = database.ref('User/').orderByChild("fname").equalTo(fname);
-        userQry.once('value', function (data) {
-            if (!data.exists()) {
-                //res.send('No users found')
-            }
-            else {
-                data.forEach(function (user) {
-                    database.ref('User/' + user.key + '/courses/' + course_code).set("true" )
-                        .then(function () {
-                            return;
-                        })
-                        .catch(function (error) {
-                            return;
-                        });
+    userQry.once('value', function (data) {
+        if (!data.exists()) {
+            //res.send('No users found')
+        }
+        else {
+            data.forEach(function (user) {
+                database.ref('User/' + user.key + '/courses/' + course_code).set("true" )
+                    .then(function () {
+                        return;
+                    })
+                    .catch(function (error) {
+                        return;
+                    });
+            });
+        }
+    });
+
+    // updating the instructor name in the Course table for that course
+    var courseQuery = database.ref('Course/').orderByChild('code').equalTo(course_code);
+    courseQuery.once('value', function(data){
+        data.forEach(function (user){
+            var oldInstructor = user.val().instructorName.split(' ');
+            console.log("PREVIOUS INSTRUCTOR NAME : " + oldInstructor);
+            database.ref('Course/' + user.key + '/instructorName').set(fname + " " + lname)
+                .then(function () {
+                })
+                .catch(function (error) {
+                    return;
                 });
-            }
+            database.ref('User/').orderByChild('fname').equalTo(oldInstructor[0])
+                .once('value', function(ins_user){
+                    ins_user.forEach(function(keyNode){
+                        console.log("KEY OF PREVIOUS INSTRUCTOR : " + keyNode.key);
+                        if(keyNode.val().level.localeCompare("INSTRUCTOR") != 1){
+                            database.ref('User/' + keyNode.key + '/courses/' + course_code).remove();
+                        }
+                    });
+            });
         });
+    });
 }
 
 function getCoursesForInstructor(instructorDetails, callback) {
