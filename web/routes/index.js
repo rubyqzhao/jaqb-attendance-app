@@ -82,6 +82,7 @@ router.post('/add_course_to_instructor', function(req, res) {
 
 router.post('/add-course', function (req, res) {
     var response = req.body;
+    console.log(req.body);
     console.log(response);
     //if input isn't entered or invalid, prevent send
     if(response == null || response.code == null || response.name == null
@@ -89,15 +90,28 @@ router.post('/add-course', function (req, res) {
         res.send('Submission is invalid');
     }
     else if(response.code.localeCompare("") == 0 || response.name.localeCompare("") == 0
-        || response.days.localeCompare("") == 0 || response.instructor.localeCompare("") == 0
+        || response.days == [""] || response.instructor.localeCompare("") == 0
         || response.time.localeCompare("") == 0) {
         res.send('Missing information');
     }
     else {
+        var daysList;
+        if(response.days[0].length == 1) {
+            daysList = response.days;
+        }
+        else {
+            var index = 1;
+            daysList = response.days[0];
+            while (index < response.days.length) {
+                daysList += "," + response.days[index];
+                index++;
+            }
+        }
+        console.log(daysList);
         database.ref('Course/').push().set({
             code: response.code,
             courseName: response.name,
-            days: response.days,
+            days: daysList,
             instructorName: response.instructor,
             time: response.time
         });
@@ -106,33 +120,31 @@ router.post('/add-course', function (req, res) {
 });
 
 router.post('/delete-course', function(req, res) {
-    var response = req.body;
-    if (response == null || response.courseCode == null)
-        res.send('Invalid POST');
-    else if(response.courseCode.localeCompare("") == 0) {
-        res.send('Please enter a course code');
-    }
-    else {
-        var userQuery = database.ref('Course/').orderByChild("code").equalTo(response.courseCode);
-        console.log(userQuery)
-        userQuery.once('value', function (data) {
-            if (!data.exists()) {
-                res.send('No users found')
-            }
-            else {
-                data.forEach(function (user) {
-                    database.ref('Course/' + user.key).remove()
-                        .then(function () {
-                            res.send("Remove succeeded.")
-                        })
-                        .catch(function (error) {
-                            res.send("Remove failed: " + error.message)
-                        });
-                });
-            }
-        });
-    }
+    var contents = JSON.stringify(req.body);
+    var arr = contents.split(',');
+    var courseCode = arr[0].substring(2);
+
+    var userQuery = database.ref('Course/').orderByChild("code").equalTo(courseCode);
+    userQuery.once('value', function (data) {
+        if (!data.exists()) {
+            return;
+        }
+        else {
+            data.forEach(function (user) {
+                database.ref('Course/' + user.key).remove()
+                    .then(function () {
+                        return;
+                    })
+                    .catch(function (error) {
+                        return;
+                    });
+            });
+        }
+    });
+
+    res.redirect('/');
 });
+
 
 function getCourses(callback) {
     var courseRef = database.ref('Course/');
@@ -161,22 +173,46 @@ function addCourseToInstructor(request_body){
     var lname = details[1].split(' ')[1];
     console.log(course_code + "  --  " + fname + "  --  " + lname);
     var userQry = database.ref('User/').orderByChild("fname").equalTo(fname);
-        userQry.once('value', function (data) {
-            if (!data.exists()) {
-                //res.send('No users found')
-            }
-            else {
-                data.forEach(function (user) {
-                    database.ref('User/' + user.key + '/courses/' + course_code).set("true" )
-                        .then(function () {
-                            return;
-                        })
-                        .catch(function (error) {
-                            return;
-                        });
+    userQry.once('value', function (data) {
+        if (!data.exists()) {
+            //res.send('No users found')
+        }
+        else {
+            data.forEach(function (user) {
+                database.ref('User/' + user.key + '/courses/' + course_code).set("true" )
+                    .then(function () {
+                        return;
+                    })
+                    .catch(function (error) {
+                        return;
+                    });
+            });
+        }
+    });
+
+    // updating the instructor name in the Course table for that course
+    var courseQuery = database.ref('Course/').orderByChild('code').equalTo(course_code);
+    courseQuery.once('value', function(data){
+        data.forEach(function (user){
+            var oldInstructor = user.val().instructorName.split(' ');
+            console.log("PREVIOUS INSTRUCTOR NAME : " + oldInstructor);
+            database.ref('Course/' + user.key + '/instructorName').set(fname + " " + lname)
+                .then(function () {
+                })
+                .catch(function (error) {
+                    return;
                 });
-            }
+            database.ref('User/').orderByChild('fname').equalTo(oldInstructor[0])
+                .once('value', function(ins_user){
+                    ins_user.forEach(function(keyNode){
+                        console.log("KEY OF PREVIOUS INSTRUCTOR : " + keyNode.key);
+                        if(keyNode.val().level.localeCompare("INSTRUCTOR") != 1){
+                            database.ref('User/' + keyNode.key + '/courses/' + course_code).remove();
+                        }
+                    });
+            });
         });
+    });
 }
 
 function getCoursesForInstructor(instructorDetails, callback) {

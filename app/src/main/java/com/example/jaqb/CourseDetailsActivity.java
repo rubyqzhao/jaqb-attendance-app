@@ -54,6 +54,10 @@ public class CourseDetailsActivity extends AppCompatActivity implements View.OnC
     private List<Course> courseList;
 
 
+    /**
+     * @param savedInstanceState saved application context passed into the activity at the time of
+     *                           creation
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,6 +137,9 @@ public class CourseDetailsActivity extends AppCompatActivity implements View.OnC
         };
     }
 
+    /**
+     * @param v Event listener for the button Register for a course
+     */
     @Override
     public void onClick(View v) {
         AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
