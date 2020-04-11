@@ -20,6 +20,9 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class to hold the activity that shows the attendance history of an user
+ */
 public class AttendanceHistoryStudentActivity extends AppCompatActivity {
 
     private String courseCode;
@@ -30,6 +33,11 @@ public class AttendanceHistoryStudentActivity extends AppCompatActivity {
     private ListView listView;
     private ArrayAdapter<String> arrayAdapter;
 
+    /**
+     * Triggers when the user first accesses the activity. Initializes values
+     * and gets data from the firebase database.
+     * @param savedInstanceState the previous state of app
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +56,10 @@ public class AttendanceHistoryStudentActivity extends AppCompatActivity {
         arrayAdapter = new ArrayAdapter<>(this, R.layout.class_list_item,
                 R.id.class_item_name, courseAttendance);
         databaseReference.addValueEventListener(new ValueEventListener() {
+            /**
+             * Triggers when there has to a change in Database
+             * @param dataSnapshot the current state of database
+             */
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot keyNode : dataSnapshot.getChildren()){
@@ -58,6 +70,10 @@ public class AttendanceHistoryStudentActivity extends AppCompatActivity {
                 listView.setAdapter(arrayAdapter);
             }
 
+            /**
+             * Triggers if data fails to get updated
+             * @param databaseError the error due to which change could not happen
+             */
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 

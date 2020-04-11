@@ -63,6 +63,8 @@ public class FireBaseDBServices {
         return dbService;
     }
 
+    public static DatabaseReference getReference() {return dbService.reference; }
+
     public void registerUser(final User newUser, final Observer observer) {
         mAuth.createUserWithEmailAndPassword(newUser.getUserName(), newUser.getPassword())
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
