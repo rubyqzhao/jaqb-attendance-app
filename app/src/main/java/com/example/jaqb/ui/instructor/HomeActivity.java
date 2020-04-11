@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
 
-import com.example.jaqb.IncompleteActivity;
 import com.example.jaqb.MyCoursesActivity;
 import com.example.jaqb.R;
 
@@ -21,9 +20,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 public class HomeActivity extends MenuOptionsActivity {
     private FusedLocationProviderClient fusedLocationClient;
-    private double latitude;
-    private double longitude;
-    private TextView coordDisplay;
+    //private double latitude;
+    //private double longitude;
+    //private TextView coordDisplay;
     private FireBaseDBServices fireBaseDBServices;
     private Course nextClass;
 
@@ -34,7 +33,7 @@ public class HomeActivity extends MenuOptionsActivity {
         Toolbar myToolbar = findViewById(R.id.instructor_toolbar);
         setSupportActionBar(myToolbar);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        coordDisplay = findViewById(R.id.gps_coord);
+        //coordDisplay = findViewById(R.id.gps_coord);
         fireBaseDBServices = FireBaseDBServices.getInstance();
         nextClass = new Course("SER 515", "Dummy Class");
     }
@@ -44,11 +43,6 @@ public class HomeActivity extends MenuOptionsActivity {
         //todo: update coordDisplay using what's stored in the database
     }
 
-    public void SetRewardsButtonOnClick(View view) {
-        Intent intent = new Intent(this, IncompleteActivity.class);
-        startActivity(intent);
-    }
-
     public void GetQRButtonOnClick(View view) {
         int res = fireBaseDBServices.startAttendanceForCourse(nextClass);
         System.out.println("RESULT AFTER GENERATING ATTENDANCE: " + res);
@@ -56,7 +50,7 @@ public class HomeActivity extends MenuOptionsActivity {
         startActivity(intent);
     }
 
-    public void submitLocationButtonOnClick(View view) {
+    /*public void submitLocationButtonOnClick(View view) {
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, new OnSuccessListener<Location>() {
                     @Override
@@ -68,7 +62,7 @@ public class HomeActivity extends MenuOptionsActivity {
                         }
                     }
                 });
-    }
+    }*/
 
     public void myCoursesButtonOnClick(View view) {
         Intent intent = new Intent(this, MyCoursesActivity.class);
