@@ -28,6 +28,14 @@ import com.example.jaqb.ui.instructor.HomeActivity;
 
 import java.util.Observable;
 
+/**
+ * Initial activity that is displayed when the user is logging in. Contains login
+ * input for the username and password.
+ *
+ * @author Joshua Drumm
+ * @author Ruby Zhao
+ * @version 1.0
+ */
 public class LoginActivity extends AppCompatActivity implements java.util.Observer {
 
     private LoginActivity loginActivity;
@@ -35,6 +43,12 @@ public class LoginActivity extends AppCompatActivity implements java.util.Observ
     private FireBaseDBServices dbServices;
     private ProgressBar loadingProgressBar;
 
+    /**
+     * Triggers when the user arrives at the login page for the first time.
+     * Initializes the login view to display and listens for changes to
+     * the input to check login status.
+     * @param savedInstanceState    the previous state of the app
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -130,6 +144,9 @@ public class LoginActivity extends AppCompatActivity implements java.util.Observ
         });
     }
 
+    /**
+     * Triggers when the page is started. Checks to see if the user is still logged in.
+     */
     @Override
     public void onStart() {
         super.onStart();
@@ -140,6 +157,13 @@ public class LoginActivity extends AppCompatActivity implements java.util.Observ
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * Determines the actions of the app when the user logs in. Sets the text for invalid
+     * credentials to appear, or determines which page the user is directed to depending
+     * on their user role.
+     * @param o     observable object for login
+     * @param arg   input argument
+     */
     @Override
     public void update(Observable o, Object arg) {
         if(o == null)
