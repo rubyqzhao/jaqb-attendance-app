@@ -46,11 +46,6 @@ public class MenuOptionsActivity extends AppCompatActivity {
             startActivity(intent);
             return true;
         }
-        else if (id == R.id.action_instructor) {
-            Intent intent = new Intent(this, HomeActivity.class);
-            startActivity(intent);
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
