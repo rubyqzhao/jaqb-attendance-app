@@ -4,14 +4,26 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.jaqb.data.model.Course;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.services.FireBaseDBServices;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author amanjotsingh
@@ -36,8 +48,11 @@ public class CourseDetailsActivity extends AppCompatActivity implements View.OnC
     private Button registerButton;
     private DialogInterface.OnClickListener dialogClickListener;
     private FireBaseDBServices fireBaseDBServices;
+    private DatabaseReference databasereference;
     private LoggedInUser currentUser;
     private Course registerCourse;
+    private List<Course> courseList;
+
 
     /**
      * @param savedInstanceState saved application context passed into the activity at the time of
@@ -76,6 +91,8 @@ public class CourseDetailsActivity extends AppCompatActivity implements View.OnC
         registerCourse.setTime(time);
 
         fireBaseDBServices = FireBaseDBServices.getInstance();
+        courseList = new ArrayList<>();
+        courseList.addAll(fireBaseDBServices.getAllCourses());
         currentUser = fireBaseDBServices.getCurrentUser();
 
 
@@ -97,8 +114,10 @@ public class CourseDetailsActivity extends AppCompatActivity implements View.OnC
                         int res = fireBaseDBServices.registerCourse(registerCourse, currentUser);
                         Intent intent = new Intent();
                         if(res == 1){
-                            System.out.println("Registered in new course");
+                            fireBaseDBServices.getInstance().updateDatabase(courseCode, currentUser);
+                            registerCourse.setInstructorName(currentUser.getfName() + " " + currentUser.getlName());
                             currentUser.updateCourse(registerCourse);
+                            System.out.println("Registered in new course");
                             intent.setClass(getApplicationContext(), MyCoursesActivity.class);
                             Toast.makeText(getApplicationContext(), "Registered", Toast.LENGTH_LONG).show();
 
@@ -111,6 +130,8 @@ public class CourseDetailsActivity extends AppCompatActivity implements View.OnC
                         startActivity(intent);
                     case DialogInterface.BUTTON_NEGATIVE:
                         break;
+                    default:
+                        throw new IllegalStateException("Unexpected value: " + which);
                 }
             }
         };
@@ -124,5 +145,6 @@ public class CourseDetailsActivity extends AppCompatActivity implements View.OnC
         AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
         builder.setMessage("Register for " + courseCode + "?").setPositiveButton("Register", dialogClickListener)
                 .setNegativeButton("Cancel", dialogClickListener).show();
+
     }
 }
