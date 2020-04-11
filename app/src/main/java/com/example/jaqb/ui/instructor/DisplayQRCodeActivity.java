@@ -38,11 +38,11 @@ public class DisplayQRCodeActivity extends AppCompatActivity {
     private String courseCode = "SER 515";
     private ImageView imageView;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     /**
      * Triggers when the user visits the QR page for the first time.
      * @param savedInstanceState    the previous state of the app
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
