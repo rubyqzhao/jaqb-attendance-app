@@ -5,10 +5,12 @@ import android.util.Log;
 import java.util.TimeZone;
 
 /**
- * @author jkdrumm
- *
  * This class contains the attributes of for a given semester
- * */
+ *
+ * @author  Joshua Drumm
+ * @version 2.0
+ * @since   2020-4-10
+ */
 
 public class Semester {
 
@@ -23,21 +25,37 @@ public class Semester {
         this.offDays = offDays;
     }
 
+    /**
+     * Gets the timeZoneID for the current semester
+     * @return The semester's timeZoneID
+     */
     public String getTimeZoneID()
     {
         return timeZone.getID();
     }
 
+    /**
+     * Gets the start date of the semester
+     * @return The start date of the semester as a SemesterDate
+     */
     public SemesterDate getStartSemesterDate()
     {
         return startSemesterDate;
     }
 
+    /**
+     * Gets the end date of the semester
+     * @return The end date of the semester as a SemesterDate
+     */
     public SemesterDate getEndSemesterDate()
     {
         return endSemesterDate;
     }
 
+    /**
+     * Gets the semester's off days formatted as needed for the Calender interfaces
+     * @return The String of off days formatted
+     */
     public String getOffDaysFormatted()
     {
         if(offDays.length == 0)
@@ -49,7 +67,11 @@ public class Semester {
         return days;
     }
 
-    public SemesterDate[] getDays()
+    /**
+     * Gets the off days of the semester
+     * @return A list of the semester's off days
+     */
+    public SemesterDate[] getOffDays()
     {
         return offDays;
     }

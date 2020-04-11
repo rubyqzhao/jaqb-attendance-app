@@ -4,9 +4,12 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -20,6 +23,7 @@ import com.example.jaqb.ui.menu.MenuOptionsActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -39,12 +43,14 @@ public class HomeActivity extends MenuOptionsActivity {
     //private TextView coordDisplay;
     private FireBaseDBServices fireBaseDBServices;
     private Course nextClass;
+    private TextView upcomingClass;
 
     /**
      * Triggers when the user first opens the page. Initializes values and sets
      * the values for the activity view.
      * @param savedInstanceState    the previous state of the app
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +60,7 @@ public class HomeActivity extends MenuOptionsActivity {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         //coordDisplay = findViewById(R.id.gps_coord);
         fireBaseDBServices = FireBaseDBServices.getInstance();
+        upcomingClass = findViewById(R.id.upcoming_class);
         nextClass = new Course("SER 515", "Dummy Class");
 
         if (ContextCompat.checkSelfPermission(this,
@@ -69,11 +76,30 @@ public class HomeActivity extends MenuOptionsActivity {
     /**
      * Triggers when the user returns to the page.
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     protected void onResume() {
         super.onResume();
-        //todo: update coordDisplay using what's stored in the database
+        upcomingClass.setText(determineClassToDisplay());
     }
-  
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    protected String determineClassToDisplay() {
+        String message;
+        if(!fireBaseDBServices.getCurrentUser().getRegisteredCourses().isEmpty()) {
+            Course course = fireBaseDBServices.getCurrentUser().getNextCourse();
+            String code = course.getCode();
+            String days = course.getDays();
+            String time = course.getTime();
+
+            message = code + "\n" + days + " @ " + time;
+        }
+        else {
+            message = "Course list is empty";
+        }
+
+        return message;
+    }
+
     public void GetQRButtonOnClick(View view) {
         int res = fireBaseDBServices.startAttendanceForCourse(nextClass);
         Intent intent = new Intent();

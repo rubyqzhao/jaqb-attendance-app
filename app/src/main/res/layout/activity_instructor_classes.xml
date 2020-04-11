@@ -69,8 +69,8 @@
         app:titleTextColor="#FFFFFF" />
 
     <TextView
-        android:id="@+id/textView3"
-        android:layout_width="407dp"
+        android:id="@+id/upcoming_class"
+        android:layout_width="match_parent"
         android:layout_height="166dp"
         android:layout_marginTop="16dp"
         android:background="@color/colorAccent"
