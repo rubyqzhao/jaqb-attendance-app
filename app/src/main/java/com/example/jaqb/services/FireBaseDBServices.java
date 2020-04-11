@@ -71,7 +71,7 @@ public class FireBaseDBServices {
         return dbService;
     }
 
-    public static DatabaseReference getReference() {return dbService.reference; }
+//    public static DatabaseReference getReference() {return dbService.reference; }
 
     /**
      * This method registers a user in the firebase database as a student
@@ -492,6 +492,19 @@ public class FireBaseDBServices {
                                 .child(key)
                                 .child("instructorName")
                                 .setValue(currentUser.getfName() + " " + currentUser.getlName());
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
                       
                       
     /**
