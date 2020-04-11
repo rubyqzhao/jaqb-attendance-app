@@ -16,8 +16,21 @@ import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
+/**
+ * A class to handle services and functions relating to time and the calendar
+ *
+ * @author Joshua Drumm
+ * @version 1.0
+ * @since   2020-4-10
+ */
 public class CalendarServices
 {
+    /**
+     * Gets the next day happening in the semester, starting from the first day in the semester
+     * @param courseDays The days the course happens on
+     * @param currentUser The current logged-in user
+     * @return The time in milliseconds since the Unix epoch that the day begins on
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static long getNextDaySemester(String courseDays, LoggedInUser currentUser)
     {
@@ -32,6 +45,12 @@ public class CalendarServices
         return soonestDay;
     }
 
+    /**
+     * Gets the next day happening for a course in a specific timezone
+     * @param course The course to get the next day for
+     * @param timeZone The timezone to use
+     * @return The time in milliseconds since the Unix epoch that the day begins on
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static long getNextTime(Course course, String timeZone)
     {
@@ -60,6 +79,12 @@ public class CalendarServices
         return soonestDay + (hour * 60 + minute) * 60000;
     }
 
+    /**
+     * Gets the user's next available course to check-in to
+     * @param courses The list of courses the user is registered in
+     * @param user The user whose courses to check
+     * @return The user's next course
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static Course getNextCourse(List<Course> courses, LoggedInUser user)
     {
@@ -79,6 +104,12 @@ public class CalendarServices
         return soonestCourse;
     }
 
+    /**
+     * Gets the day of the week based on the formatted day code
+     * MO,TU,WE,TH,FR,SA,SU -> DayOfWeek Enum
+     * @param dayCode The string representing the day
+     * @return The DayOfWeek enum corresponding to the string
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static DayOfWeek getDayOfWeek(String dayCode)
     {
@@ -112,6 +143,13 @@ public class CalendarServices
         return dayOfWeek;
     }
 
+    /**
+     * Gets the first time of a course happening on a specific day in the semester
+     * @param dayCode The string code that the course happens next on
+     * @param currentUser The user currently logged in
+     * @return The Unix Epoch time in milliseconds for the time of the start of the day
+     *         for the course's first occurrence on the specified day in the semester
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static long getTimeOfNextDayCodeSemester(String dayCode, LoggedInUser currentUser)
     {
@@ -121,6 +159,13 @@ public class CalendarServices
         return ZonedDateTime.of(semesterDate.getYear(), semesterDate.getMonth(), semesterDate.getDay(), 0, 0, 0, 0, zone).toLocalDate().with(TemporalAdjusters.nextOrSame(dayOfWeek)).atStartOfDay().toInstant(zone.getRules().getOffset(LocalDateTime.now())).getEpochSecond() * 1000;
     }
 
+    /**
+     * Gets the next time of a course happening on a specific day in the semester
+     * @param dayCode The string code that the course happens next on
+     * @param zone The timezone to compare to. This is usually the user's timezone
+     * @return The Unix Epoch time in milliseconds for the time of the start of the day
+     *         for the course's next occurrence on the specified day in the semester
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static long getTimeOfNextDayCode(String dayCode, ZoneId zone)
     {
@@ -128,12 +173,22 @@ public class CalendarServices
         return ZonedDateTime.now(zone).toLocalDate().with(TemporalAdjusters.nextOrSame(dayOfWeek)).atStartOfDay().toInstant(zone.getRules().getOffset(LocalDateTime.now())).getEpochSecond() * 1000;
     }
 
+    /**
+     * Gets the current time
+     * @param zone The timezone to get the time from. This is usually the user's timezone
+     * @return The Unix Epoch time in milliseconds for the specified timezone
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static long getCurrentTime(ZoneId zone)
     {
         return ZonedDateTime.now(zone).toInstant().getEpochSecond() * 1000;
     }
 
+    /**
+     * Gets the Calendar URI base
+     * @param eventUri If true, the events URI will be used instead of the calendar URI
+     * @return The base URI needed for accessing calendar events
+     */
     public static String getCalendarUriBase(boolean eventUri) {
         Uri calendarURI = null;
         try {
