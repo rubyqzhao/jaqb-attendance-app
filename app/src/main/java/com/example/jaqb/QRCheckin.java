@@ -1,7 +1,9 @@
 package com.example.jaqb;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -16,6 +18,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.services.FireBaseDBServices;
 import com.google.android.gms.vision.CameraSource;
@@ -57,6 +62,7 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
     private FireBaseDBServices fireBaseDBServices;
     private SurfaceView cameraSurfaceView;
     private CameraSource cameraSource;
+    private SurfaceHolder surfaceHolder;
     private BarcodeDetector barcodeDetector;
 
     /**
@@ -85,7 +91,8 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
         cameraSurfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
-                if(!isCamerPermissionGranted()){
+                if(!isCameraPermissionGranted()){
+                    surfaceHolder = holder;
                     return;
                 }
                 try {
@@ -131,7 +138,32 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
         });
     }
 
-    private boolean isCamerPermissionGranted() {
+    private boolean isCameraPermissionGranted() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Permission is not granted
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA},
+                    1);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isLocationPermissionGranted() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+            // Permission is not granted
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
+                    2);
+            return false;
+        }
         return true;
     }
 
@@ -320,5 +352,44 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
     @Override
     public void onProviderDisabled(String provider) {
 
+    }
+
+    //@RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay!
+                    try {
+                        cameraSource.start(surfaceHolder);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(getApplicationContext(), "Needs Camera for QR Check-in!", Toast.LENGTH_LONG).show();
+                }
+                isLocationPermissionGranted();
+                return;
+            }
+            case 2: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay!
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(getApplicationContext(), "Needs Location for Check-in!", Toast.LENGTH_LONG).show();
+                }
+                isCameraPermissionGranted();
+                return;
+            }
+        }
     }
 }
