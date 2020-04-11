@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -16,7 +15,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.jaqb.IncompleteActivity;
 import com.example.jaqb.MainActivity;
 import com.example.jaqb.MyCoursesActivity;
@@ -27,14 +25,12 @@ import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.services.FireBaseDBServices;
 import com.example.jaqb.ui.instructor.AttendanceHistoryInstructorActivity;
 import com.example.jaqb.ui.menu.MenuOptionsActivity;
-import com.example.jaqb.ui.student.BadgeActivity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -145,17 +141,17 @@ public class CheckInActivity extends MenuOptionsActivity {
     public void checkinButtonOnClick(View view) {
         Double courseLongitude;
         Double courseLatitude;
-        String courseQR;
+        //String courseQR;
         //todo: change decision logic to get closest upcoming class
         if(!courseList.isEmpty()) {
             Course course = courseList.get(1);
-            courseLongitude = course.getLongitude();
-            courseLatitude = course.getLatitude();
-            courseQR = course.getCourseQRCode();
+            courseLongitude = -111.9179767;//course.getLongitude();
+            courseLatitude = 33.4144485;//course.getLatitude();
+            //courseQR = course.getCourseQRCode();
             Intent intent = new Intent(this, QRCheckin.class);
             intent.putExtra("courseLongitude", courseLongitude);
             intent.putExtra("courseLatitude", courseLatitude);
-            intent.putExtra("courseQR", courseQR);
+            intent.putExtra("courseQR", "8320");
             startActivity(intent);
         }
         else {

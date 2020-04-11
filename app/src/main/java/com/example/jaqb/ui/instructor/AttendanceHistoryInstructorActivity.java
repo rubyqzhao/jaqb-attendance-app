@@ -28,6 +28,11 @@ public class AttendanceHistoryInstructorActivity extends AppCompatActivity
     private ListView listView;
     private CourseAdapter courseAdapter;
 
+    /**
+     * Triggers when the user first opens the activity. Initializes values for the
+     * view to be displayed and the firebase.
+     * @param savedInstanceState    the previous state of the app
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,10 +47,12 @@ public class AttendanceHistoryInstructorActivity extends AppCompatActivity
     }
 
     /**
-     * @param parent
-     * @param view
-     * @param position
-     * @param id
+     * Triggers when the user clicks on an item on the attendance history list.
+     * Determines which detail page to direct the user to.
+     * @param parent    the parent adapter view containing the item
+     * @param view      the item view containing the attendance history
+     * @param position  position of the item to be retrieved
+     * @param id        id number of the item to be retrieved
      */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
