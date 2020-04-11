@@ -1,12 +1,16 @@
 package com.example.jaqb.ui.instructor;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.jaqb.MyCoursesActivity;
 import com.example.jaqb.R;
@@ -36,6 +40,15 @@ public class HomeActivity extends MenuOptionsActivity {
         //coordDisplay = findViewById(R.id.gps_coord);
         fireBaseDBServices = FireBaseDBServices.getInstance();
         nextClass = new Course("SER 515", "Dummy Class");
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Permission is not granted
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
+                    1);
+        }
     }
 
     protected void onResume() {
