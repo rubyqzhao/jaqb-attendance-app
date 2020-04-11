@@ -16,10 +16,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author amanjotsingh
- *
  * Custom adapter to display the details of courses in a listview that uses more than
  * 1 textview.
+ *
+ * @author amanjotsingh
+ * @version 1.0
  * */
 
 public class CourseAdapter extends BaseAdapter implements Filterable {
@@ -29,24 +30,50 @@ public class CourseAdapter extends BaseAdapter implements Filterable {
     private List<Course> filteredList;
     private Filter filter;
 
+    /**
+     * Constructor for courseAdapter class. Initializes context and courses.
+     * @param context   the current app context
+     * @param courses   a list of courses to be displayed
+     */
     public CourseAdapter(Context context, List<Course> courses) {
         this.inflater = LayoutInflater.from(context);
         this.courses = courses;
         this.filteredList = courses;
     }
 
+    /**
+     * Gets the count of the course list after it's been filtered.
+     * @return  int size of filteredList
+     */
     public int getCount() {
         return filteredList.size();
     }
 
+    /**
+     * Gets the current item in the course list at the given position.
+     * @param position  the position of the item to get
+     * @return  the item in the filtered list
+     */
     public Course getItem(int position) {
         return filteredList.get(position);
     }
 
+    /**
+     * Gets the item id for the course at the given position in the list.
+     * @param position the position of the item id to get
+     * @return long id the number of the id
+     */
     public long getItemId(int position) {
         return position;
     }
 
+    /**
+     * Gets the view object for the course at the given position in the list.
+     * @param position      the position of the item to get
+     * @param convertView   the current view of the course item to be set
+     * @param parent        the parent viewgroup object containing the view object
+     * @return the modified view object for the course
+     */
     public View getView(int position, View convertView, ViewGroup parent) {
         CourseViewHolder holder;
         if(convertView == null) {
@@ -69,6 +96,11 @@ public class CourseAdapter extends BaseAdapter implements Filterable {
         return convertView;
     }
 
+    /**
+     * Filters the course list passed into the class based on the given constraints
+     * to generate the correct course list for the current student.
+     * @return  filter object
+     */
     @Override
     public Filter getFilter() {
         if(filter == null) {
