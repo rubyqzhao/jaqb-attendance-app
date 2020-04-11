@@ -51,6 +51,11 @@ public class CheckInActivity extends MenuOptionsActivity {
     private LoggedInUser currentUser;
     private FireBaseDBServices fireBaseDBServices;
 
+    /**
+     * Triggers when the user first accesses the activity. Initializes values
+     * and gets data from the firebase database.
+     * @param savedInstanceState the previous state of app
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,11 +69,17 @@ public class CheckInActivity extends MenuOptionsActivity {
         courseList = currentUser.getRegisteredCourses();
     }
 
+    /**
+     * Triggers when activity is started
+     */
     @Override
     protected void onStart() {
         super.onStart();
     }
 
+    /**
+     * Triggers when activity is resumed
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onResume() {
@@ -76,12 +87,22 @@ public class CheckInActivity extends MenuOptionsActivity {
         upcomingClass.setText(determineClassToDisplay());
     }
 
+    /**
+     * When the menu is accessed
+     * @param menu f type MENU
+     * @return true if menu loads, else false
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_items, menu);
         return true;
     }
 
+    /**
+     * Triggers when an option is selected from the list of options
+     * @param item of type MenuItem
+     * @return true if option gets selected
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -96,6 +117,11 @@ public class CheckInActivity extends MenuOptionsActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Triggers when check in button is clicked and activate QR code scanner activity
+     * for the upcoming course displayed on check in
+     * @param view
+     */
     public void checkinButtonOnClick(View view) {
         Double courseLongitude;
         Double courseLatitude;
@@ -117,11 +143,19 @@ public class CheckInActivity extends MenuOptionsActivity {
         }
     }
 
+    /**
+     * Triggers set alarm activity
+     * @param view
+     */
     public void setAlarmButtonOnClick(View view) {
         Intent intent = new Intent(this, IncompleteActivity.class);
         startActivity(intent);
     }
 
+    /**
+     * Triggers reward activity
+     * @param view
+     */
     public void seeRewardsButtonOnClick(View view) {
         for(Course c : courseList) {
             Log.d("database", c.getCode());
@@ -131,16 +165,28 @@ public class CheckInActivity extends MenuOptionsActivity {
         startActivity(intent);
     }
 
+    /**
+     * Triggers Attendance History activity
+     * @param view
+     */
     public void seeAttendanceButtonOnClick(View view) {
         Intent intent = new Intent(this, AttendanceHistoryInstructorActivity.class);
         startActivity(intent);
     }
 
+    /**
+     * Triggers My Courses activity
+     * @param view
+     */
     public void myCoursesButtonOnClick(View view) {
         Intent intent = new Intent(this, MyCoursesActivity.class);
         startActivity(intent);
     }
 
+    /**
+     * Determines which class to display as next upcoming class
+     * @return the list of courses or message if there is no course in list
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     protected String determineClassToDisplay() {
         String message;
@@ -160,6 +206,10 @@ public class CheckInActivity extends MenuOptionsActivity {
         return message;
     }
 
+    /**
+     * Calculate and find the status of the next course
+     * @param course the course to check status for
+     */
     protected void calculateStats(String course) {
         final String courseName = course;
 
@@ -174,6 +224,10 @@ public class CheckInActivity extends MenuOptionsActivity {
 
         // calculate and update stats
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            /**
+             * Triggers when there has to a change in Database
+             * @param dataSnapshot the current state of database
+             */
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Map<String, Object> attendance = new HashMap<>();
@@ -216,6 +270,10 @@ public class CheckInActivity extends MenuOptionsActivity {
                 Log.d("database stats", stats.toString());
                 statsRef.updateChildren(stats);
             }
+            /**
+             * Triggers if data fails to get updated
+             * @param databaseError the error due to which change could not happen
+             */
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {}
         });

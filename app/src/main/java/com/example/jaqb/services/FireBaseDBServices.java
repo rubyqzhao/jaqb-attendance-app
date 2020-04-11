@@ -44,6 +44,7 @@ public class FireBaseDBServices {
     private FirebaseAuth mAuth;
     private LoggedInUser currentUser;
     private FirebaseDatabase database;
+    private DatabaseReference reference;
     private List<Course> allCourses = new ArrayList<>();
 
     public List<Course> getAllCourses() {
@@ -53,11 +54,14 @@ public class FireBaseDBServices {
     private FireBaseDBServices() {
         mAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
+        reference = FirebaseDatabase.getInstance().getReference();
     }
 
     public static FireBaseDBServices getInstance() {
         return dbService;
     }
+
+    public static DatabaseReference getReference() {return dbService.reference; }
 
     public void registerUser(final User newUser, final Observer observer) {
         mAuth.createUserWithEmailAndPassword(newUser.getUserName(), newUser.getPassword())

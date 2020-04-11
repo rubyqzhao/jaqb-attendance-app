@@ -30,6 +30,11 @@ public class BadgeActivity extends MenuOptionsActivity {
     private DatabaseReference databaseReference;
 
 
+    /**
+     * Triggers when the user first accesses the activity. Initializes values
+     * and gets data from the firebase database.
+     * @param savedInstanceState the previous state of app
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

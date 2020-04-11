@@ -14,11 +14,14 @@ block content
               th Days
               th Time
               th Instructor
+              th
           tbody
             each item in courses
               tr
                 each row in item
                   td(id="class-" + row) #{row}
+                td
+                  button(type='submit', onclick='deleteCourse("#{item}")') Remove
 
   div(class = "w3-row-padding w3-section")
     div(class = "w3-white w3-col w3-border w3-padding l12 s12")
@@ -36,8 +39,28 @@ block content
           div(class="w3-col l2 w3-padding") 
             span.label Meeting Days 
             br
-            input(type="text", name="days", placeholder="MO,TU,WE,TH,FR")    
-          div(class="w3-col l2 w3-padding") 
+            input(type="checkbox", name="days", value="MO")
+            span.label Monday
+            br
+            input(type="checkbox", name="days", value="TU")
+            span.label Tuesday
+            br
+            input(type="checkbox", name="days", value="WE")
+            span.label Wednesday
+            br
+            input(type="checkbox", name="days", value="TH")
+            span.label Thursday
+            br
+            input(type="checkbox", name="days", value="FR")
+            span.label Friday
+            br
+            input(type="checkbox", name="days", value="SA")
+            span.label Saturday
+            br
+            input(type="checkbox", name="days", value="SU")
+            span.label Sunday
+            br
+          div(class="w3-col l2 w3-padding")
             span.label Meeting Time  
             br
             input(type="time", name="time") 
@@ -70,7 +93,7 @@ block content
     div(class = "w3-white w3-col w3-padding l4 w3-border")
       h2 Assign Courses to Instructors
       button(type="button", onclick="window.location.href = '/assign_courses';" class="w3-button w3-light-gray w3-hover-red") Assign Courses to Instructors
-    div(class = "w3-white w3-col w3-padding l4 w3-border")
+    //div(class = "w3-white w3-col w3-padding l4 w3-border")
       h2 Delete Course
       form(name="delete-course", action="delete-course" method="post")
         div.input(style="float:left;" class="w3-col l10")
@@ -78,5 +101,5 @@ block content
           input(type="text", name="courseCode" placeholder="Ex. SER 517") 
         div(class="we-col l1")  
         div.actions(class="w3-col l1")
-          input(type="submit", value="Delete" class="w3-button w3-light-gray w3-hover-red") 
+          input(type="submit", value="Delete" class="w3-button w3-light-gray w3-hover-red")
 

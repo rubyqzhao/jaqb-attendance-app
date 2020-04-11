@@ -25,6 +25,12 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 import java.io.IOException;
 
+/**
+ * Activity to display the QR code generated for instructors.
+ *
+ * @author Amanjot Singh
+ * @version 1.0
+ */
 public class DisplayQRCodeActivity extends AppCompatActivity {
 
     private TextView qrCode;
@@ -33,6 +39,10 @@ public class DisplayQRCodeActivity extends AppCompatActivity {
     private ImageView imageView;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
+    /**
+     * Triggers when the user visits the QR page for the first time.
+     * @param savedInstanceState    the previous state of the app
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

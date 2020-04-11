@@ -32,6 +32,9 @@ import com.example.jaqb.services.FireBaseDBServices;
 
 import java.util.Observable;
 
+/**
+ * A view Class for the User registration in the database
+ */
 public class RegisterActivity extends AppCompatActivity implements java.util.Observer {
 
     private RegisterActivity registerActivity;
@@ -40,6 +43,12 @@ public class RegisterActivity extends AppCompatActivity implements java.util.Obs
     private FireBaseDBServices dbServices;
     private ProgressBar loadingProgressBar;
 
+
+    /**
+     * Triggers when the user first accesses the activity. Initializes values
+     * and gets data from the firebase database.
+     * @param savedInstanceState the previous state of app
+     */
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +66,10 @@ public class RegisterActivity extends AppCompatActivity implements java.util.Obs
 
         newUser = new User();
         registerViewModel.getLoginFormState().observe(this, new Observer<RegisterFormState>() {
+            /**
+             * Triggers when the state of form changes
+             * @param registerFormState the previous state of form
+             */
             @Override
             public void onChanged(@Nullable RegisterFormState registerFormState) {
                 if (registerFormState == null) {
@@ -73,6 +86,10 @@ public class RegisterActivity extends AppCompatActivity implements java.util.Obs
         });
 
         registerViewModel.getLoginResult().observe(this, new Observer<RegisterResult>() {
+            /**
+             * Triggers when the result of login changes
+             * @param registerResult the previous result of view
+             */
             @Override
             public void onChanged(@Nullable RegisterResult registerResult) {
                 if (registerResult == null) {
@@ -95,16 +112,37 @@ public class RegisterActivity extends AppCompatActivity implements java.util.Obs
         });
 
         TextWatcher afterTextChangedListener = new TextWatcher() {
+            /**
+             * This method is called to notify you that, within s, the count characters beginning
+             * at start are about to be replaced by new text with length after.
+             * @param s the character sequence
+             * @param start
+             * @param count
+             * @param after
+             */
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 // ignore
             }
 
+            /**
+             * This method is called to notify you that, within s, the count characters
+             * beginning at start have just replaced old text that had length before.
+             * @param s
+             * @param start
+             * @param before
+             * @param count
+             */
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // ignore
             }
 
+            /**
+             * This method is called to notify you that, somewhere within s,
+             * the text has been changed.
+             * @param s
+             */
             @Override
             public void afterTextChanged(Editable s) {
                 registerViewModel.loginDataChanged(usernameEditText.getText().toString(),
@@ -115,6 +153,16 @@ public class RegisterActivity extends AppCompatActivity implements java.util.Obs
         passwordEditText.addTextChangedListener(afterTextChangedListener);
         passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
+            /**
+             * Called when an action is being performed.
+             * @param v The view that was clicked
+             * @param actionId Identifier of the action. This will be either the identifier you
+             *                 supplied, or EditorInfo#IME_NULL if being called due to the enter
+             *                 key being pressed.
+             * @param event If triggered by an enter key,
+             *              this is the event; otherwise, this is null.
+             * @return boolean, Return true if you have consumed the action, else false.
+             */
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -126,6 +174,11 @@ public class RegisterActivity extends AppCompatActivity implements java.util.Obs
         });
 
         registerButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Triggers when the view Item is clicked and set values for User as Username, password
+             * first name and last name
+             * @param v the View
+             */
             @Override
             public void onClick(View v) {
                 loadingProgressBar.setVisibility(View.VISIBLE);
@@ -138,10 +191,19 @@ public class RegisterActivity extends AppCompatActivity implements java.util.Obs
         });
     }
 
+    /**
+     * Private function that triggers if login fails
+     * @param errorString
+     */
     private void showLoginFailed(@StringRes Integer errorString) {
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * Update the user about the value entered
+     * @param o Observation made
+     * @param arg the argument on which observation is made
+     */
     @Override
     public void update(Observable o, Object arg)
     {
