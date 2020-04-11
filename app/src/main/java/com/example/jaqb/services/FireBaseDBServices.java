@@ -40,29 +40,43 @@ public class FireBaseDBServices {
 
     private static final String TAG = "EmailPassword";
     private static final FireBaseDBServices dbService = new FireBaseDBServices();
-
     private FirebaseAuth mAuth;
     private LoggedInUser currentUser;
     private FirebaseDatabase database;
     private DatabaseReference reference;
     private List<Course> allCourses = new ArrayList<>();
 
+    /**
+     * @return list of courses for the logged-in user
+     */
     public List<Course> getAllCourses() {
         return allCourses;
     }
 
+    /**
+     * Private constructor to initialize the authentication and database
+     */
     private FireBaseDBServices() {
         mAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
         reference = FirebaseDatabase.getInstance().getReference();
     }
 
+    /**
+     * @return singleton instance of the FireBaseDBServices class
+     */
     public static FireBaseDBServices getInstance() {
         return dbService;
     }
 
     public static DatabaseReference getReference() {return dbService.reference; }
 
+    /**
+     * This method registers a user in the firebase database as a student
+     *
+     * @param newUser User object for the new user registering for the application
+     * @param observer Event listener for the success or failure to register the user
+     */
     public void registerUser(final User newUser, final Observer observer) {
         mAuth.createUserWithEmailAndPassword(newUser.getUserName(), newUser.getPassword())
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -86,6 +100,13 @@ public class FireBaseDBServices {
                 });
     }
 
+    /**
+     * This method logs-in the user into the application
+     *
+     * @param email email id used for login
+     * @param password password entered by the user
+     * @param observer Event listener for successful/failure in logging in
+     */
     public void loginUser(String email, String password, final Observer observer) {
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -166,10 +187,18 @@ public class FireBaseDBServices {
                 });
     }
 
+    /**
+     * @return Object of LoggedInUser with the details of the user logged in
+     */
     public LoggedInUser getCurrentUser() {
         return currentUser;
     }
 
+    /**
+     * This method checks if the user is still logged in and the session is valid
+     *
+     * @param context Current context of the application
+     */
     public void seeIfStillLoggedIn(final Context context) {
         // Check if user is signed in (non-null) and update UI accordingly.
         final FirebaseUser firebaseUser = mAuth.getCurrentUser();
@@ -201,6 +230,13 @@ public class FireBaseDBServices {
         //goToUserHomepage(context);
     }
 
+    /**
+     * This method registers the user for a course
+     *
+     * @param newCourse course that user wants to register
+     * @param user the user who is accessing the application
+     * @return 1 for successful registration and 0 for failure
+     */
     public int registerCourse(final Course newCourse, final LoggedInUser user) {
         int res = 0;
         try {
@@ -235,6 +271,13 @@ public class FireBaseDBServices {
         return res;
     }
 
+    /**
+     * This method returns the courses that the user is registered for
+     *
+     * @param currentUser the user who is logged in
+     * @param allCourses list of all courses in the database
+     * @return list of courses the user is registered for
+     */
     public List<Course> getUserCourses(LoggedInUser currentUser, List<Course> allCourses) {
         List<String> courseNames = new ArrayList<>();
         courseNames.addAll(currentUser.getCourseNames());
@@ -249,6 +292,12 @@ public class FireBaseDBServices {
         return userCourses;
     }
 
+    /**
+     * This method checks if the user is already registered in a course
+     *
+     * @param code the course code to be matched
+     * @return true if the user is registered and false if the user is not registered
+     */
     public boolean courseAlreadyRegistered(String code) {
         List<String> presentCourses = currentUser.getCourseNames();
         for (String course : presentCourses) {
@@ -259,38 +308,19 @@ public class FireBaseDBServices {
         return false;
     }
 
+    /**
+     * This method clears the session information and logs out the current user
+     */
     public void logoutUser() {
         currentUser = null;
         mAuth.signOut();
         allCourses.clear();
     }
 
-    public void addPoints(final int numPoints, final Observer observer) {
-        final DatabaseReference reff = database.getReference("User").child(currentUser.getuID()).child("points");
-        reff.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    try
-                    {
-                        long totalPoints = (long) dataSnapshot.getValue();
-                        totalPoints += numPoints;
-                        reff.setValue(totalPoints);
-                    }
-                    catch (NullPointerException e)
-                    {
-                        reff.setValue(numPoints);
-                    }
-                    observer.update(null, numPoints);
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    observer.update(null, 0);
-                }
-
-            });
-    }
-
+    /**
+     * This method adds the badges earned by the user from the database and sets up the
+     * badges in the LoggedInUser object for this class
+     */
     public void getBadges() {
         final int notEarnedIcon = R.drawable.mystery_badgexhdpi;
         DatabaseReference statsRef = database.getReference("User").child(currentUser.getuID()).child("stats");
@@ -355,8 +385,12 @@ public class FireBaseDBServices {
     }
 
     /**
-     * @param nextClass
-     * @return
+     * This method sets up the database for taking attendance for a class. It is executed
+     * when an instructor clicks on generate QR code button
+     *
+     * @param nextClass this is the immediate next class that the instructor will be taking
+     * @return 1 if the database setup is successful, 0 is there is failure in setting up
+     *          the database
      */
     public int startAttendanceForCourse(final Course nextClass) {
         final int[] attendanceCreated = {0};
@@ -432,4 +466,42 @@ public class FireBaseDBServices {
         return attendanceCreated[0];
     }
 
+    /**
+     * This method updates the QR code generated by the instructor. The QR code is stored along
+     * with the timestamp in order to be able to check the 24 hour expiry time of the generated
+     * code
+     *
+     * @param code code to be updated in the database
+     * @param courseCode course for which the QR code needs to be stored
+     */
+    public void updateQRCode(final int code, String courseCode) {
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        final String strDate= formatter.format(date);
+        try {
+            Query query = database.getReference("Course").orderByChild("code")
+                    .equalTo(courseCode);
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    String key = "";
+                    for(DataSnapshot keyNode : dataSnapshot.getChildren()){
+                        key = keyNode.getKey();
+                        database.getReference("Course")
+                                .child(key)
+                                .child("courseQRCode")
+                                .setValue(String.valueOf(code) + " " + strDate);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 }
