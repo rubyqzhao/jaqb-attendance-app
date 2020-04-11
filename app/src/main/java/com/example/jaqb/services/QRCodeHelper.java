@@ -13,6 +13,11 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author amanjotsingh
+ *
+ * This class generated the QR code image of the 4 digit code for the instructor
+ */
 public class QRCodeHelper {
     private static QRCodeHelper qrCodeHelper = null;
     private ErrorCorrectionLevel mErrorCorrectionLevel;

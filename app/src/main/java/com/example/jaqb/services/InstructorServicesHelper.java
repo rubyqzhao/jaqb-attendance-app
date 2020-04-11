@@ -1,16 +1,21 @@
 package com.example.jaqb.services;
 
-import com.example.jaqb.data.model.Course;
-
-import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author amanjotsingh
+ *
+ * This class is a helper class for generating the QR code for the instructor
+ */
 public class InstructorServicesHelper {
 
+    /**
+     * @return 4 digit random code generated for the QR code
+     */
     public int generateRandomCode() {
         int res = 0;
         Random random = new Random();
@@ -20,6 +25,14 @@ public class InstructorServicesHelper {
         return res;
     }
 
+    /**
+     * This method checks if the previous QR code is valid as the validity of the QR code
+     * generated is 24 hours
+     *
+     * @param previousTime last time the instructor generated the QR code
+     * @param timeUnit Units in which the difference in the times of QR code generation is expected
+     * @return true if the previous code is valid, false if it is invalid
+     */
     public boolean isPreviousCodeValid(String previousTime, TimeUnit timeUnit){
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

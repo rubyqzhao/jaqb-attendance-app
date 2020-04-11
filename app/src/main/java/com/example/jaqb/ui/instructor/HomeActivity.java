@@ -9,11 +9,9 @@ import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
-
 import com.example.jaqb.IncompleteActivity;
 import com.example.jaqb.MyCoursesActivity;
 import com.example.jaqb.R;
-
 import com.example.jaqb.data.model.Course;
 import com.example.jaqb.services.FireBaseDBServices;
 import com.example.jaqb.services.InstructorServicesHelper;
