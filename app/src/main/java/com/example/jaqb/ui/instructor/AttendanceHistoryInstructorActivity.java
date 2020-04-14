@@ -10,6 +10,7 @@ import com.example.jaqb.R;
 import com.example.jaqb.data.model.Course;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.services.FireBaseDBServices;
+import com.example.jaqb.ui.ActivityTest;
 import com.example.jaqb.ui.courses.CourseAdapter;
 import com.example.jaqb.ui.student.AttendanceHistoryStudentActivity;
 
@@ -62,7 +63,7 @@ public class AttendanceHistoryInstructorActivity extends AppCompatActivity
             intent.setClass(this, ClassDatesActivity.class);
         }
         else if("STUDENT".equals(currentUser.getLevel().toString())){
-            intent.setClass(this, AttendanceHistoryStudentActivity.class);
+            intent.setClass(this, ActivityTest.class);
         }
         intent.putExtra("code", (String) course.getCode());
         startActivity(intent);

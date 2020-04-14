@@ -3,6 +3,7 @@ package com.example.jaqb.ui.student;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.CalendarView;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -41,7 +42,7 @@ public class AttendanceHistoryStudentActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_class_dates);
+        setContentView(R.layout.activity_course_history_calendar);
         courseAttendance = new ArrayList<>();
         fireBaseDBServices = FireBaseDBServices.getInstance();
         currentUser = fireBaseDBServices.getCurrentUser();
@@ -51,10 +52,10 @@ public class AttendanceHistoryStudentActivity extends AppCompatActivity {
                 .child("attendanceHistory")
                 .child(courseCode);
 
-        listView = (ListView) findViewById(R.id.dates_course_list);
-        findViewById(R.id.dates_progressBar).setVisibility(View.GONE);
-        arrayAdapter = new ArrayAdapter<>(this, R.layout.class_list_item,
-                R.id.class_item_name, courseAttendance);
+//        listView = (ListView) findViewById(R.id.dates_course_list);
+//        findViewById(R.id.dates_progressBar).setVisibility(View.GONE);
+//        arrayAdapter = new ArrayAdapter<>(this, R.layout.class_list_item,
+//                R.id.class_item_name, courseAttendance);
         databaseReference.addValueEventListener(new ValueEventListener() {
             /**
              * Triggers when there has to a change in Database
@@ -67,7 +68,7 @@ public class AttendanceHistoryStudentActivity extends AppCompatActivity {
                     boolean presence = (boolean) keyNode.getValue();
                     courseAttendance.add(date + " : " + (presence?"Present" : "Absent"));
                 }
-                listView.setAdapter(arrayAdapter);
+//                listView.setAdapter(arrayAdapter);
             }
 
             /**
