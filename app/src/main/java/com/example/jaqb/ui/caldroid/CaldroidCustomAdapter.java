@@ -1,4 +1,4 @@
-package com.example.jaqb.ui;
+package com.example.jaqb.ui.caldroid;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -16,9 +16,9 @@ import java.util.Map;
 
 import hirondelle.date4j.DateTime;
 
-public class CaldroidSampleCustomAdapter extends CaldroidGridAdapter {
+public class CaldroidCustomAdapter extends CaldroidGridAdapter {
 
-    public CaldroidSampleCustomAdapter(Context context, int month, int year,
+    public CaldroidCustomAdapter(Context context, int month, int year,
                                        Map<String, Object> caldroidData,
                                        Map<String, Object> extraData) {
         super(context, month, year, caldroidData, extraData);

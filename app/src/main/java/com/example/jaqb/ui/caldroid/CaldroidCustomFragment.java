@@ -1,14 +1,14 @@
-package com.example.jaqb.ui;
+package com.example.jaqb.ui.caldroid;
 
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidGridAdapter;
 
-public class CaldroidSampleCustomFragment extends CaldroidFragment {
+public class CaldroidCustomFragment extends CaldroidFragment {
 
     @Override
     public CaldroidGridAdapter getNewDatesGridAdapter(int month, int year) {
         // TODO Auto-generated method stub
-        return new CaldroidSampleCustomAdapter(getActivity(), month, year,
+        return new CaldroidCustomAdapter(getActivity(), month, year,
                 getCaldroidData(), extraData);
     }
 
