@@ -26,7 +26,12 @@ firebase.initializeApp(firebaseConfig);
 var database = firebase.database();
 
 /* GET home page. */
+
 router.get('/', function(req, res) {
+    res.render('home', {title: "home"});
+});
+
+router.get('/courses', function(req, res) {
     getCourses(function(courseList) {
         res.render('index', {
             title: 'JAQB Admin',
@@ -34,6 +39,11 @@ router.get('/', function(req, res) {
         });
     });
 });
+
+router.get('/add_course', function(req, res) {
+    res.render('add_course', {title: "Add Courses"});
+});
+
 
 // opens the page with list of users, enables admin to change user privileges
 router.get('/user_privileges_page', function(req, res) {
