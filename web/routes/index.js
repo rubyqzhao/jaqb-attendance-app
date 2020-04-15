@@ -8,6 +8,7 @@ const csv = require('fast-csv');
 const upload = multer({ dest: 'test/' });
 const http = require('http');
 const fs = require('fs');
+var path = require('path');
 
 
 const firebaseConfig = {
@@ -28,6 +29,10 @@ var database = firebase.database();
 /* GET home page. */
 
 router.get('/', function(req, res) {
+    res.render('login', {title: "login"});
+});
+
+router.get('/home', function(req, res) {
     res.render('home', {title: "home"});
 });
 

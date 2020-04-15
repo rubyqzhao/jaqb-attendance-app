@@ -111,3 +111,68 @@ a {
   float: left;
   margin: 5px;
 }
+
+#loginDiv {
+  margin: auto;
+  width: 40%;
+  text-align: center;
+}
+
+#loginDiv h1 {
+  padding: 10px;
+  margin: 10px;
+}
+
+
+/* Full-width inputs */
+#loginDiv input[type=text], input[type=password] {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+/* Set a style for all buttons */
+#loginDiv button {
+  background-color: #DC4844;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+#loginDiv button:hover {
+  opacity: 0.8;
+}
+
+
+#loginDiv .imgcontainer {
+  text-align: center;
+  margin: 24px 0 12px 0;
+}
+
+#loginDiv img.avatar {
+  width: 40%;
+  border-radius: 50%;
+}
+
+#loginDiv .container {
+  padding: 16px;
+}
+
+/* The "Forgot password" text */
+#loginDiv span.psw {
+  float: right;
+  padding-top: 16px;
+}
+
+@media screen and (max-width: 300px) {
+  #loginDiv span.psw {
+    display: block;
+    float: none;
+  }
+} 
