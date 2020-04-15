@@ -2,14 +2,18 @@ package com.example.jaqb.ui.instructor;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.jaqb.R;
 import com.google.firebase.database.DataSnapshot;
@@ -17,8 +21,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.roomorama.caldroid.CaldroidFragment;
+import com.roomorama.caldroid.CaldroidListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -28,12 +38,12 @@ import java.util.List;
  * @author Amanjot Singh
  * @version 1.0
  */
-public class ClassDatesActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+public class ClassDatesActivity extends AppCompatActivity {
 
     private String courseCode;
     private List<String> courseDates;
-    private ListView listView;
-    private ArrayAdapter<String> arrayAdapter;
+    private CaldroidFragment caldroidFragment;
+    private CaldroidFragment dialogCaldroidFragment;
     private DatabaseReference databaseReference;
 
     /**
@@ -45,15 +55,11 @@ public class ClassDatesActivity extends AppCompatActivity implements AdapterView
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_class_dates);
+        setContentView(R.layout.activity_calendar_view);
         courseCode = (String) getIntent().getCharSequenceExtra("code");
         databaseReference = FirebaseDatabase.getInstance().getReference("InstructorAttendance")
                 .child(courseCode);
         courseDates = new ArrayList<>();
-        listView = (ListView) findViewById(R.id.dates_course_list);
-        findViewById(R.id.dates_progressBar).setVisibility(View.GONE);
-        arrayAdapter = new ArrayAdapter<>(this, R.layout.class_list_item,
-                R.id.class_item_name, courseDates);
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -61,7 +67,15 @@ public class ClassDatesActivity extends AppCompatActivity implements AdapterView
                     String date = (String) keyNode.getKey();
                     courseDates.add(date);
                 }
-                listView.setAdapter(arrayAdapter);
+                // Attach to the activity
+                FragmentTransaction t = getSupportFragmentManager().beginTransaction();
+                t.replace(R.id.calendar1, caldroidFragment);
+                t.commit();
+                try {
+                    setCustomResourceForDates();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -69,23 +83,98 @@ public class ClassDatesActivity extends AppCompatActivity implements AdapterView
 
             }
         });
-        listView.setOnItemClickListener(this);
+
+        final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+        caldroidFragment = new CaldroidFragment();
+
+        // If Activity is created after rotation
+        if (savedInstanceState != null) {
+            caldroidFragment.restoreStatesFromKey(savedInstanceState,
+                    "CALDROID_SAVED_STATE");
+        }
+        // If activity is created from fresh
+        else {
+            Bundle args = new Bundle();
+            Calendar cal = Calendar.getInstance();
+            args.putInt(CaldroidFragment.MONTH, cal.get(Calendar.MONTH) + 1);
+            args.putInt(CaldroidFragment.YEAR, cal.get(Calendar.YEAR));
+            args.putBoolean(CaldroidFragment.ENABLE_SWIPE, true);
+            args.putBoolean(CaldroidFragment.SIX_WEEKS_IN_CALENDAR, true);
+            caldroidFragment.setArguments(args);
+        }
+
+        final CaldroidListener listener = new CaldroidListener() {
+
+            @Override
+            public void onSelectDate(Date date, View view) {
+                Intent intent = new Intent(getApplicationContext(), CheckAttendance.class);
+                intent.putExtra("date", formatter.format(date));
+                intent.putExtra("code", courseCode);
+                Toast.makeText(getApplicationContext(), formatter.format(date),
+                        Toast.LENGTH_SHORT).show();
+                startActivity(intent);
+            }
+
+            @Override
+            public void onChangeMonth(int month, int year) {
+                String text = "month: " + month + " year: " + year;
+                Toast.makeText(getApplicationContext(), text,
+                        Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onLongClickDate(Date date, View view) {
+                Toast.makeText(getApplicationContext(),
+                        "Long click " + formatter.format(date),
+                        Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCaldroidViewCreated() {
+                if (caldroidFragment.getLeftArrowButton() != null) {
+                    Toast.makeText(getApplicationContext(),
+                            "Caldroid view is created", Toast.LENGTH_SHORT)
+                            .show();
+                }
+            }
+
+        };
+        caldroidFragment.setCaldroidListener(listener);
     }
 
     /**
-     * Determines the actions of the item shown on the page. When clicked,
-     * the button will take the user to the check attendance activity.
-     * @param parent    the parent adapterView object containing the course view
-     * @param view      the course view being displayed
-     * @param position  the current position of the item in the list
-     * @param id        the id of the item
+     * Save current states of the Caldroid here
      */
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        String dateSelected = (String) arrayAdapter.getItem(position);
-        Intent intent = new Intent(this, CheckAttendance.class);
-        intent.putExtra("code", courseCode);
-        intent.putExtra("date", dateSelected);
-        startActivity(intent);
+    protected void onSaveInstanceState(Bundle outState) {
+        // TODO Auto-generated method stub
+        super.onSaveInstanceState(outState);
+
+        if (caldroidFragment != null) {
+            caldroidFragment.saveStatesToKey(outState, "CALDROID_SAVED_STATE");
+        }
+
+        if (dialogCaldroidFragment != null) {
+            dialogCaldroidFragment.saveStatesToKey(outState,
+                    "DIALOG_CALDROID_SAVED_STATE");
+        }
+    }
+
+    /**
+     * This method sets the custom dates and their color for the students in the
+     * attendance history calendar
+     *
+     * @throws ParseException while parsing the string to date
+     */
+    private void setCustomResourceForDates() throws ParseException {
+        if (caldroidFragment != null) {
+            ColorDrawable blue = new ColorDrawable(Color.BLUE);
+            for(String d : courseDates){
+                Date date = new SimpleDateFormat("yyyy-MM-dd").parse(d);
+                caldroidFragment.setBackgroundDrawableForDate(blue, date);
+                caldroidFragment.setTextColorForDate(R.color.caldroid_black, date);
+            }
+        }
     }
 }

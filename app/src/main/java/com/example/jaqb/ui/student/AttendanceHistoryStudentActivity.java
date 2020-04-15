@@ -165,6 +165,12 @@ public class AttendanceHistoryStudentActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * This method sets the custom dates and their color for the students in the
+     * attendance history calendar
+     *
+     * @throws ParseException while parsing the string to date
+     */
     private void setCustomResourceForDates() throws ParseException {
         if (caldroidFragment != null) {
             ColorDrawable red = new ColorDrawable(Color.RED);
