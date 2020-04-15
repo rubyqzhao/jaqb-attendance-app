@@ -1,13 +1,9 @@
 package com.example.jaqb.ui.student;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.CalendarView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,7 +13,6 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.jaqb.R;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.services.FireBaseDBServices;
-import com.example.jaqb.ui.instructor.AttendanceHistoryInstructorActivity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,6 +21,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidListener;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -53,7 +49,7 @@ public class AttendanceHistoryStudentActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.test);
+        setContentView(R.layout.activity_calendar_view);
         courseAttendance = new ArrayList<>();
         fireBaseDBServices = FireBaseDBServices.getInstance();
         currentUser = fireBaseDBServices.getCurrentUser();
@@ -74,6 +70,15 @@ public class AttendanceHistoryStudentActivity extends AppCompatActivity {
                     boolean presence = (boolean) keyNode.getValue();
                     courseAttendance.add(date + " : " + (presence?"Present" : "Absent"));
                 }
+                // Attach to the activity
+                FragmentTransaction t = getSupportFragmentManager().beginTransaction();
+                t.replace(R.id.calendar1, caldroidFragment);
+                t.commit();
+                try {
+                    setCustomResourceForDates();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
 
             /**
@@ -88,8 +93,6 @@ public class AttendanceHistoryStudentActivity extends AppCompatActivity {
 
         final SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy");
 
-        // Setup caldroid fragment
-        // **** If you want normal CaldroidFragment, use below line ****
         caldroidFragment = new CaldroidFragment();
 
         // If Activity is created after rotation
@@ -108,14 +111,6 @@ public class AttendanceHistoryStudentActivity extends AppCompatActivity {
             caldroidFragment.setArguments(args);
         }
 
-        setCustomResourceForDates();
-
-        // Attach to the activity
-        FragmentTransaction t = getSupportFragmentManager().beginTransaction();
-        t.replace(R.id.calendar1, caldroidFragment);
-        t.commit();
-
-        // Setup listener
         final CaldroidListener listener = new CaldroidListener() {
 
             @Override
@@ -170,25 +165,29 @@ public class AttendanceHistoryStudentActivity extends AppCompatActivity {
         }
     }
 
-    private void setCustomResourceForDates() {
-        Calendar cal = Calendar.getInstance();
-
-        // Min date is last 7 days
-        cal.add(Calendar.DATE, -7);
-        Date blueDate = cal.getTime();
-
-        // Max date is next 7 days
-        cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, 7);
-        Date greenDate = cal.getTime();
-
+    private void setCustomResourceForDates() throws ParseException {
         if (caldroidFragment != null) {
-            ColorDrawable blue = new ColorDrawable(getResources().getColor(R.color.caldroid_sky_blue));
+            ColorDrawable red = new ColorDrawable(Color.RED);
             ColorDrawable green = new ColorDrawable(Color.GREEN);
-            caldroidFragment.setBackgroundDrawableForDate(blue, blueDate);
-            caldroidFragment.setBackgroundDrawableForDate(green, greenDate);
-            caldroidFragment.setTextColorForDate(R.color.caldroid_white, blueDate);
-            caldroidFragment.setTextColorForDate(R.color.caldroid_white, greenDate);
+            ColorDrawable yellow = new ColorDrawable(Color.YELLOW);
+            for(String s : courseAttendance){
+                String[] data = s.split(":");
+                String tempDate = data[0].trim();
+                String dateColor = data[1].trim();
+                Date date = new SimpleDateFormat("yyyy-MM-dd").parse(tempDate);
+                if(dateColor.equalsIgnoreCase("present")){
+                    caldroidFragment.setBackgroundDrawableForDate(green, date);
+                    caldroidFragment.setTextColorForDate(R.color.caldroid_black, date);
+                }
+                else if(dateColor.equalsIgnoreCase("absent")){
+                    caldroidFragment.setBackgroundDrawableForDate(red, date);
+                    caldroidFragment.setTextColorForDate(R.color.caldroid_black, date);
+                }
+                else if(dateColor.equalsIgnoreCase("late")){
+                    caldroidFragment.setBackgroundDrawableForDate(yellow, date);
+                    caldroidFragment.setTextColorForDate(R.color.caldroid_black, date);
+                }
+            }
         }
     }
 }
