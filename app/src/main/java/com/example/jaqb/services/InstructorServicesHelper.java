@@ -37,8 +37,8 @@ public class InstructorServicesHelper {
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String currentTime= formatter.format(date);
-        String[] prevData = previousTime.split(" ");
         try {
+            String[] prevData = previousTime.split(" ");
             Date prevDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(prevData[1] + " " + prevData[2]);
             Date nowDate = formatter.parse(currentTime);
             long timeDiff = nowDate.getTime() - prevDate.getTime();
@@ -49,6 +49,9 @@ public class InstructorServicesHelper {
                 return true;
             }
         } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        catch (ArrayIndexOutOfBoundsException e) {
             e.printStackTrace();
         }
         return false;
