@@ -49,6 +49,7 @@
         <activity android:name=".ui.instructor.ClassDatesActivity" />
         <activity android:name=".ui.instructor.CheckAttendance" />
         <activity android:name=".ui.student.AttendanceHistoryStudentActivity" />
+        <activity android:name=".ui.instructor.AttendanceHistoryOptionsActivity" />
 
         <meta-data
             android:name="com.google.android.gms.vision.DEPENDENCIES"
