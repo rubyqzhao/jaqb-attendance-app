@@ -36,7 +36,9 @@ public class AttendanceHistoryOptionsActivity extends AppCompatActivity {
         historyByNames.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Names button pressed", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getApplicationContext(), AttendanceHistoryByNamesActivity.class);
+                intent.putExtra("code", courseCode);
+                startActivity(intent);
             }
         });
     }
