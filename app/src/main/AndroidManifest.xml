@@ -51,6 +51,7 @@
         <activity android:name=".ui.student.AttendanceHistoryStudentActivity" />
         <activity android:name=".ui.instructor.AttendanceHistoryOptionsActivity" />
         <activity android:name=".ui.instructor.AttendanceHistoryByNamesActivity" />
+        <activity android:name=".ui.instructor.AttendanceHistoryIndividualStudentActivity" />
 
         <meta-data
             android:name="com.google.android.gms.vision.DEPENDENCIES"

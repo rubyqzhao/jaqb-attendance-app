@@ -34,7 +34,7 @@
         tools:text="@string/history_students" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/attendance_history_text"
         android:layout_width="161dp"
         android:layout_height="35dp"
         android:text="@string/action_attendance_history"

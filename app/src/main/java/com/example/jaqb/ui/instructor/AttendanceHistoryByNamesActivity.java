@@ -1,14 +1,18 @@
 package com.example.jaqb.ui.instructor;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.jaqb.CourseDetailsActivity;
 import com.example.jaqb.R;
+import com.example.jaqb.data.model.Course;
 import com.example.jaqb.data.model.RegisteredUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -93,17 +97,30 @@ public class AttendanceHistoryByNamesActivity extends AppCompatActivity {
 
             }
         });
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String item = arrayAdapter.getItem(position);
+                String item_id = item.split(":")[1].trim();
+                Intent intent = new Intent(getApplicationContext(), AttendanceHistoryIndividualStudentActivity.class);
+                intent.putExtra("studentId", item_id.substring(0, item_id.length() - 1));
+                intent.putExtra("code", courseCode);
+                startActivity(intent);
+            }
+        });
     }
 
     private void getDisplayDate(){
         for(String id : studentIds){
             if(studentData.containsKey(id)){
-                studentsAttendance.add(studentData.get(id));
+                RegisteredUser user = studentData.get(id);
+                studentNames.add(user.getfName() + " " + user.getlName() + " (Id : " + id + ")");
             }
         }
-        for(int i=0; i< studentsAttendance.size(); i++){
-            RegisteredUser user = studentsAttendance.get(i);
-            studentNames.add(user.getfName() + " " + user.getlName());
-        }
+//        for(int i=0; i< studentsAttendance.size(); i++){
+//            RegisteredUser user = studentsAttendance.get(i);
+//            studentNames.add(user.getfName() + " " + user.getlName());
+//        }
     }
 }
