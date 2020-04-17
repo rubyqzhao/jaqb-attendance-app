@@ -9,18 +9,20 @@ const upload = multer({ dest: 'test/' });
 const http = require('http');
 const fs = require('fs');
 var path = require('path');
-
+require('firebase/auth');
+var session = require('express-session');
 
 const firebaseConfig = {
-    apiKey: process.env.API_KEY,
-    authDomain: process.env.AUTH_DOMAIN,
+    apiKey: "AIzaSyDxSA3WWlv6kQnBEiXiw6k8hmmlIztgHjY",
+    authDomain: "jaqb-attendance-app.firebaseapp.com",
     databaseURL: "https://jaqb-attendance-app.firebaseio.com",
     projectId: "jaqb-attendance-app",
     storageBucket: "jaqb-attendance-app.appspot.com",
-    messagingSenderId: process.env.MSG_ID,
-    appId: process.env.APP_ID,
-    measurementId: process.env.MEASURE_ID
-};
+    messagingSenderId: "986621442209",
+    appId: "1:986621442209:web:bb66e7ef1c1d9f962518e0",
+    measurementId: "G-0RMT5V21FJ"
+  };
+
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
@@ -28,9 +30,54 @@ var database = firebase.database();
 
 /* GET home page. */
 
+function checkAuth(req, res, next) {
+    if (req.session.userLoggedIn) {
+      next();
+    } else {
+      res.status(403).send('Unauthorized!');
+      return;
+    }
+  }
+
+router.use(session({
+    secret: 'jaqb-app',
+    saveUninitialized: true,
+    resave: true
+}));
+
 router.get('/', function(req, res) {
     res.render('login', {title: "login"});
 });
+
+router.post('/login', function(req, res) {
+    var username = req.body.uname;
+    var password = req.body.psw;
+    console.log(username+" "+password);   
+    firebase.auth().signInWithEmailAndPassword(username, password)
+    .then(function(){
+        req.session.userLoggedIn = true;
+        res.redirect('/home');
+    })
+    .catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+
+        res.render('error', {message: "Sign-in Error: "+ errorMessage});
+        // ...
+      });
+});
+
+router.get('/signout', function(req, res) {
+    firebase.auth().signOut().then(function() {
+        req.session.userLoggedIn = false;
+        res.redirect('/');
+      }).catch(function(error) {
+        res.render('error', {message: "Sign-out Error: "+ errorMessage});
+      });      
+});
+
+router.use('/home', checkAuth);
 
 router.get('/home', function(req, res) {
     res.render('home', {title: "home"});
@@ -45,12 +92,16 @@ router.get('/courses', function(req, res) {
     });
 });
 
+router.use('/add_course', checkAuth);
+
 router.get('/add_course', function(req, res) {
     res.render('add_course', {title: "Add Courses"});
 });
 
 
 // opens the page with list of users, enables admin to change user privileges
+router.use('/user_privileges_page', checkAuth);
+
 router.get('/user_privileges_page', function(req, res) {
     getUsers(function(userList) {
         res.render('user_privileges', {
@@ -61,6 +112,8 @@ router.get('/user_privileges_page', function(req, res) {
 });
 
 // opens list of instructors in the app, enables admin to assign courses to them
+router.use('/assign_courses', checkAuth);
+
 router.get('/assign_courses', function(req, res) {
     getInstructors(function(instructorList) {
         res.render('all_instructors', {
@@ -71,6 +124,8 @@ router.get('/assign_courses', function(req, res) {
 });
 
 // get courses in page - add courses to the instructor
+router.use('/all_courses', checkAuth);
+
 router.get('/all_courses', function(req, res) {
     var ins_details = req.query.ins_data.split(',');
     var fname = ins_details[0];
@@ -389,5 +444,17 @@ router.post('/upload-csv', upload.single('document'), function (req, res) {
             res.send('Uploaded');
         })
 });
+
+firebase.auth().onAuthStateChanged(function(user) {
+    if(user) {
+        var loggedInUser = firebase.auth.currentUser;
+        if(loggedInUser!=null) {
+
+        }
+        redirect("/home");
+    } else {
+        
+    }
+}) 
 
 module.exports = router;
