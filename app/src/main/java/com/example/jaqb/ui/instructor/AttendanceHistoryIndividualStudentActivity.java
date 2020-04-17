@@ -40,7 +40,7 @@ public class AttendanceHistoryIndividualStudentActivity extends AppCompatActivit
         studentId = (String) getIntent().getCharSequenceExtra("studentId");
         courseAttendance = new ArrayList<>();
         databaseReference = FirebaseDatabase.getInstance().getReference("User")
-                .child("rVsnjKGxNaZjruklcilWLRbaKDx2")
+                .child(studentId)
                 .child("attendanceHistory")
                 .child(courseCode);
         databaseReference.addValueEventListener(new ValueEventListener() {

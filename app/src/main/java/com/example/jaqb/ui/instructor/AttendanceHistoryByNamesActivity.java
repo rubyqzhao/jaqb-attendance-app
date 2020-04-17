@@ -101,9 +101,9 @@ public class AttendanceHistoryByNamesActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String item = arrayAdapter.getItem(position);
-//                String item_id = item.split(":")[1].trim();
+                String item_id = item.split(":")[1].trim();
                 Intent intent = new Intent(getApplicationContext(), AttendanceHistoryIndividualStudentActivity.class);
-//                intent.putExtra("studentId", item_id.substring(0, item_id.length() - 1));
+                intent.putExtra("studentId", item_id);
                 intent.putExtra("code", courseCode);
                 startActivity(intent);
             }
@@ -113,12 +113,9 @@ public class AttendanceHistoryByNamesActivity extends AppCompatActivity {
     private void getDisplayDate(){
         for(String id : studentIds){
             if(studentData.containsKey(id)){
-                studentsAttendance.add(studentData.get(id));
+                RegisteredUser user = studentData.get(id);
+                studentNames.add(user.getfName() + " " + user.getlName() + " ID : " + id);
             }
-        }
-        for(int i=0; i< studentsAttendance.size(); i++){
-            RegisteredUser user = studentsAttendance.get(i);
-            studentNames.add(user.getfName() + " " + user.getlName());
         }
     }
 }
