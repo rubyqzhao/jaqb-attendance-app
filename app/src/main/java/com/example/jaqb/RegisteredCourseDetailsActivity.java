@@ -29,6 +29,7 @@ import androidx.core.content.ContextCompat;
 import com.example.jaqb.data.model.Course;
 import com.example.jaqb.data.model.SemesterDate;
 import com.example.jaqb.data.model.LoggedInUser;
+import com.example.jaqb.services.CalendarServices;
 import com.example.jaqb.services.FireBaseDBServices;
 
 import java.time.DayOfWeek;
@@ -156,7 +157,7 @@ public class RegisteredCourseDetailsActivity extends AppCompatActivity implement
     {
         ContentResolver cr = getContentResolver();
         try {
-            Cursor cursor = cr.query(Uri.parse(getCalendarUriBase(true) + "reminders"),
+            Cursor cursor = cr.query(Uri.parse(CalendarServices.getCalendarUriBase(true) + "reminders"),
                     new String[]{ CalendarContract.Reminders.MINUTES },
                     CalendarContract.Reminders.EVENT_ID + "=" + hashCode, null , null);
             cursor.moveToFirst();
@@ -189,7 +190,7 @@ public class RegisteredCourseDetailsActivity extends AppCompatActivity implement
     public void removeCalendarReminder()
     {
         ContentResolver cr = getContentResolver();
-        int numDeleted = cr.delete(Uri.parse(getCalendarUriBase(true) + "reminders"),
+        int numDeleted = cr.delete(Uri.parse(CalendarServices.getCalendarUriBase(true) + "reminders"),
            CalendarContract.Reminders.EVENT_ID + "=" + hashCode,
       null);
         if(numDeleted > 0) {
@@ -213,7 +214,7 @@ public class RegisteredCourseDetailsActivity extends AppCompatActivity implement
             return;
         }
         ContentResolver cr = getContentResolver();
-        Cursor cursor = cr.query(Uri.parse(getCalendarUriBase(true) + "events"),
+        Cursor cursor = cr.query(Uri.parse(CalendarServices.getCalendarUriBase(true) + "events"),
                 new String[]{ CalendarContract.Events._ID },
                 CalendarContract.Events._ID + "=" + hashCode, null , null);
         cursor.moveToFirst();
@@ -237,7 +238,7 @@ public class RegisteredCourseDetailsActivity extends AppCompatActivity implement
         ContentValues values = new ContentValues();
 
         values.put(CalendarContract.Reminders.MINUTES, alertMinutes);
-        int rows = cr.update(Uri.parse(getCalendarUriBase(true) + "reminders"), values,
+        int rows = cr.update(Uri.parse(CalendarServices.getCalendarUriBase(true) + "reminders"), values,
                 CalendarContract.Reminders.EVENT_ID + "=" + hashCode,
                 null);
         if(rows == 0)
@@ -249,7 +250,7 @@ public class RegisteredCourseDetailsActivity extends AppCompatActivity implement
     {
         ContentResolver cr = getContentResolver();
         ContentValues values = new ContentValues();
-        Uri REMINDERS_URI = Uri.parse(getCalendarUriBase(true) + "reminders");
+        Uri REMINDERS_URI = Uri.parse(CalendarServices.getCalendarUriBase(true) + "reminders");
         values.put(CalendarContract.Reminders.EVENT_ID, hashCode);
         values.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT);
         values.put(CalendarContract.Reminders.MINUTES, alertMinutes);
@@ -261,7 +262,7 @@ public class RegisteredCourseDetailsActivity extends AppCompatActivity implement
     @RequiresApi(api = Build.VERSION_CODES.N)
     public boolean addCalendarEvent(int alertMinutes) {
         Calendar calendarEvent = Calendar.getInstance();
-        Uri EVENTS_URI = Uri.parse(getCalendarUriBase(true) + "events");
+        Uri EVENTS_URI = Uri.parse(CalendarServices.getCalendarUriBase(true) + "events");
 
         ContentResolver cr = getContentResolver();
         TimeZone timeZone = TimeZone.getDefault();
@@ -280,7 +281,7 @@ public class RegisteredCourseDetailsActivity extends AppCompatActivity implement
             return false;
         }
 
-        long startTime = getNextDay() + (hour * 60 + minute) * 60000;
+        long startTime = CalendarServices.getNextDaySemester(courseDays, currentUser)+ (hour * 60 + minute) * 60000;
         ContentValues values = new ContentValues();
 
         Uri event = null;
@@ -304,7 +305,7 @@ public class RegisteredCourseDetailsActivity extends AppCompatActivity implement
         event = cr.insert(EVENTS_URI, values);
 
         if(event != null) {
-            Uri REMINDERS_URI = Uri.parse(getCalendarUriBase(true) + "reminders");
+            Uri REMINDERS_URI = Uri.parse(CalendarServices.getCalendarUriBase(true) + "reminders");
             values = new ContentValues();
             values.put(CalendarContract.Reminders.EVENT_ID, Long.parseLong(event.getLastPathSegment()));
             values.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT);
@@ -314,71 +315,6 @@ public class RegisteredCourseDetailsActivity extends AppCompatActivity implement
         }
 
         return false;
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private long getNextDay()
-    {
-        String[] days = courseDays.split("[,]");
-        long soonestDay = getTimeOfNextDayCode(days[0]);
-        for(int i = 1; i < days.length; i++)
-        {
-            long nextDay = getTimeOfNextDayCode(days[i]);
-            if(nextDay < soonestDay)
-                soonestDay = nextDay;
-        }
-        return soonestDay;
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private long getTimeOfNextDayCode(String dayCode)
-    {
-        DayOfWeek dayOfWeek;
-        switch(dayCode)
-        {
-            case "MO":
-                dayOfWeek = DayOfWeek.MONDAY;
-                break;
-            case "TU":
-                dayOfWeek = DayOfWeek.TUESDAY;
-                break;
-            case "WE":
-                dayOfWeek = DayOfWeek.WEDNESDAY;
-                break;
-            case "TH":
-                dayOfWeek = DayOfWeek.THURSDAY;
-                break;
-            case "FR":
-                dayOfWeek = DayOfWeek.FRIDAY;
-                break;
-            case "SA":
-                dayOfWeek = DayOfWeek.SATURDAY;
-                break;
-            case "SU":
-                dayOfWeek = DayOfWeek.SUNDAY;
-                break;
-            default:
-                dayOfWeek = null;
-        }
-        SemesterDate semesterDate = currentUser.getSemester().getStartSemesterDate();
-        ZoneId zone = ZoneId.of(currentUser.getSemester().getTimeZoneID());
-        return ZonedDateTime.of(semesterDate.getYear(), semesterDate.getMonth(), semesterDate.getDay(), 0, 0, 0, 0, zone).toLocalDate().with(TemporalAdjusters.nextOrSame(dayOfWeek)).atStartOfDay().toInstant(zone.getRules().getOffset(LocalDateTime.now())).getEpochSecond() * 1000;
-    }
-
-    private String getCalendarUriBase(boolean eventUri) {
-        Uri calendarURI = null;
-        try {
-            if (android.os.Build.VERSION.SDK_INT <= 7) {
-                calendarURI = (eventUri) ? Uri.parse("content://calendar/") :
-                        Uri.parse("content://calendar/calendars");
-            } else {
-                calendarURI = (eventUri) ? Uri.parse("content://com.android.calendar/") : Uri
-                        .parse("content://com.android.calendar/calendars");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return calendarURI.toString();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)

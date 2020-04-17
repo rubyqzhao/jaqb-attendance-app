@@ -26,4 +26,5 @@
     <string name="class_list">"Class List"</string>
     <string name="action_submit_location">"Update Class Location"</string>
     <string name="badges">Badges</string>
+    <string name="scan_qr">Scan QR Code or enter the attendance code</string>
 </resources>

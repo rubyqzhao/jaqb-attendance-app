@@ -13,21 +13,37 @@ import com.example.jaqb.data.model.Badge;
 
 import java.util.List;
 
+/**
+ * Adapter class for the badges
+ */
 public class BadgeAdapter extends BaseAdapter {
     private Context context;
     private List<Badge> badges;
 
+    /**
+     * Constructor to initialize the badge adapter
+     * @param context the context
+     * @param badges the list of badges
+     */
     public BadgeAdapter(Context context, List<Badge> badges) {
         this.context = context;
         this.badges = badges;
     }
 
-    // number of cells to be rendered
+    /**
+     * returns number of cells to be rendered for badge
+     * @return number of badges
+     */
     @Override
     public int getCount() {
         return badges.size();
     }
 
+    /**
+     * Get ID of each badge
+     * @param position the position of current item
+     * @return
+     */
     @Override
     public long getItemId(int position) {
         return 0;
@@ -38,6 +54,13 @@ public class BadgeAdapter extends BaseAdapter {
         return null;
     }
 
+    /**
+     * Get the view of badges
+     * @param position the position to place badge
+     * @param convertView the converted view
+     * @param parent the parent of the view group
+     * @return
+     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         Badge badge = badges.get(position);

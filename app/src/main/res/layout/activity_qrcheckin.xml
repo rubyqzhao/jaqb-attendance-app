@@ -21,8 +21,8 @@
         android:id="@+id/codeArea"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="9dp"
-        android:layout_marginLeft="9dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginLeft="30dp"
         android:ems="10"
         android:inputType="number"
         android:maxLength="4"
@@ -32,13 +32,17 @@
 
     <Button
         android:id="@+id/codeButton"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginRight="30dp"
         android:layout_marginBottom="57dp"
+        android:background="@color/colorAccent"
         android:onClick="codeButtonOnClick"
         android:text="ENTER CODE"
+        android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/codeArea"
@@ -50,11 +54,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="35dp"
         android:layout_marginBottom="34dp"
-        android:text="Scan QR Code or enter the attendance code"
         android:textSize="16dp"
         app:layout_constraintBottom_toTopOf="@+id/cameraView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/scan_qr" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
@@ -16,13 +15,11 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.services.FireBaseDBServices;
@@ -35,21 +32,16 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import java.io.IOException;
-import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
-
 
 /**
  * @author Bharat Goel
+ * @author amanjotsingh
  *
  * This Activity scans the QR code and verify the time and location of the student to decide
  * whether to mark attendance or not
@@ -58,10 +50,6 @@ import java.util.Random;
 public class QRCheckin extends AppCompatActivity implements LocationListener {
 
     private static final double ALLOWED_DISTANCE = 50;
-    SurfaceView surfaceView;
-    CameraSource cameraSource;
-    BarcodeDetector barcodeDetector;
-    TextView textView;
     EditText editText;
     LocationManager locationManager;
     String currentQR;
@@ -72,7 +60,14 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
     private DatabaseReference databaseReference;
     private LoggedInUser currentUser;
     private FireBaseDBServices fireBaseDBServices;
+    private SurfaceView cameraSurfaceView;
+    private CameraSource cameraSource;
+    private SurfaceHolder surfaceHolder;
+    private BarcodeDetector barcodeDetector;
 
+    /**
+     * @param savedInstanceState saved application context passed into activity when it is created
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,24 +80,19 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
         databaseReference = FirebaseDatabase.getInstance().getReference();
         fireBaseDBServices = FireBaseDBServices.getInstance();
         currentUser = fireBaseDBServices.getCurrentUser();
-
         editText = findViewById(R.id.codeArea);
-
-        surfaceView = findViewById(R.id.cameraView);
-
+        cameraSurfaceView = (SurfaceView) findViewById(R.id.cameraView);
         barcodeDetector = new BarcodeDetector.Builder(this)
                 .setBarcodeFormats(Barcode.QR_CODE).build();
 
-        CameraSource.Builder builder = new CameraSource.Builder(this, barcodeDetector);
-        builder.setRequestedPreviewSize(640, 480);
-        builder.setAutoFocusEnabled(true);
-        cameraSource = builder.build();
+        cameraSource = new CameraSource.Builder(this, barcodeDetector)
+                .setRequestedPreviewSize(640, 480).build();
 
-        surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
+        cameraSurfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
-                if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA)
-                        != PackageManager.PERMISSION_GRANTED) {
+                if(!isCameraPermissionGranted()){
+                    surfaceHolder = holder;
                     return;
                 }
                 try {
@@ -110,7 +100,6 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
             }
 
             @Override
@@ -127,54 +116,88 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
         barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
             @Override
             public void release() {
-
             }
 
+            /**
+             * @param detections Event listener for the camera scanning the QR code
+             */
             @Override
             public void receiveDetections(Detector.Detections<Barcode> detections) {
                 final SparseArray<Barcode> qrCodes = detections.getDetectedItems();
-
-                if (qrCodes.size() != 0) {
-                    Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
-                    vibrator.vibrate(100);
-                    barcodeDetector.setProcessor(null);
-                    checkValues(qrCodes.valueAt(0).displayValue);
+                if(qrCodes.size() != 0){
+                    editText.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+                            vibrator.vibrate(1000);
+                            editText.setText(qrCodes.valueAt(0).displayValue);
+                        }
+                    });
                 }
             }
         });
     }
 
+    private boolean isCameraPermissionGranted() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Permission is not granted
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA},
+                    1);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isLocationPermissionGranted() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+            // Permission is not granted
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
+                    2);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @param view Event listener for the button click for QR code button
+     * @throws ParseException
+     */
     public void codeButtonOnClick(View view) throws ParseException {
         String textCode = editText.getText().toString();
         checkValues(textCode);
     }
 
+    /**
+     * This method checks the distance and QR code from the student's device to that of the
+     * data in the database
+     *
+     * @param code the QR code scanned by the camera of student's device
+     */
     public void checkValues(String code) {
-
-        /*Location Check starts*/
-        checkLocation();
+        updateLocation();
         boolean distOk = checkDist();
-        /*Location Check ends*/
-
-        /*Time Check starts
-        boolean timeOk = checkTime();
-        Time Check ends*/
-
-        /*QR check* starts*/
         boolean codeOk = (currentQR.equals(code));
-        /*QR check ends*/
-        
-        /* FOR TESTING PURPOSES THE CODE IS ALWAYS SET TO EVALUATE
-        AS TRUE. WHEN COMMITTING TO MASTER, THIS SHOULD BE CHANGED
-        BACK TO THE COMMENTED-OUT CODE. */
-        //takeDecision(distOk, codeOk);
-        takeDecision(true, true);
+        takeDecision(distOk, codeOk);
     }
 
+    /**
+     * This method takes the decision about the student checkin based on the location and
+     * QR code entered by the student
+     *
+     * @param distOk true if the distance check is true i.e. the student is within 50 feet else false
+     * @param codeOk true if the QR code matches with the QR code for the course
+     */
     private void takeDecision(boolean distOk, boolean codeOk) {
         if (distOk && codeOk) {
-            Toast.makeText(this, "CheckIn Successful", Toast.LENGTH_LONG).show();
-
             //create new attendance history in student and instructorAttendance
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
             Date date = new Date();
@@ -186,27 +209,22 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
             final String upcomingClass = "SER 515";
 
             final DatabaseReference userRef = databaseReference.child("User").child(currentUser.getuID())
-                    .child("attendanceHistory").child(upcomingClass);
+                    .child("attendanceHistory").child(upcomingClass).child(currDate);
             final DatabaseReference instRef = databaseReference.child("InstructorAttendance")
                     .child(upcomingClass).child(currDate);
-
             // update table for student
             userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     Map<String, Object> attendance = new HashMap<>();
-
                     if (dataSnapshot.exists()) {
                         Log.d("database", "Exists");
-                        for(DataSnapshot keyNode : dataSnapshot.getChildren()) {
-                            attendance.put(keyNode.getKey(), keyNode.getValue());
-                        }
-                        attendance.put(currDate, bool);
-                        userRef.updateChildren(attendance);
+                        databaseReference.child("User").child(currentUser.getuID())
+                                .child("attendanceHistory")
+                                .child(upcomingClass)
+                                .child(currDate).setValue(true);
                     } else {
                         Log.d("database", "Doesn't exist");
-                        attendance.put(currDate, bool);
-                        userRef.updateChildren(attendance);
                     }
                 }
                 @Override
@@ -226,17 +244,20 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
                         }
                         instructor.put(currentUser.getuID(), true);
                         instRef.updateChildren(instructor);
+                        Toast.makeText(getApplicationContext(), "check-in successful"
+                                , Toast.LENGTH_LONG).show();
+                        finish();
                     } else {
                         Log.d("database", "Doesn't exist");
-                        instructor.put(currentUser.getuID(), true);
-                        instRef.updateChildren(instructor);
+                        Toast.makeText(getApplicationContext()
+                                , "The instructor has not started the attendance yet."
+                                , Toast.LENGTH_LONG).show();
+                        finish();
                     }
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {}
             });
-
-            finish();
         }
         if (distOk && !codeOk) {
             Toast.makeText(this, "Invalid QR code. Please try with updated QR code", Toast.LENGTH_LONG).show();
@@ -252,7 +273,8 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
         }
     }
 
-    /*
+
+/*
     private boolean checkTime() throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
         String dateInString = "22-01-2015 10:20:56";
@@ -269,8 +291,15 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
             return true;
         return false;
 
-    }*/
+    }
+*/
 
+    /**
+     * This method checks the distance of the android device with the class co-ordinates
+     * when the students check-in for the class
+     *
+     * @return true if the distance is with-in 50 feet otherwise false
+     */
     private boolean checkDist() {
         final int R = 6371;
 
@@ -285,12 +314,14 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
         if (dist <= ALLOWED_DISTANCE) {
             return true;
         }
-   
         return false;
     }
 
 
-    public boolean checkLocation() {
+    /**
+     * This method checks the location of the android device and updates the class variables
+     */
+    public void updateLocation() {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Location location = null;
         try {
@@ -300,9 +331,6 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
         }
         assert location != null;
         onLocationChanged(location);
-
-        /* Get Location from database and compare */
-        return false;
     }
 
     @Override
@@ -324,5 +352,44 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
     @Override
     public void onProviderDisabled(String provider) {
 
+    }
+
+    //@RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay!
+                    try {
+                        cameraSource.start(surfaceHolder);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(getApplicationContext(), "Needs Camera for QR Check-in!", Toast.LENGTH_LONG).show();
+                }
+                isLocationPermissionGranted();
+                return;
+            }
+            case 2: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay!
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(getApplicationContext(), "Needs Location for Check-in!", Toast.LENGTH_LONG).show();
+                }
+                isCameraPermissionGranted();
+                return;
+            }
+        }
     }
 }

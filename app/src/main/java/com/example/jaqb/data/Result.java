@@ -1,7 +1,10 @@
 package com.example.jaqb.data;
-
 /**
  * A generic class that holds a result success w/ data or an error exception.
+ *
+ * @author Joshua Drumm
+ * @version 2.0
+ * @since   2020-4-10
  */
 public class Result<T> {
     // hide the private constructor to limit subclass types (Success, Error)

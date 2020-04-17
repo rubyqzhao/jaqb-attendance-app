@@ -12,9 +12,18 @@ import com.example.jaqb.R;
 import com.example.jaqb.services.FireBaseDBServices;
 import com.example.jaqb.ui.instructor.HomeActivity;
 
+/**
+ * Class to hold the menu view
+ */
+
 public class MenuOptionsActivity extends AppCompatActivity {
     private FireBaseDBServices dbServices;
 
+    /**
+     * This public triggers when menu is created
+     * @param menu f type MENU
+     * @return boolean value if the menu is created or not
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_items, menu);
@@ -22,6 +31,11 @@ public class MenuOptionsActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * This public function checks which option is selected and launch selected activity
+     * @param item of type MenuItem
+     * @return boolean based on if the activity is launched
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -29,11 +43,6 @@ public class MenuOptionsActivity extends AppCompatActivity {
         if (id == R.id.action_logout) {
             dbServices.logoutUser();
             Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            return true;
-        }
-        else if (id == R.id.action_instructor) {
-            Intent intent = new Intent(this, HomeActivity.class);
             startActivity(intent);
             return true;
         }

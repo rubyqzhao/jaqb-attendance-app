@@ -21,6 +21,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A view class to provide functions for the instructor attendance page
+ * to show the lists of students who have attended their courses.
+ *
+ * @author Amanjot Singh
+ * @version 1.0
+ */
 public class CheckAttendance extends AppCompatActivity {
 
     private String courseCode;
@@ -35,6 +42,12 @@ public class CheckAttendance extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private DatabaseReference databaseReference2;
 
+    /**
+     * Initial method that triggers when the user accesses the attendance list
+     * for the first time in the app. Creates the view and initializes values
+     * using data pulled from firebase.
+     * @param savedInstanceState    the previous state of the app
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
