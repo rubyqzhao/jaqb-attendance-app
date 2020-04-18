@@ -23,7 +23,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:exported="true">
-        <activity android:name=".QRCheckin"/>
+        <activity android:name=".ui.student.QRCheckin"/>
         <activity
             android:name=".ui.login.LoginActivity"
             android:label="@string/title_activity_login" />

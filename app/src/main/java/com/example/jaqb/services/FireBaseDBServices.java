@@ -390,6 +390,8 @@ public class FireBaseDBServices {
      * This method sets up the database for taking attendance for a class. It is executed
      * when an instructor clicks on generate QR code button
      *
+     * @author amanjotsingh
+     *
      * @param nextClass this is the immediate next class that the instructor will be taking
      * @return 1 if the database setup is successful, 0 is there is failure in setting up
      *          the database
@@ -432,12 +434,12 @@ public class FireBaseDBServices {
                                                     database.getReference("InstructorAttendance")
                                                             .child(nextClass.getCode())
                                                             .child(strDate)
-                                                            .child(studentKey).setValue(false);
+                                                            .child(studentKey).setValue("false");
                                                     database.getReference("User")
                                                             .child(studentKey)
                                                             .child("attendanceHistory")
                                                             .child(nextClass.getCode())
-                                                            .child(strDate).setValue(false);
+                                                            .child(strDate).setValue("false");
                                                 }
                                             }
 

@@ -70,9 +70,17 @@ public class CheckAttendance extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot keyNode : dataSnapshot.getChildren()) {
                     String studentId = keyNode.getKey();
-                    boolean attendance = (boolean) keyNode.getValue();
+                    String attendance = (String) keyNode.getValue();
                     studentIds.add(studentId);
-                    studentPresence.add((attendance) ? "Present" : "Absent");
+                    if("true".equalsIgnoreCase(attendance)){
+                        studentPresence.add("Present");
+                    }
+                    else if("false".equalsIgnoreCase(attendance)){
+                        studentPresence.add("Absent");
+                    }
+                    else if("late".equalsIgnoreCase(attendance)){
+                        studentPresence.add("Late");
+                    }
                 }
             }
 

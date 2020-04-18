@@ -52,8 +52,8 @@ public class AttendanceHistoryIndividualStudentActivity extends AppCompatActivit
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot keyNode : dataSnapshot.getChildren()){
                     String date = keyNode.getKey();
-                    boolean presence = (boolean) keyNode.getValue();
-                    courseAttendance.add(date + " : " + (presence?"Present" : "Absent"));
+                    String presence = (String) keyNode.getValue();
+                    courseAttendance.add(date + " : " + presence);
                 }
                 // Attach to the activity
                 FragmentTransaction t = getSupportFragmentManager().beginTransaction();
@@ -166,11 +166,11 @@ public class AttendanceHistoryIndividualStudentActivity extends AppCompatActivit
                 String tempDate = data[0].trim();
                 String dateColor = data[1].trim();
                 Date date = new SimpleDateFormat("yyyy-MM-dd").parse(tempDate);
-                if(dateColor.equalsIgnoreCase("present")){
+                if(dateColor.equalsIgnoreCase("true")){
                     caldroidFragment.setBackgroundDrawableForDate(green, date);
                     caldroidFragment.setTextColorForDate(R.color.caldroid_black, date);
                 }
-                else if(dateColor.equalsIgnoreCase("absent")){
+                else if(dateColor.equalsIgnoreCase("false")){
                     caldroidFragment.setBackgroundDrawableForDate(red, date);
                     caldroidFragment.setTextColorForDate(R.color.caldroid_black, date);
                 }
