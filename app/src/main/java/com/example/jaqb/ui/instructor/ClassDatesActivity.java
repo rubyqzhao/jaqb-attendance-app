@@ -108,12 +108,16 @@ public class ClassDatesActivity extends AppCompatActivity {
 
             @Override
             public void onSelectDate(Date date, View view) {
-                Intent intent = new Intent(getApplicationContext(), CheckAttendance.class);
-                intent.putExtra("date", formatter.format(date));
-                intent.putExtra("code", courseCode);
-                Toast.makeText(getApplicationContext(), formatter.format(date),
+                String dateSelected = formatter.format(date);
+                Toast.makeText(getApplicationContext(), dateSelected,
                         Toast.LENGTH_SHORT).show();
-                startActivity(intent);
+                if(courseDates.contains(dateSelected)) {
+                    Intent intent = new Intent(getApplicationContext(), CheckAttendance.class);
+                    intent.putExtra("date", dateSelected);
+                    intent.putExtra("code", courseCode);
+
+                    startActivity(intent);
+                }
             }
 
             @Override

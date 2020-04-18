@@ -1,9 +1,13 @@
 package com.example.jaqb.ui.instructor;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.jaqb.R;
@@ -64,7 +68,25 @@ public class CheckAttendance extends AppCompatActivity {
         studentData = new HashMap<String, RegisteredUser>();
         listView = (ListView) findViewById(R.id.dates_course_list);
         findViewById(R.id.dates_progressBar).setVisibility(View.GONE);
-        arrayAdapter = new ArrayAdapter<>(this, R.layout.class_list_item, R.id.class_item_name, studentNames);
+        arrayAdapter = new ArrayAdapter<String>(this, R.layout.class_list_item, R.id.class_item_name, studentNames){
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent){
+                View view = super.getView(position, convertView, parent);
+                TextView textView = (TextView)view.findViewById(R.id.class_item_name);
+                String text = textView.getText().toString();//setTextColor(position % 2 == 0 ? Color.WHITE : Color.RED); // here can be your logic
+                String color = text.split(":")[1].trim();
+                if("late".equalsIgnoreCase(color)){
+                    textView.setTextColor(Color.YELLOW);
+                }
+                else if("present".equalsIgnoreCase(color)) {
+                    textView.setTextColor(Color.GREEN);
+                }
+                else if("absent".equalsIgnoreCase(color)){
+                    textView.setTextColor(Color.RED);
+                }
+                return view;
+            };
+        };
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
