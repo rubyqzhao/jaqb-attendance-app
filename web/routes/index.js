@@ -34,8 +34,8 @@ function checkAuth(req, res, next) {
     if (req.session.userLoggedIn) {
       next();
     } else {
-      res.status(403).send('Unauthorized!');
-      return;
+        res.status(403).send('Unauthorized! <a href="/">Go back home</a>');
+        return;
     }
   }
 
@@ -63,7 +63,7 @@ router.post('/login', function(req, res) {
         var errorCode = error.code;
         var errorMessage = error.message;
 
-        res.render('error', {message: "Sign-in Error: "+ errorMessage});
+        res.render('error', {message: "Sign-in Error: "+errorCode+" "+ errorMessage});
         // ...
       });
 });
@@ -73,7 +73,7 @@ router.get('/signout', function(req, res) {
         req.session.userLoggedIn = false;
         res.redirect('/');
       }).catch(function(error) {
-        res.render('error', {message: "Sign-out Error: "+ errorMessage});
+        res.render('error', {message: "Sign-out Error: "+errorCode+" "+ errorMessage});
       });      
 });
 
@@ -141,13 +141,13 @@ router.get('/all_courses', function(req, res) {
 // post request to update the user privileges
 router.post('/change_privilege', function(req, res) {
     changePrivilege(JSON.stringify(req.body));
-    res.redirect('/');
+    res.redirect('/user_priviliges');
 });
 
 router.post('/add_course_to_instructor', function(req, res) {
     //console.log(JSON.stringify(req.body) + " : BODY");
     addCourseToInstructor(JSON.stringify(req.body));
-    res.redirect('/');
+    res.redirect('/assign_courses');
 });
 
 router.post('/add-course', function (req, res) {
@@ -157,12 +157,12 @@ router.post('/add-course', function (req, res) {
     //if input isn't entered or invalid, prevent send
     if(response == null || response.code == null || response.name == null
         || response.days == null || response.instructor == null || response.time == null) {
-        res.send('Submission is invalid');
+            res.status(400).send('Invalid Submission! <a href="/add_course">Go back</a>');
     }
     else if(response.code.localeCompare("") == 0 || response.name.localeCompare("") == 0
         || response.days == [""] || response.instructor.localeCompare("") == 0
         || response.time.localeCompare("") == 0) {
-        res.send('Missing information');
+        res.status(400).send('Information missing! <a href="/add_course">Go back</a>');
     }
     else {
         var daysList;
@@ -185,7 +185,7 @@ router.post('/add-course', function (req, res) {
             instructorName: response.instructor,
             time: response.time
         });
-        res.send('Submitted');
+        res.status(200).send('Submitted! <a href="/add_course">Go back</a>');
     }
 });
 
@@ -212,7 +212,7 @@ router.post('/delete-course', function(req, res) {
         }
     });
 
-    res.redirect('/');
+    res.redirect('/index');
 });
 
 
@@ -441,7 +441,7 @@ router.post('/upload-csv', upload.single('document'), function (req, res) {
                 });
             }
 
-            res.send('Uploaded');
+            res.status(200).send('Uploaded! <a href="/add_course">Go back</a>');
         })
 });
 

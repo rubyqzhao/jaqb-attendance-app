@@ -47,6 +47,16 @@ a {
   text-align: center;
 }
 
+#addCourseTable{
+  text-align: left;
+}
+
+
+#addCourseTable td{
+  width: 20%;
+  padding: 10px;
+}
+
 #addMultiple {
   width: 29%;
   float: left;
@@ -104,12 +114,6 @@ a {
 .menuItem a {
   display: block;
   text-decoration: none;
-}
-
-.daylist {
-  display: block;
-  float: left;
-  margin: 5px;
 }
 
 #loginDiv {

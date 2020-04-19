@@ -1,56 +1,59 @@
 extends layout
 
-div(class = "w3-top w3-bar w3-border w3-gray")
-      a(href="/" class="w3-bar-item w3-button w3-pading-16")
-       h1 JAQB Admin
-
 block content
     div(class = "w3-row-padding w3-section"  id ="addCourseDiv")
         div(class = "w3-white w3-col w3-border w3-padding")
-          h2 Add Courses    
-          form(name="add-course", action="add-course", method="post")   
+          h2 Add Courses
+          br
+          br    
+          form(name="add-course", action="add-course", method="post" id="addCourseForm")   
             div.input
-              div(class="w3-col w3-padding")  
-                span.label Course Code 
-                br
-                input(type="text", name="code", placeholder="Ex. SER 517")    
-              div(class="w3-col w3-padding") 
-                span.label Course Name    
-                br
-                input(type="text", name="name")     
-              div(class="w3-col w3-padding") 
-                span.label Meeting Days 
-                br
-                div(class = "daylist")
+              table(id="addCourseTable")
+                tr
+                  td
+                    b
+                      span.label Course Code 
+                  td
+                    input(type="text", name="code", placeholder="Ex. SER 517")    
+                tr
+                  td 
+                    b 
+                      span.label Course Name 
+                  td   
+                    input(type="text", name="name" placeholder="Ex. Data Structures") 
+                tr 
+                  td 
+                    b  
+                      span.label Meeting Days 
+                  td
                     input(type="checkbox", name="days", value="MO")
-                    span.label  Monday
-                div(class = "daylist")
+                    span.label  MO 
                     input(type="checkbox", name="days", value="TU")
-                    span.label  Tuesday
-                div(class = "daylist")
+                    span.label  TU 
                     input(type="checkbox", name="days", value="WE")
-                    span.label  Wednesday
-                div(class = "daylist")
+                    span.label  WE 
                     input(type="checkbox", name="days", value="TH")
-                    span.label  Thursday
-                div(class = "daylist")  
+                    span.label  TH 
                     input(type="checkbox", name="days", value="FR")
-                    span.label  Friday
-                div(class = "daylist")
+                    span.label  FR 
                     input(type="checkbox", name="days", value="SA")
-                    span.label  Saturday
-                div(class = "daylist")
+                    span.label  SA 
                     input(type="checkbox", name="days", value="SU")
-                    span.label  Sunday
-              div(class="w3-col w3-padding")
-                span.label Meeting Time  
-                br
-                input(type="time", name="time") 
-              div(class="w3-col w3-padding") 
-                span.label Course Instructor 
-                br
-                input(type="text", name="instructor")
-              br  
+                    span.label  SU 
+                tr
+                  td
+                    b
+                      span.label Meeting Time
+                  td  
+                    input(type="time", name="time") 
+                tr
+                  td
+                    b
+                      span.label Course Instructor 
+                  td
+                    input(type="text", name="instructor"  placeholder="Ex. John Doe")
+              br
+              br
               div.action(class="w3-col w3-padding") 
                 input(type="submit", value="Add", class="w3-button w3-light-gray w3-hover-red")
 
@@ -64,6 +67,7 @@ block content
             div(class="w3-col")
             div.actions(class="w3-col")
               br
-              input(type="submit", value = "Submit"  class="w3-button w3-light-gray w3-hover-red")
+              br
+              input(type="submit", value = "Add"  class="w3-button w3-light-gray w3-hover-red")
               br
               br
