@@ -1,6 +1,6 @@
 body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  background-color: #8C1D40;
+  background-color: #00A0F9;
 }
 
 a {
@@ -8,8 +8,13 @@ a {
 }
 
 .box {
-  height: 100px;
+  height: 50px;
 }
+
+.box2 {
+  height: 75px;
+}
+
 
 .wrapper {
   margin: auto;
@@ -180,3 +185,7 @@ a {
     float: none;
   }
 } 
+
+#aboutDiv {
+  margin: auto;
+}

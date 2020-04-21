@@ -2,22 +2,22 @@ extends layout
 
 block content
     div(class = "w3-row-padding" id="menu")
-        div(class = "w3-col w3-white w3-padding menuItem l6")
-            a(href="/courses")
+        div(class = "w3-col w3-white w3-padding menuItem l6 w3-hover-red")
+            a(href="/courses", class="")
                 div(class = "menuImage")
                     i(class="fas fa-clipboard-list fa-10x")
                     p View Courses
-        div(class = "w3-col w3-white w3-padding menuItem l6")
+        div(class = "w3-col w3-white w3-padding menuItem l6 w3-hover-red")
             a(href="/add_course")
                 div(class = "menuImage")
                     i(class="fas fa-plus fa-10x")
                     p Add Courses 
-        div(class = "w3-col w3-white w3-padding menuItem l6")
+        div(class = "w3-col w3-white w3-padding menuItem l6 w3-hover-red")
             a(href="/user_privileges_page")
                 div(class = "menuImage")
                     i(class="fas fa-user-cog fa-10x")
                     p Change User Privileges
-        div(class = "w3-col w3-white w3-padding menuItem l6")
+        div(class = "w3-col w3-white w3-padding menuItem l6 w3-hover-red")
             a(href="/assign_courses")
                 div(class = "menuImage")
                     i(class="fas fa-book-medical fa-10x")

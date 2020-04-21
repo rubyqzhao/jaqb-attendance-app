@@ -83,6 +83,10 @@ router.get('/home', function(req, res) {
     res.render('home', {title: "home"});
 });
 
+router.get('/about', function(req, res) {
+    res.render('about', {title: "About"});
+});
+
 router.get('/courses', function(req, res) {
     getCourses(function(courseList) {
         res.render('index', {
