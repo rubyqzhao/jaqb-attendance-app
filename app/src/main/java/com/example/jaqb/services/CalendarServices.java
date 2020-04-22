@@ -46,7 +46,7 @@ public class CalendarServices
     }
 
     /**
-     * Gets the next day happening for a course in a specific timezone
+     * Gets the next day and time happening for a course in a specific timezone
      * @param course The course to get the next day for
      * @param timeZone The timezone to use
      * @return The time in milliseconds since the Unix epoch that the day begins on
@@ -56,17 +56,9 @@ public class CalendarServices
     {
         String[] days = course.getDays().split("[,]");
         ZoneId zone = ZoneId.of(timeZone);
-        long soonestDay = getTimeOfNextDayCode(days[0], zone);
-        for(int i = 1; i < days.length; i++)
-        {
-            long nextDay = getTimeOfNextDayCode(days[i], zone);
-            if(nextDay < soonestDay)
-                soonestDay = nextDay;
-        }
         String timeSplit[] = course.getTime().split("[:]");
         if(timeSplit.length != 2)
             return -1;
-
         int hour, minute;
         try {
             hour = Integer.parseInt(timeSplit[0]);
@@ -76,6 +68,14 @@ public class CalendarServices
             e.printStackTrace();
             return -1;
         }
+        long soonestDay = getTimeOfNextDayCode(days[0], zone, hour, minute);
+        for(int i = 1; i < days.length; i++)
+        {
+            long nextDay = getTimeOfNextDayCode(days[i], zone, hour, minute);
+            if(nextDay < soonestDay)
+                soonestDay = nextDay;
+        }
+
         return soonestDay + (hour * 60 + minute) * 60000;
     }
 
@@ -90,11 +90,11 @@ public class CalendarServices
     {
         long currentTime = getCurrentTime(ZoneId.of(user.getSemester().getTimeZoneID()));
         Course soonestCourse = courses.get(0);
-        long soonestCourseTime = CalendarServices.getNextTime(courses.get(0), user.getSemester().getTimeZoneID());
+        long soonestCourseTime = getNextTime(courses.get(0), user.getSemester().getTimeZoneID());
         for(int i = 1; i < courses.size(); i++)
         {
             Course course = courses.get(i);
-            long courseTime = CalendarServices.getNextTime(courses.get(i), user.getSemester().getTimeZoneID());
+            long courseTime = getNextTime(courses.get(i), user.getSemester().getTimeZoneID());
             if(courseTime < soonestCourseTime && courseTime > currentTime)
             {
                 soonestCourseTime = courseTime;
@@ -168,6 +168,22 @@ public class CalendarServices
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static long getTimeOfNextDayCode(String dayCode, ZoneId zone)
+    {
+        DayOfWeek dayOfWeek = getDayOfWeek(dayCode);
+        return ZonedDateTime.now(zone).toLocalDate().with(TemporalAdjusters.nextOrSame(dayOfWeek)).atStartOfDay().toInstant(zone.getRules().getOffset(LocalDateTime.now())).getEpochSecond() * 1000;
+    }
+
+    /**
+     * Gets the next time of a course happening on a specific day in the semester with a given time
+     * @param dayCode The string code that the course happens next on
+     * @param zone The timezone to compare to. This is usually the user's timezone
+     * @param hour The hour the class starts
+     * @param minute The minute the class starts
+     * @return The Unix Epoch time in milliseconds for the time of the start of the day
+     *         for the course's next occurrence on the specified day in the semester
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static long getTimeOfNextDayCode(String dayCode, ZoneId zone, int hour, int minute)
     {
         DayOfWeek dayOfWeek = getDayOfWeek(dayCode);
         return ZonedDateTime.now(zone).toLocalDate().with(TemporalAdjusters.nextOrSame(dayOfWeek)).atStartOfDay().toInstant(zone.getRules().getOffset(LocalDateTime.now())).getEpochSecond() * 1000;
