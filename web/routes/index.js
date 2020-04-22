@@ -30,11 +30,23 @@ var database = firebase.database();
 
 /* GET home page. */
 
+function checkIfAdmin(req) {
+    var loggingUserId = firebase.auth().currentUser.uid;
+    var ref = database.ref('User/'+loggingUserId+'/level');
+    ref.on("value", function(snapshot) {
+        if(snapshot.val() === "ADMIN"){
+            req.session.userLoggedIn = true;
+        }
+    }, function(error) {
+        console.log("error"+error.code);
+    });
+}
+
 function checkAuth(req, res, next) {
     if (req.session.userLoggedIn) {
-      next();
+        next();
     } else {
-        res.status(403).send('Unauthorized! <a href="/">Go back home</a>');
+        res.status(403).send('Unauthorized! Only Admins can login. <a href="/">Go back home</a>');
         return;
     }
   }
@@ -55,16 +67,14 @@ router.post('/login', function(req, res) {
     console.log(username+" "+password);   
     firebase.auth().signInWithEmailAndPassword(username, password)
     .then(function(){
-        req.session.userLoggedIn = true;
+        checkIfAdmin(req);
         res.redirect('/home');
     })
     .catch(function(error) {
         // Handle Errors here.
         var errorCode = error.code;
         var errorMessage = error.message;
-
         res.render('error', {message: "Sign-in Error: "+errorCode+" "+ errorMessage});
-        // ...
       });
 });
 
@@ -80,7 +90,7 @@ router.get('/signout', function(req, res) {
 router.use('/home', checkAuth);
 
 router.get('/home', function(req, res) {
-    res.render('home', {title: "home"});
+    res.render('home', {title: "Home"});
 });
 
 router.get('/about', function(req, res) {
@@ -121,7 +131,7 @@ router.use('/assign_courses', checkAuth);
 router.get('/assign_courses', function(req, res) {
     getInstructors(function(instructorList) {
         res.render('all_instructors', {
-            title: 'instructors',
+            title: 'Instructors',
             instructors: instructorList
         });
     });
@@ -455,7 +465,6 @@ firebase.auth().onAuthStateChanged(function(user) {
         if(loggedInUser!=null) {
 
         }
-        redirect("/home");
     } else {
         
     }
