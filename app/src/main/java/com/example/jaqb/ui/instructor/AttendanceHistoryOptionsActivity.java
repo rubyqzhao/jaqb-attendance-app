@@ -46,6 +46,30 @@ public class AttendanceHistoryOptionsActivity extends AppCompatActivity {
 
         dates = new ArrayList();
 
+        /*For demo purpose
+        courseAttendance.add(new BarEntry(1, 0));
+        courseAttendance.add(new BarEntry(2, 1));
+        courseAttendance.add(new BarEntry(3, 2));
+        courseAttendance.add(new BarEntry(5, 3));
+        courseAttendance.add(new BarEntry(10, 4));
+        courseAttendance.add(new BarEntry(5, 5));
+        courseAttendance.add(new BarEntry(8, 6));
+        courseAttendance.add(new BarEntry(9, 7));
+        courseAttendance.add(new BarEntry(4, 8));
+        courseAttendance.add(new BarEntry(6, 9));
+
+        dates.add("2008");
+        dates.add("2009");
+        dates.add("2010");
+        dates.add("2011");
+        dates.add("2012");
+        dates.add("2013");
+        dates.add("2014");
+        dates.add("2015");
+        dates.add("2016");
+        dates.add("2017");
+        */
+
         DatabaseReference databaseReference = FirebaseDatabase.getInstance()
                 .getReference("InstructorAttendance").child(courseCode);
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
