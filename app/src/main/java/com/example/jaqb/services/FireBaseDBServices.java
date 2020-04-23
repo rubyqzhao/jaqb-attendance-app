@@ -94,6 +94,19 @@ public class FireBaseDBServices {
                             reff.child("lname").setValue(registeredUser.getlName());
                             reff.child("level").setValue(registeredUser.getLevel());
                             observer.update(null, registeredUser);
+
+                            mAuth.getCurrentUser().sendEmailVerification()
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Log.d(TAG, "Email sent.");
+                                            }
+                                            else {
+                                                Log.d(TAG, "sendEmailVerification:failure", task.getException());
+                                            }
+                                        }
+                                    });
                         } else {
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
                             observer.update(null, null);
