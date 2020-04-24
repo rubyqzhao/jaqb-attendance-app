@@ -130,6 +130,8 @@ public class FireBaseDBServices {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "signInWithEmail:success");
                             final FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                            if(firebaseUser == null)
+                                return;
                             database.getReference("User").child(firebaseUser.getUid())
                                     .addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
@@ -167,8 +169,10 @@ public class FireBaseDBServices {
                                                                 offDays[i] = new SemesterDate(date);
                                                                 i++;
                                                             }
-                                                            currentUser.setSemester(new Semester(timeZone, startSemesterDate, endSemesterDate, offDays));
-                                                            observer.update(currentUser, currentUser.getLevel());
+                                                            if(currentUser != null) {
+                                                                currentUser.setSemester(new Semester(timeZone, startSemesterDate, endSemesterDate, offDays));
+                                                                observer.update(currentUser, currentUser.getLevel());
+                                                            }
                                                         }
 
                                                 @Override
@@ -176,8 +180,10 @@ public class FireBaseDBServices {
 
                                                 }
                                             });
-                                            currentUser.setRegisteredCourses(getUserCourses(currentUser, allCourses));
-                                            getBadges();
+                                            if(currentUser != null && currentUser.isEmailVerified()) {
+                                                currentUser.setRegisteredCourses(getUserCourses(currentUser, allCourses));
+                                                getBadges();
+                                            }
                                         }
 
                                         @Override
