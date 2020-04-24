@@ -114,8 +114,10 @@ public class CourseDetailsActivity extends AppCompatActivity implements View.OnC
                         int res = fireBaseDBServices.registerCourse(registerCourse, currentUser);
                         Intent intent = new Intent();
                         if(res == 1){
-                            fireBaseDBServices.getInstance().updateDatabase(courseCode, currentUser);
-                            registerCourse.setInstructorName(currentUser.getfName() + " " + currentUser.getlName());
+                            //Should not be this way
+                            if(FireBaseDBServices.getInstance().getCurrentUser().getLevel().toString() == "INSTRUCTOR") {
+                                registerCourse.setInstructorName(currentUser.getfName() + " " + currentUser.getlName());
+                            }
                             currentUser.updateCourse(registerCourse);
                             System.out.println("Registered in new course");
                             intent.setClass(getApplicationContext(), MyCoursesActivity.class);
