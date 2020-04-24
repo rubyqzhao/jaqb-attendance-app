@@ -62,7 +62,8 @@ public class HomeActivity extends MenuOptionsActivity {
         //coordDisplay = findViewById(R.id.gps_coord);
         fireBaseDBServices = FireBaseDBServices.getInstance();
         upcomingClass = findViewById(R.id.upcoming_class);
-        nextClass = new Course("SER 515", "Dummy Class");
+        upcomingClass.setText(determineClassToDisplay());
+        //nextClass = new Course("SER 515", "Dummy Class");
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -87,10 +88,10 @@ public class HomeActivity extends MenuOptionsActivity {
     protected String determineClassToDisplay() {
         String message;
         if(!fireBaseDBServices.getCurrentUser().getRegisteredCourses().isEmpty()) {
-            Course course = fireBaseDBServices.getCurrentUser().getNextCourse();
-            String code = course.getCode();
-            String days = course.getDays();
-            String time = course.getTime();
+            nextClass = fireBaseDBServices.getCurrentUser().getNextCourse();
+            String code = nextClass.getCode();
+            String days = nextClass.getDays();
+            String time = nextClass.getTime();
 
             message = code + "\n" + days + " @ " + time;
         }
@@ -121,7 +122,7 @@ public class HomeActivity extends MenuOptionsActivity {
         }
         else{
 //            code = Integer.getInteger(nextClass.getCourseQRCode().split(" ")[0]);
-            code = Integer.valueOf("5115");
+            code = Integer.valueOf("6468");
             intent.putExtra("validCode", true);
         }
         intent.putExtra("code", code);

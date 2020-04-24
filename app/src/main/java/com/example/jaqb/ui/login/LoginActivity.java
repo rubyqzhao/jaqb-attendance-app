@@ -42,6 +42,7 @@ public class LoginActivity extends AppCompatActivity implements java.util.Observ
     private LoginViewModel loginViewModel;
     private FireBaseDBServices dbServices;
     private ProgressBar loadingProgressBar;
+    private Button loginButton;
 
     /**
      * Triggers when the user arrives at the login page for the first time.
@@ -58,8 +59,8 @@ public class LoginActivity extends AppCompatActivity implements java.util.Observ
 
         final EditText usernameEditText = findViewById(R.id.username);
         final EditText passwordEditText = findViewById(R.id.password);
-        final Button loginButton = findViewById(R.id.login);
         loadingProgressBar = findViewById(R.id.loading);
+        loginButton = findViewById(R.id.login);
         dbServices = FireBaseDBServices.getInstance();
 
         loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
@@ -135,7 +136,7 @@ public class LoginActivity extends AppCompatActivity implements java.util.Observ
             @Override
             public void onClick(View v) {
                 loadingProgressBar.setVisibility(View.VISIBLE);
-                loadingProgressBar.setVisibility(View.VISIBLE);
+                loginButton.setEnabled(false);
                 String email = usernameEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
                 dbServices = FireBaseDBServices.getInstance();
@@ -169,25 +170,35 @@ public class LoginActivity extends AppCompatActivity implements java.util.Observ
         if(o == null)
         {
             //Invalid credentials
+            loginButton.setEnabled(true);
             loadingProgressBar.setVisibility(View.GONE);
             Toast.makeText(getApplicationContext(), "Invalid Email or Password",
                     Toast.LENGTH_SHORT).show();
         }
         else
         {
-            Intent intent = null;
-            switch((UserLevel) (arg))
-            {
-                case INSTRUCTOR:
-                    intent = new Intent(getApplicationContext(), HomeActivity.class);
-                    break;
-                case ADMIN:
-                    intent = new Intent(getApplicationContext(), IncompleteActivity.class);
-                    break;
-                default:
-                    intent = new Intent(getApplicationContext(), CheckInActivity.class);
+            FireBaseDBServices firebase = FireBaseDBServices.getInstance();
+            if(firebase.getCurrentUser().isEmailVerified()) {
+                Intent intent = null;
+                switch ((UserLevel) (arg)) {
+                    case INSTRUCTOR:
+                        intent = new Intent(getApplicationContext(), HomeActivity.class);
+                        break;
+                    case ADMIN:
+                        intent = new Intent(getApplicationContext(), IncompleteActivity.class);
+                        break;
+                    default:
+                        intent = new Intent(getApplicationContext(), CheckInActivity.class);
+                }
+                startActivity(intent);
             }
-            startActivity(intent);
+            else
+            {
+                firebase.logoutUser();
+                loadingProgressBar.setVisibility(View.GONE);
+                Toast.makeText(getApplicationContext(), "Email is not verified!\nCheck your email for a link to verify",
+                        Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

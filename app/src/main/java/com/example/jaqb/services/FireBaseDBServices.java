@@ -94,6 +94,19 @@ public class FireBaseDBServices {
                             reff.child("lname").setValue(registeredUser.getlName());
                             reff.child("level").setValue(registeredUser.getLevel());
                             observer.update(null, registeredUser);
+
+                            mAuth.getCurrentUser().sendEmailVerification()
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Log.d(TAG, "Email sent.");
+                                            }
+                                            else {
+                                                Log.d(TAG, "sendEmailVerification:failure", task.getException());
+                                            }
+                                        }
+                                    });
                         } else {
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
                             observer.update(null, null);
@@ -117,6 +130,8 @@ public class FireBaseDBServices {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "signInWithEmail:success");
                             final FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                            if(firebaseUser == null)
+                                return;
                             database.getReference("User").child(firebaseUser.getUid())
                                     .addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
@@ -154,8 +169,10 @@ public class FireBaseDBServices {
                                                                 offDays[i] = new SemesterDate(date);
                                                                 i++;
                                                             }
-                                                            currentUser.setSemester(new Semester(timeZone, startSemesterDate, endSemesterDate, offDays));
-                                                            observer.update(currentUser, currentUser.getLevel());
+                                                            if(currentUser != null) {
+                                                                currentUser.setSemester(new Semester(timeZone, startSemesterDate, endSemesterDate, offDays));
+                                                                observer.update(currentUser, currentUser.getLevel());
+                                                            }
                                                         }
 
                                                 @Override
@@ -163,8 +180,10 @@ public class FireBaseDBServices {
 
                                                 }
                                             });
-                                            currentUser.setRegisteredCourses(getUserCourses(currentUser, allCourses));
-                                            getBadges();
+                                            if(currentUser != null && currentUser.isEmailVerified()) {
+                                                currentUser.setRegisteredCourses(getUserCourses(currentUser, allCourses));
+                                                getBadges();
+                                            }
                                         }
 
                                         @Override
@@ -390,6 +409,8 @@ public class FireBaseDBServices {
      * This method sets up the database for taking attendance for a class. It is executed
      * when an instructor clicks on generate QR code button
      *
+     * @author amanjotsingh
+     *
      * @param nextClass this is the immediate next class that the instructor will be taking
      * @return 1 if the database setup is successful, 0 is there is failure in setting up
      *          the database
@@ -432,12 +453,12 @@ public class FireBaseDBServices {
                                                     database.getReference("InstructorAttendance")
                                                             .child(nextClass.getCode())
                                                             .child(strDate)
-                                                            .child(studentKey).setValue(false);
+                                                            .child(studentKey).setValue("false");
                                                     database.getReference("User")
                                                             .child(studentKey)
                                                             .child("attendanceHistory")
                                                             .child(nextClass.getCode())
-                                                            .child(strDate).setValue(false);
+                                                            .child(strDate).setValue("false");
                                                 }
                                             }
 

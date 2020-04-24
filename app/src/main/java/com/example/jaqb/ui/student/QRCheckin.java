@@ -1,4 +1,4 @@
-package com.example.jaqb;
+package com.example.jaqb.ui.student;
 
 import android.Manifest;
 import android.content.Context;
@@ -21,6 +21,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.jaqb.R;
+import com.example.jaqb.data.model.Course;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.services.FireBaseDBServices;
 import com.google.android.gms.vision.CameraSource;
@@ -33,8 +35,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,10 +53,10 @@ import java.util.Map;
 
 public class QRCheckin extends AppCompatActivity implements LocationListener {
 
-    private static final double ALLOWED_DISTANCE = 50;
-    EditText editText;
-    LocationManager locationManager;
-    String currentQR;
+    private static final double ALLOWED_DISTANCE = 500;
+    private EditText editText;
+    private LocationManager locationManager;
+    private String currentQR;
     double Long;
     double Lat;
     double currentLongitude;
@@ -64,6 +68,7 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
     private CameraSource cameraSource;
     private SurfaceHolder surfaceHolder;
     private BarcodeDetector barcodeDetector;
+    private Course nextCourse;
 
     /**
      * @param savedInstanceState saved application context passed into activity when it is created
@@ -80,6 +85,7 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
         databaseReference = FirebaseDatabase.getInstance().getReference();
         fireBaseDBServices = FireBaseDBServices.getInstance();
         currentUser = fireBaseDBServices.getCurrentUser();
+//        nextCourse = currentUser.getNextCourse();
         editText = findViewById(R.id.codeArea);
         cameraSurfaceView = (SurfaceView) findViewById(R.id.cameraView);
         barcodeDetector = new BarcodeDetector.Builder(this)
@@ -186,17 +192,31 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
         updateLocation();
         boolean distOk = checkDist();
         boolean codeOk = (currentQR.equals(code));
-        takeDecision(distOk, codeOk);
+        String timeDiff = checkTime();
+        if("early".equalsIgnoreCase(timeDiff)){
+            Toast.makeText(this, "You are too early for the class", Toast.LENGTH_LONG).show();
+            finish();
+        }
+        else if("tooLate".equalsIgnoreCase(timeDiff)){
+            Toast.makeText(this, "You are too late for the class", Toast.LENGTH_LONG).show();
+            finish();
+        }
+        else {
+            takeDecision(distOk, codeOk, timeDiff);
+        }
     }
 
     /**
      * This method takes the decision about the student checkin based on the location and
      * QR code entered by the student
      *
+     * @edited amanjotsingh - 04/17/2020
+     * Added check for the time
+     *
      * @param distOk true if the distance check is true i.e. the student is within 50 feet else false
      * @param codeOk true if the QR code matches with the QR code for the course
      */
-    private void takeDecision(boolean distOk, boolean codeOk) {
+    private void takeDecision(boolean distOk, boolean codeOk, final String time) {
         if (distOk && codeOk) {
             //create new attendance history in student and instructorAttendance
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -222,7 +242,7 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
                         databaseReference.child("User").child(currentUser.getuID())
                                 .child("attendanceHistory")
                                 .child(upcomingClass)
-                                .child(currDate).setValue(true);
+                                .child(currDate).setValue(time);
                     } else {
                         Log.d("database", "Doesn't exist");
                     }
@@ -242,10 +262,16 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
                         for(DataSnapshot keyNode : dataSnapshot.getChildren()) {
                             instructor.put(keyNode.getKey(), keyNode.getValue());
                         }
-                        instructor.put(currentUser.getuID(), true);
+                        instructor.put(currentUser.getuID(), time);
                         instRef.updateChildren(instructor);
-                        Toast.makeText(getApplicationContext(), "check-in successful"
-                                , Toast.LENGTH_LONG).show();
+                        if("late".equalsIgnoreCase(time)){
+                            Toast.makeText(getApplicationContext(), "Checked-in late"
+                                    , Toast.LENGTH_LONG).show();
+                        }
+                        else{
+                            Toast.makeText(getApplicationContext(), "check-in successful"
+                                    , Toast.LENGTH_LONG).show();
+                        }
                         finish();
                     } else {
                         Log.d("database", "Doesn't exist");
@@ -274,25 +300,48 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
     }
 
 
-/*
-    private boolean checkTime() throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
-        String dateInString = "22-01-2015 10:20:56";
-        Date date = sdf.parse(dateInString);
+    /**
+     * This method checks if the time when students checkin for the app is current or not
+     *
+     * @author amanjotsingh - 04/17/2020
+     *
+     * @return true : If the time when student checks-in attendance for the class is valid
+     *              otherwise false
+     */
+    private String checkTime(){
+        Date date = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+        try {
+            Date classTimeOnTime = format.parse("23:45");
+//            Date classTimeOnTime = format.parse(nextCourse.getTime());
+            Date nowTime = format.parse(format.format(date));
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        long classTime = calendar.getTimeInMillis();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(classTimeOnTime);
+            long classTimeOnTimeInMils = calendar.getTimeInMillis();
 
-        calendar = Calendar.getInstance();
-        long currentTime = calendar.getTimeInMillis();
+            calendar = Calendar.getInstance();
+            calendar.setTime(nowTime);
+            long currentTime = calendar.getTimeInMillis();
 
-        if(Math.abs(classTime - currentTime) == 1000*60*15)
-            return true;
-        return false;
-
+            long timeDiff = (classTimeOnTimeInMils - currentTime)/(1000*60);
+            if(timeDiff >= 0 && timeDiff  <= 15){
+                return "true";
+            }
+            else if(timeDiff > 15){
+                return "early";
+            }
+            else if(timeDiff < 0 && timeDiff >= -15){
+                return "late";
+            }
+            else if(timeDiff < -15){
+                return "tooLate";
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return "error";
     }
-*/
 
     /**
      * This method checks the distance of the android device with the class co-ordinates
