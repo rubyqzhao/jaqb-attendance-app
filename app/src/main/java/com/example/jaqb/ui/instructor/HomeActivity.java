@@ -62,7 +62,6 @@ public class HomeActivity extends MenuOptionsActivity {
         fireBaseDBServices = FireBaseDBServices.getInstance();
         upcomingClass = findViewById(R.id.upcoming_class);
         upcomingClass.setText(determineClassToDisplay());
-        //nextClass = new Course("SER 515", "Dummy Class");
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -107,16 +106,16 @@ public class HomeActivity extends MenuOptionsActivity {
         intent.setClass(this, DisplayQRCodeActivity.class);
         // generate random code
         InstructorServicesHelper instructorServicesHelper = new InstructorServicesHelper();
-//        boolean generateCode = instructorServicesHelper.isPreviousCodeValid(nextClass.getCourseQRCode(), TimeUnit.HOURS);
-        boolean isPrevCodeValid = instructorServicesHelper.isPreviousCodeValid("6468 2020-04-17 01:18:10", TimeUnit.HOURS);
+        boolean isPrevCodeValid = instructorServicesHelper.isPreviousCodeValid(nextClass.getCourseQRCode(), TimeUnit.HOURS);
+//        boolean isPrevCodeValid = instructorServicesHelper.isPreviousCodeValid("6468 2020-04-17 01:18:10", TimeUnit.HOURS);
         int code = 0;
         if(!isPrevCodeValid){
             code = instructorServicesHelper.generateRandomCode();
             intent.putExtra("validCode", false);
         }
         else{
-//            code = Integer.getInteger(nextClass.getCourseQRCode().split(" ")[0]);
-            code = Integer.valueOf("6468");
+            code = Integer.parseInt(nextClass.getCourseQRCode().split(" ")[0].trim());
+//            code = Integer.valueOf("6468");
             intent.putExtra("validCode", true);
         }
         intent.putExtra("code", code);
