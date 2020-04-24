@@ -52,6 +52,7 @@ public class CheckInActivity extends MenuOptionsActivity {
      * and gets data from the firebase database.
      * @param savedInstanceState the previous state of app
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +64,7 @@ public class CheckInActivity extends MenuOptionsActivity {
         fireBaseDBServices = FireBaseDBServices.getInstance();
         currentUser = fireBaseDBServices.getCurrentUser();
         courseList = currentUser.getRegisteredCourses();
+        upcomingClass.setText(determineClassToDisplay());
     }
 
     /**
@@ -80,7 +82,7 @@ public class CheckInActivity extends MenuOptionsActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        //upcomingClass.setText(determineClassToDisplay());
+        upcomingClass.setText(determineClassToDisplay());
     }
 
     /**
