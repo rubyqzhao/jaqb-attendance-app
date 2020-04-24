@@ -343,6 +343,13 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
         return "error";
     }
 
+    /**
+     * @author Bharat Goel
+     *
+     * This is just afunction to test checkTime function
+     * @param str
+     * @return
+     */
     public String getCheckTimeString(String str){
         return checkTime(str);
     }
