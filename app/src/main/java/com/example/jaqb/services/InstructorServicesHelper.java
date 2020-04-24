@@ -33,26 +33,21 @@ public class InstructorServicesHelper {
      * @param timeUnit Units in which the difference in the times of QR code generation is expected
      * @return true if the previous code is valid, false if it is invalid
      */
-    public boolean isPreviousCodeValid(String previousTime, TimeUnit timeUnit){
+    public boolean isPreviousCodeValid(String previousTime, TimeUnit timeUnit)
+            throws ArrayIndexOutOfBoundsException, ParseException
+    {
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String currentTime= formatter.format(date);
-        try {
-            String[] prevData = previousTime.split(" ");
-            Date prevDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(prevData[1] + " " + prevData[2]);
-            Date nowDate = formatter.parse(currentTime);
-            long timeDiff = nowDate.getTime() - prevDate.getTime();
-            long diff = timeUnit.convert(timeDiff, TimeUnit.HOURS);
-            System.out.println("DIFFERENCE IN TIME UNITS : " + diff);
-            long timeInHours = (diff)/(1000*60*60);
-            if(timeInHours < 24){
-                return true;
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        catch (ArrayIndexOutOfBoundsException e) {
-            e.printStackTrace();
+        String[] prevData = previousTime.split(" ");
+        Date prevDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(prevData[1] + " " + prevData[2]);
+        Date nowDate = formatter.parse(currentTime);
+        long timeDiff = nowDate.getTime() - prevDate.getTime();
+        long diff = timeUnit.convert(timeDiff, TimeUnit.HOURS);
+        System.out.println("DIFFERENCE IN TIME UNITS : " + diff);
+        long timeInHours = (diff)/(1000*60*60);
+        if(timeInHours < 24 && timeInHours >= 0){
+            return true;
         }
         return false;
     }
