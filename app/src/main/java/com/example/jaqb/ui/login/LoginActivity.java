@@ -177,19 +177,28 @@ public class LoginActivity extends AppCompatActivity implements java.util.Observ
         }
         else
         {
-            Intent intent = null;
-            switch((UserLevel) (arg))
-            {
-                case INSTRUCTOR:
-                    intent = new Intent(getApplicationContext(), HomeActivity.class);
-                    break;
-                case ADMIN:
-                    intent = new Intent(getApplicationContext(), IncompleteActivity.class);
-                    break;
-                default:
-                    intent = new Intent(getApplicationContext(), CheckInActivity.class);
+            FireBaseDBServices firebase = FireBaseDBServices.getInstance();
+            if(firebase.getCurrentUser().isEmailVerified()) {
+                Intent intent = null;
+                switch ((UserLevel) (arg)) {
+                    case INSTRUCTOR:
+                        intent = new Intent(getApplicationContext(), HomeActivity.class);
+                        break;
+                    case ADMIN:
+                        intent = new Intent(getApplicationContext(), IncompleteActivity.class);
+                        break;
+                    default:
+                        intent = new Intent(getApplicationContext(), CheckInActivity.class);
+                }
+                startActivity(intent);
             }
-            startActivity(intent);
+            else
+            {
+                firebase.logoutUser();
+                loadingProgressBar.setVisibility(View.GONE);
+                Toast.makeText(getApplicationContext(), "Email is not verified!\nCheck your email for a link to verify",
+                        Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }
