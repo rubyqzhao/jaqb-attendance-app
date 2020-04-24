@@ -79,7 +79,7 @@ public class HomeActivity extends MenuOptionsActivity {
     @RequiresApi(api = Build.VERSION_CODES.O)
     protected void onResume() {
         super.onResume();
-        upcomingClass.setText(determineClassToDisplay());
+//        upcomingClass.setText(determineClassToDisplay());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -107,7 +107,7 @@ public class HomeActivity extends MenuOptionsActivity {
         // generate random code
         InstructorServicesHelper instructorServicesHelper = new InstructorServicesHelper();
 //        boolean generateCode = instructorServicesHelper.isPreviousCodeValid(nextClass.getCourseQRCode(), TimeUnit.HOURS);
-        boolean isPrevCodeValid = instructorServicesHelper.isPreviousCodeValid("5115 2020-04-05 16:04:15", TimeUnit.HOURS);
+        boolean isPrevCodeValid = instructorServicesHelper.isPreviousCodeValid("6468 2020-04-17 01:18:10", TimeUnit.HOURS);
         int code = 0;
         if(!isPrevCodeValid){
             code = instructorServicesHelper.generateRandomCode();
@@ -115,7 +115,7 @@ public class HomeActivity extends MenuOptionsActivity {
         }
         else{
 //            code = Integer.getInteger(nextClass.getCourseQRCode().split(" ")[0]);
-            code = Integer.valueOf("5115");
+            code = Integer.valueOf("6468");
             intent.putExtra("validCode", true);
         }
         intent.putExtra("code", code);
