@@ -10,6 +10,7 @@ import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.data.model.SemesterDate;
 
 import java.time.DayOfWeek;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -95,7 +96,7 @@ public class CalendarServices
         {
             Course course = courses.get(i);
             long courseTime = getNextTime(courses.get(i), user.getSemester().getTimeZoneID());
-            if(courseTime < soonestCourseTime && courseTime > currentTime)
+            if(courseTime < soonestCourseTime)
             {
                 soonestCourseTime = courseTime;
                 soonestCourse = course;
@@ -186,7 +187,13 @@ public class CalendarServices
     public static long getTimeOfNextDayCode(String dayCode, ZoneId zone, int hour, int minute)
     {
         DayOfWeek dayOfWeek = getDayOfWeek(dayCode);
-        return ZonedDateTime.now(zone).toLocalDate().with(TemporalAdjusters.nextOrSame(dayOfWeek)).atStartOfDay().toInstant(zone.getRules().getOffset(LocalDateTime.now())).getEpochSecond() * 1000;
+        long time = ZonedDateTime.now(zone).toLocalDate().with(TemporalAdjusters.nextOrSame(dayOfWeek)).atStartOfDay().toInstant(zone.getRules().getOffset(LocalDateTime.now())).getEpochSecond() * 1000;
+        int hourNow = ZonedDateTime.now(zone).getHour();
+        int minuteNow = ZonedDateTime.now(zone).getHour();
+        DayOfWeek currentDay = ZonedDateTime.now(zone).getDayOfWeek();
+        if(dayOfWeek == currentDay && (hourNow > hour || (hourNow == hour && minuteNow > minute)))
+            time = ZonedDateTime.now(zone).toLocalDate().with(TemporalAdjusters.next(dayOfWeek)).atStartOfDay().toInstant(zone.getRules().getOffset(LocalDateTime.now())).getEpochSecond() * 1000;
+        return time;
     }
 
     /**

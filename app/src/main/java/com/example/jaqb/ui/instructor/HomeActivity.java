@@ -61,7 +61,8 @@ public class HomeActivity extends MenuOptionsActivity {
         //coordDisplay = findViewById(R.id.gps_coord);
         fireBaseDBServices = FireBaseDBServices.getInstance();
         upcomingClass = findViewById(R.id.upcoming_class);
-        nextClass = new Course("SER 515", "Dummy Class");
+        upcomingClass.setText(determineClassToDisplay());
+        //nextClass = new Course("SER 515", "Dummy Class");
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -79,17 +80,17 @@ public class HomeActivity extends MenuOptionsActivity {
     @RequiresApi(api = Build.VERSION_CODES.O)
     protected void onResume() {
         super.onResume();
-//        upcomingClass.setText(determineClassToDisplay());
+        upcomingClass.setText(determineClassToDisplay());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     protected String determineClassToDisplay() {
         String message;
         if(!fireBaseDBServices.getCurrentUser().getRegisteredCourses().isEmpty()) {
-            Course course = fireBaseDBServices.getCurrentUser().getNextCourse();
-            String code = course.getCode();
-            String days = course.getDays();
-            String time = course.getTime();
+            nextClass = fireBaseDBServices.getCurrentUser().getNextCourse();
+            String code = nextClass.getCode();
+            String days = nextClass.getDays();
+            String time = nextClass.getTime();
 
             message = code + "\n" + days + " @ " + time;
         }
