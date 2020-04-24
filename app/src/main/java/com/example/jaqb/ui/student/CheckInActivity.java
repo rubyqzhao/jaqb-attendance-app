@@ -246,7 +246,7 @@ public class CheckInActivity extends MenuOptionsActivity {
                     Log.d("database", attendance.toString());
                     int tempStreak = 0;
                     for(int i = 0; i < attendDates.size(); i++) {
-                        if(attendance.get(attendDates.get(i)).toString().equals("true")) {
+                        if(attendance.get(attendDates.get(i)).toString().equals("true") || attendance.get(attendDates.get(i)).toString().equals("late")) {
                             tempStreak++;
                             numAttended++;
                         }

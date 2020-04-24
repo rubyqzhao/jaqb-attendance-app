@@ -8,6 +8,7 @@ const csv = require('fast-csv');
 const upload = multer({ dest: 'test/' });
 const http = require('http');
 const fs = require('fs');
+var Chart = require('chart.js');
 
 
 const firebaseConfig = {
@@ -374,5 +375,70 @@ router.post('/upload-csv', upload.single('document'), function (req, res) {
             res.send('Uploaded');
         })
 });
+
+router.get('/stats', function(req, res) {
+    getStats(function(labels, attendTrueList, attendLateList, attendFalseList, attendRatio) {
+        res.render('stats', {
+            labelList: labels,
+            attendTrue: attendTrueList,
+            attendLate: attendLateList,
+            attendFalse: attendFalseList,
+            attendPercent: attendRatio
+        });
+    });
+
+});
+
+function getStats(callback) {
+    var attendRef = database.ref('InstructorAttendance/');
+    attendRef.once('value', function(snapshot) {
+        var labels = [];
+        var attendTrueList = [];
+        var attendLateList = [];
+        var attendFalseList = [];
+        var totalAttended = 0;
+        var totalClasses = 0;
+        var attendRatio = 0;
+
+        snapshot.forEach(function(item) {
+            var attendTrue = 0;
+            var attendLate = 0;
+            var attendFalse = 0;
+
+            console.log(item.key);
+            labels.push(item.key);
+            for (date in item.val()) {
+                console.log("Date ", date);
+                console.log("child of date ", item.child(date));
+                for (attendance in item.child(date).val()) {
+                    console.log("Attendance ", attendance);
+                    console.log("value of attendance ", item.child(date + "/" + attendance).val());
+                    if (item.child(date + "/" + attendance).val().toLocaleString().localeCompare("true") == 0)
+                        attendTrue++;
+                    else if (item.child(date + "/" + attendance).val().toLocaleString().localeCompare("late") == 0)
+                        attendLate++;
+                    else
+                        attendFalse++;
+                }
+
+            }
+
+            attendTrueList.push(attendTrue);
+            attendLateList.push(attendLate);
+            attendFalseList.push(attendFalse);
+            totalAttended += attendTrue + attendLate;
+            totalClasses += attendTrue + attendLate + attendFalse;
+
+            console.log("true list ", attendTrueList);
+            console.log("late list ", attendLateList);
+            console.log("false list ", attendFalseList);
+
+
+            attendRatio = Math.round(totalAttended / totalClasses * 100);
+        });
+
+        return callback(labels, attendTrueList, attendLateList, attendFalseList, attendRatio);
+    });
+}
 
 module.exports = router;
