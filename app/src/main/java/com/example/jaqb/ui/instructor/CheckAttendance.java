@@ -1,15 +1,24 @@
 package com.example.jaqb.ui.instructor;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.jaqb.R;
 import com.example.jaqb.data.model.RegisteredUser;
 import com.example.jaqb.data.model.User;
 import com.example.jaqb.services.FireBaseDBServices;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -64,15 +73,41 @@ public class CheckAttendance extends AppCompatActivity {
         studentData = new HashMap<String, RegisteredUser>();
         listView = (ListView) findViewById(R.id.dates_course_list);
         findViewById(R.id.dates_progressBar).setVisibility(View.GONE);
-        arrayAdapter = new ArrayAdapter<>(this, R.layout.class_list_item, R.id.class_item_name, studentNames);
+        arrayAdapter = new ArrayAdapter<String>(this, R.layout.class_list_item, R.id.class_item_name, studentNames){
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent){
+                View view = super.getView(position, convertView, parent);
+                TextView textView = (TextView)view.findViewById(R.id.class_item_name);
+                String text = textView.getText().toString();//setTextColor(position % 2 == 0 ? Color.WHITE : Color.RED); // here can be your logic
+                String color = text.split(":")[1].trim();
+                if("late".equalsIgnoreCase(color)){
+                    textView.setTextColor(Color.YELLOW);
+                }
+                else if("present".equalsIgnoreCase(color)) {
+                    textView.setTextColor(Color.GREEN);
+                }
+                else if("absent".equalsIgnoreCase(color)){
+                    textView.setTextColor(Color.RED);
+                }
+                return view;
+            };
+        };
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot keyNode : dataSnapshot.getChildren()) {
                     String studentId = keyNode.getKey();
-                    boolean attendance = (boolean) keyNode.getValue();
+                    String attendance = (String) keyNode.getValue();
                     studentIds.add(studentId);
-                    studentPresence.add((attendance) ? "Present" : "Absent");
+                    if("true".equalsIgnoreCase(attendance)){
+                        studentPresence.add("Present");
+                    }
+                    else if("false".equalsIgnoreCase(attendance)){
+                        studentPresence.add("Absent");
+                    }
+                    else if("late".equalsIgnoreCase(attendance)){
+                        studentPresence.add("Late");
+                    }
                 }
             }
 
@@ -100,6 +135,39 @@ public class CheckAttendance extends AppCompatActivity {
 
             }
         });
+
+        PieChart pieChart = findViewById(R.id.piechart);
+        pieChart.setVisibility(View.VISIBLE);
+        ArrayList NoOfEmp = new ArrayList();
+
+        NoOfEmp.add(new Entry(945f, 0));
+        NoOfEmp.add(new Entry(1040f, 1));
+        NoOfEmp.add(new Entry(1133f, 2));
+        NoOfEmp.add(new Entry(1240f, 3));
+        NoOfEmp.add(new Entry(1369f, 4));
+        NoOfEmp.add(new Entry(1487f, 5));
+        NoOfEmp.add(new Entry(1501f, 6));
+        NoOfEmp.add(new Entry(1645f, 7));
+        NoOfEmp.add(new Entry(1578f, 8));
+        NoOfEmp.add(new Entry(1695f, 9));
+        PieDataSet dataSet = new PieDataSet(NoOfEmp, "Number Of Employees");
+
+        ArrayList year = new ArrayList();
+
+        year.add("2008");
+        year.add("2009");
+        year.add("2010");
+        year.add("2011");
+        year.add("2012");
+        year.add("2013");
+        year.add("2014");
+        year.add("2015");
+        year.add("2016");
+        year.add("2017");
+        PieData data = new PieData(year, dataSet);
+        pieChart.setData(data);
+        dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+        pieChart.animateXY(5000, 5000);
     }
 
     private void getDisplayDate(){

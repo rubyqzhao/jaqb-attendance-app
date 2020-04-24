@@ -1,20 +1,13 @@
 package com.example.jaqb.ui.instructor;
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
-
 import com.example.jaqb.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -23,7 +16,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidListener;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,41 +23,37 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Activity to show the user a list of class dates based on the course code.
- * Gets the days listed in the database.
- *
- * @author Amanjot Singh
- * @version 1.0
- */
-public class ClassDatesActivity extends AppCompatActivity {
+public class AttendanceHistoryIndividualStudentActivity extends AppCompatActivity {
 
     private String courseCode;
-    private List<String> courseDates;
+    private String studentId;
+    private DatabaseReference databaseReference;
+    private List<String> courseAttendance;
     private CaldroidFragment caldroidFragment;
     private CaldroidFragment dialogCaldroidFragment;
-    private DatabaseReference databaseReference;
 
-    /**
-     * Triggers when the user first accesses the activity. Initializes values
-     * and gets data from the firebase database.
-     * @param savedInstanceState    the previous state of the app
-     */
-    @SuppressLint("ResourceType")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calendar_view);
         courseCode = (String) getIntent().getCharSequenceExtra("code");
-        databaseReference = FirebaseDatabase.getInstance().getReference("InstructorAttendance")
+        studentId = (String) getIntent().getCharSequenceExtra("studentId");
+        courseAttendance = new ArrayList<>();
+        databaseReference = FirebaseDatabase.getInstance().getReference("User")
+                .child(studentId)
+                .child("attendanceHistory")
                 .child(courseCode);
-        courseDates = new ArrayList<>();
         databaseReference.addValueEventListener(new ValueEventListener() {
+            /**
+             * Triggers when there has to a change in Database
+             * @param dataSnapshot the current state of database
+             */
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot keyNode : dataSnapshot.getChildren()){
-                    String date = (String) keyNode.getKey();
-                    courseDates.add(date);
+                    String date = keyNode.getKey();
+                    String presence = (String) keyNode.getValue();
+                    courseAttendance.add(date + " : " + presence);
                 }
                 // Attach to the activity
                 FragmentTransaction t = getSupportFragmentManager().beginTransaction();
@@ -78,13 +66,17 @@ public class ClassDatesActivity extends AppCompatActivity {
                 }
             }
 
+            /**
+             * Triggers if data fails to get updated
+             * @param databaseError the error due to which change could not happen
+             */
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });
 
-        final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        final SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy");
 
         caldroidFragment = new CaldroidFragment();
 
@@ -108,16 +100,8 @@ public class ClassDatesActivity extends AppCompatActivity {
 
             @Override
             public void onSelectDate(Date date, View view) {
-                String dateSelected = formatter.format(date);
-                Toast.makeText(getApplicationContext(), dateSelected,
+                Toast.makeText(getApplicationContext(), formatter.format(date),
                         Toast.LENGTH_SHORT).show();
-                if(courseDates.contains(dateSelected)) {
-                    Intent intent = new Intent(getApplicationContext(), CheckAttendance.class);
-                    intent.putExtra("date", dateSelected);
-                    intent.putExtra("code", courseCode);
-
-                    startActivity(intent);
-                }
             }
 
             @Override
@@ -144,6 +128,7 @@ public class ClassDatesActivity extends AppCompatActivity {
             }
 
         };
+
         caldroidFragment.setCaldroidListener(listener);
     }
 
@@ -173,11 +158,26 @@ public class ClassDatesActivity extends AppCompatActivity {
      */
     private void setCustomResourceForDates() throws ParseException {
         if (caldroidFragment != null) {
-            ColorDrawable blue = new ColorDrawable(Color.BLUE);
-            for(String d : courseDates){
-                Date date = new SimpleDateFormat("yyyy-MM-dd").parse(d);
-                caldroidFragment.setBackgroundDrawableForDate(blue, date);
-                caldroidFragment.setTextColorForDate(R.color.caldroid_black, date);
+            ColorDrawable red = new ColorDrawable(Color.RED);
+            ColorDrawable green = new ColorDrawable(Color.GREEN);
+            ColorDrawable yellow = new ColorDrawable(Color.YELLOW);
+            for(String s : courseAttendance){
+                String[] data = s.split(":");
+                String tempDate = data[0].trim();
+                String dateColor = data[1].trim();
+                Date date = new SimpleDateFormat("yyyy-MM-dd").parse(tempDate);
+                if(dateColor.equalsIgnoreCase("true")){
+                    caldroidFragment.setBackgroundDrawableForDate(green, date);
+                    caldroidFragment.setTextColorForDate(R.color.caldroid_black, date);
+                }
+                else if(dateColor.equalsIgnoreCase("false")){
+                    caldroidFragment.setBackgroundDrawableForDate(red, date);
+                    caldroidFragment.setTextColorForDate(R.color.caldroid_black, date);
+                }
+                else if(dateColor.equalsIgnoreCase("late")){
+                    caldroidFragment.setBackgroundDrawableForDate(yellow, date);
+                    caldroidFragment.setTextColorForDate(R.color.caldroid_black, date);
+                }
             }
         }
     }
