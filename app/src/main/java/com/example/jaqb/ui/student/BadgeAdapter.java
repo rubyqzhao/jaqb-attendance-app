@@ -15,6 +15,9 @@ import java.util.List;
 
 /**
  * Adapter class for the badges
+ *
+ * @author Ruby Zhao
+ * @version 1.0
  */
 public class BadgeAdapter extends BaseAdapter {
     private Context context;
@@ -27,6 +30,14 @@ public class BadgeAdapter extends BaseAdapter {
      */
     public BadgeAdapter(Context context, List<Badge> badges) {
         this.context = context;
+        this.badges = badges;
+    }
+
+    /**
+     * Constructor to initialize the badge adapter
+     * @param badges the list of badges
+     */
+    public BadgeAdapter(List<Badge> badges) {
         this.badges = badges;
     }
 

@@ -127,7 +127,6 @@ public class CheckInActivity extends MenuOptionsActivity {
         Double courseLongitude;
         Double courseLatitude;
         //String courseQR;
-        //todo: change decision logic to get closest upcoming class
         if(!courseList.isEmpty()) {
             Course course = courseList.get(1);
             courseLongitude = -111.9179767;//course.getLongitude();
@@ -191,7 +190,6 @@ public class CheckInActivity extends MenuOptionsActivity {
     @RequiresApi(api = Build.VERSION_CODES.O)
     protected String determineClassToDisplay() {
         String message;
-        //todo: change decision logic to get closest upcoming class
         if(!courseList.isEmpty()) {
             Course course = currentUser.getNextCourse();
             String code = course.getCode();
@@ -278,5 +276,37 @@ public class CheckInActivity extends MenuOptionsActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
+    }
+
+    /**
+     * Determines badge stats based on inputted attendance data
+     * @param attendDates
+     * @param attendance
+     */
+    public Map<String, Object> badgeStats(List<String> attendDates, Map<String, Object> attendance) {
+        Map<String, Object> stats = new HashMap<>();
+        int currentStreak = 0;
+        int numAttended = 0;
+        int totalClasses = attendance.size();;
+        int tempStreak = 0;
+        for(int i = 0; i < attendDates.size(); i++) {
+            if(attendance.get(attendDates.get(i)).toString().equals("true")) {
+                tempStreak++;
+                numAttended++;
+            }
+            else {
+                if(tempStreak > currentStreak)
+                    currentStreak = tempStreak;
+                tempStreak = 0;
+            }
+        }
+        if(tempStreak > currentStreak)
+            currentStreak = tempStreak;
+
+        stats.put("currentStreak", Integer.valueOf(currentStreak));
+        stats.put("numAttended", Integer.valueOf(numAttended));
+        stats.put("totalClasses", Integer.valueOf(totalClasses));
+
+        return stats;
     }
 }
