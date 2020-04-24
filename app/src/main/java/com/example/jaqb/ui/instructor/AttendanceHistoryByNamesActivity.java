@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.jaqb.R;
 import com.example.jaqb.data.model.RegisteredUser;
+import com.example.jaqb.ui.student.AttendanceHistoryStudentActivity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -110,7 +111,7 @@ public class AttendanceHistoryByNamesActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String item = arrayAdapter.getItem(position);
                 String item_id = item.split(":")[1].trim();
-                Intent intent = new Intent(getApplicationContext(), AttendanceHistoryIndividualStudentActivity.class);
+                Intent intent = new Intent(getApplicationContext(), AttendanceHistoryStudentActivity.class);
                 intent.putExtra("studentId", item_id);
                 intent.putExtra("code", courseCode);
                 startActivity(intent);
