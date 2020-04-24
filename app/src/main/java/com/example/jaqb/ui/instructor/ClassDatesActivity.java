@@ -57,6 +57,7 @@ public class ClassDatesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calendar_view);
         courseCode = (String) getIntent().getCharSequenceExtra("code");
+        findViewById(R.id.overall_stats).setVisibility(View.GONE);
         databaseReference = FirebaseDatabase.getInstance().getReference("InstructorAttendance")
                 .child(courseCode);
         courseDates = new ArrayList<>();

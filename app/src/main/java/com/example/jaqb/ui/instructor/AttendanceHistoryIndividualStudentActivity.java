@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,11 +32,24 @@ public class AttendanceHistoryIndividualStudentActivity extends AppCompatActivit
     private List<String> courseAttendance;
     private CaldroidFragment caldroidFragment;
     private CaldroidFragment dialogCaldroidFragment;
+    private TextView presentTextView;
+    private TextView absentTextView;
+    private TextView lateTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calendar_view);
+        presentTextView = (TextView) findViewById(R.id.present_stat);
+        presentTextView.setTextColor(Color.GREEN);
+
+        absentTextView = (TextView) findViewById(R.id.absent_stat);
+        absentTextView.setTextColor(Color.RED);
+
+        lateTextView = (TextView) findViewById(R.id.late_stat);
+        lateTextView.setTextColor(Color.YELLOW);
+        findViewById(R.id.overall_stats).setVisibility(View.VISIBLE);
+
         courseCode = (String) getIntent().getCharSequenceExtra("code");
         studentId = (String) getIntent().getCharSequenceExtra("studentId");
         courseAttendance = new ArrayList<>();
@@ -50,15 +64,29 @@ public class AttendanceHistoryIndividualStudentActivity extends AppCompatActivit
              */
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                int present = 0, absent = 0, late = 0;
                 for(DataSnapshot keyNode : dataSnapshot.getChildren()){
                     String date = keyNode.getKey();
                     String presence = (String) keyNode.getValue();
                     courseAttendance.add(date + " : " + presence);
+                    if("true".equalsIgnoreCase(presence)) {
+                        present++;
+                    }
+                    else if("false".equalsIgnoreCase(presence)){
+                        absent++;
+                    }
+                    else if("late".equalsIgnoreCase(presence)){
+                        late++;
+                    }
                 }
                 // Attach to the activity
                 FragmentTransaction t = getSupportFragmentManager().beginTransaction();
                 t.replace(R.id.calendar1, caldroidFragment);
                 t.commit();
+
+                presentTextView.setText("Present : " + present);
+                absentTextView.setText("Absent : " + absent);
+                lateTextView.setText("Late : " + late);
                 try {
                     setCustomResourceForDates();
                 } catch (ParseException e) {

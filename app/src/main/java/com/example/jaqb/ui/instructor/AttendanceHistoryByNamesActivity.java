@@ -6,6 +6,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.jaqb.R;
@@ -16,6 +18,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +39,7 @@ public class AttendanceHistoryByNamesActivity extends AppCompatActivity {
     private ArrayAdapter<String> arrayAdapter;
     private Query databaseReference;
     private DatabaseReference databaseReference2;
+    private TextView textView;
 
     /**
      * Initial method that triggers when the user accesses the attendance list
@@ -44,8 +50,10 @@ public class AttendanceHistoryByNamesActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_class_dates);
+        setContentView(R.layout.activity_student_name_list);
         courseCode = (String) getIntent().getCharSequenceExtra("code");
+        textView = (TextView) findViewById(R.id.studentLabel);
+        textView.setText("List of students : " + courseCode);
         date = (String) getIntent().getCharSequenceExtra("date");
         databaseReference = FirebaseDatabase.getInstance().getReference("Course")
                 .orderByChild("code").equalTo(courseCode);
@@ -55,8 +63,8 @@ public class AttendanceHistoryByNamesActivity extends AppCompatActivity {
         studentPresence = new ArrayList<String>();
         studentNames = new ArrayList<String>();
         studentData = new HashMap<String, RegisteredUser>();
-        listView = (ListView) findViewById(R.id.dates_course_list);
-        findViewById(R.id.dates_progressBar).setVisibility(View.GONE);
+        listView = (ListView) findViewById(R.id.student_names_list);
+//        findViewById(R.id.dates_progressBar).setVisibility(View.GONE);
         arrayAdapter = new ArrayAdapter<>(this, R.layout.class_list_item, R.id.class_item_name, studentNames);
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
