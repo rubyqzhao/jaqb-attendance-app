@@ -24,6 +24,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.text.ParseException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -108,7 +109,12 @@ public class HomeActivity extends MenuOptionsActivity {
         // generate random code
         InstructorServicesHelper instructorServicesHelper = new InstructorServicesHelper();
 //        boolean generateCode = instructorServicesHelper.isPreviousCodeValid(nextClass.getCourseQRCode(), TimeUnit.HOURS);
-        boolean isPrevCodeValid = instructorServicesHelper.isPreviousCodeValid("6468 2020-04-17 01:18:10", TimeUnit.HOURS);
+        boolean isPrevCodeValid = false;
+        try {
+            isPrevCodeValid = instructorServicesHelper.isPreviousCodeValid("5115 2020-04-05 16:04:15", TimeUnit.HOURS);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         int code = 0;
         if(!isPrevCodeValid){
             code = instructorServicesHelper.generateRandomCode();
