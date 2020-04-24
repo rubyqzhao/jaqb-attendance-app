@@ -27,4 +27,8 @@
     <string name="action_submit_location">"Update Class Location"</string>
     <string name="badges">Badges</string>
     <string name="scan_qr">Scan QR Code or enter the attendance code</string>
+    <string name="undo">Undo</string>
+    <string name="customize">Customize</string>
+    <string name="history_students">View attendance by\n student name</string>
+    <string name="history_dates">View attendance by\n date</string>
 </resources>

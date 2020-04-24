@@ -1,17 +1,13 @@
 package com.example.jaqb.ui.student;
 
-import android.Manifest;
 import android.content.Intent;
 import android.os.Build;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,7 +16,6 @@ import android.widget.Toast;
 import com.example.jaqb.IncompleteActivity;
 import com.example.jaqb.MainActivity;
 import com.example.jaqb.MyCoursesActivity;
-import com.example.jaqb.QRCheckin;
 import com.example.jaqb.R;
 import com.example.jaqb.data.model.Course;
 import com.example.jaqb.data.model.LoggedInUser;
@@ -85,7 +80,7 @@ public class CheckInActivity extends MenuOptionsActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        upcomingClass.setText(determineClassToDisplay());
+        //upcomingClass.setText(determineClassToDisplay());
     }
 
     /**
@@ -136,7 +131,7 @@ public class CheckInActivity extends MenuOptionsActivity {
             Intent intent = new Intent(this, QRCheckin.class);
             intent.putExtra("courseLongitude", courseLongitude);
             intent.putExtra("courseLatitude", courseLatitude);
-            intent.putExtra("courseQR", "8320");
+            intent.putExtra("courseQR", "6468");
             startActivity(intent);
         }
         else {

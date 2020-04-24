@@ -59,7 +59,7 @@ public class AttendanceHistoryInstructorActivity extends AppCompatActivity
         Course course = courseAdapter.getItem(position);
         Intent intent = new Intent();
         if("INSTRUCTOR".equals(currentUser.getLevel().toString())){
-            intent.setClass(this, ClassDatesActivity.class);
+            intent.setClass(this, AttendanceHistoryOptionsActivity.class);
         }
         else if("STUDENT".equals(currentUser.getLevel().toString())){
             intent.setClass(this, AttendanceHistoryStudentActivity.class);

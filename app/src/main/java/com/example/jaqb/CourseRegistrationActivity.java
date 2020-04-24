@@ -73,13 +73,14 @@ public class CourseRegistrationActivity extends AppCompatActivity implements
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Intent intent = new Intent();
+        Course course = courseAdapter.getItem(position);
         intent.setClass(this, CourseDetailsActivity.class);
-        intent.putExtra("code", (String) courseList.get((int) id).getCode());
-        intent.putExtra("name", (String) courseList.get((int) id).getCourseName());
-        intent.putExtra("instructor", (String) courseList.get((int) id).getInstructorName());
-        intent.putExtra("days", (String) courseList.get((int) id).getDays());
-        intent.putExtra("time", (String) courseList.get((int) id).getTime());
-        if(fireBaseDBServices.courseAlreadyRegistered(courseList.get((int) id).getCode())){
+        intent.putExtra("code", (String) course.getCode());
+        intent.putExtra("name", (String) course.getCourseName());
+        intent.putExtra("instructor", (String) course.getInstructorName());
+        intent.putExtra("days", (String) course.getDays());
+        intent.putExtra("time", (String) course.getTime());
+        if(fireBaseDBServices.courseAlreadyRegistered(course.getCode())){
             intent.putExtra("registered", "true");
         }
         else{
