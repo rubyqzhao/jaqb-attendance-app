@@ -61,7 +61,8 @@ public class HomeActivity extends MenuOptionsActivity {
         //coordDisplay = findViewById(R.id.gps_coord);
         fireBaseDBServices = FireBaseDBServices.getInstance();
         upcomingClass = findViewById(R.id.upcoming_class);
-        nextClass = new Course("SER 515", "Dummy Class");
+        upcomingClass.setText(determineClassToDisplay());
+        //nextClass = new Course("SER 515", "Dummy Class");
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -86,10 +87,10 @@ public class HomeActivity extends MenuOptionsActivity {
     protected String determineClassToDisplay() {
         String message;
         if(!fireBaseDBServices.getCurrentUser().getRegisteredCourses().isEmpty()) {
-            Course course = fireBaseDBServices.getCurrentUser().getNextCourse();
-            String code = course.getCode();
-            String days = course.getDays();
-            String time = course.getTime();
+            nextClass = fireBaseDBServices.getCurrentUser().getNextCourse();
+            String code = nextClass.getCode();
+            String days = nextClass.getDays();
+            String time = nextClass.getTime();
 
             message = code + "\n" + days + " @ " + time;
         }
@@ -107,7 +108,7 @@ public class HomeActivity extends MenuOptionsActivity {
         // generate random code
         InstructorServicesHelper instructorServicesHelper = new InstructorServicesHelper();
 //        boolean generateCode = instructorServicesHelper.isPreviousCodeValid(nextClass.getCourseQRCode(), TimeUnit.HOURS);
-        boolean isPrevCodeValid = instructorServicesHelper.isPreviousCodeValid("5115 2020-04-05 16:04:15", TimeUnit.HOURS);
+        boolean isPrevCodeValid = instructorServicesHelper.isPreviousCodeValid("6468 2020-04-17 01:18:10", TimeUnit.HOURS);
         int code = 0;
         if(!isPrevCodeValid){
             code = instructorServicesHelper.generateRandomCode();
@@ -115,7 +116,7 @@ public class HomeActivity extends MenuOptionsActivity {
         }
         else{
 //            code = Integer.getInteger(nextClass.getCourseQRCode().split(" ")[0]);
-            code = Integer.valueOf("5115");
+            code = Integer.valueOf("6468");
             intent.putExtra("validCode", true);
         }
         intent.putExtra("code", code);
