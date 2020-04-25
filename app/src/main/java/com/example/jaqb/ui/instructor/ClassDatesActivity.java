@@ -58,6 +58,7 @@ public class ClassDatesActivity extends LogoutActivity {
         super.onCreate(savedInstanceState);
         onCreate(R.layout.activity_calendar_view);
         courseCode = (String) getIntent().getCharSequenceExtra("code");
+        findViewById(R.id.overall_stats).setVisibility(View.GONE);
         databaseReference = FirebaseDatabase.getInstance().getReference("InstructorAttendance")
                 .child(courseCode);
         courseDates = new ArrayList<>();
@@ -130,18 +131,11 @@ public class ClassDatesActivity extends LogoutActivity {
 
             @Override
             public void onLongClickDate(Date date, View view) {
-                Toast.makeText(getApplicationContext(),
-                        "Long click " + formatter.format(date),
-                        Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onCaldroidViewCreated() {
-                if (caldroidFragment.getLeftArrowButton() != null) {
-                    Toast.makeText(getApplicationContext(),
-                            "Caldroid view is created", Toast.LENGTH_SHORT)
-                            .show();
-                }
+
             }
 
         };

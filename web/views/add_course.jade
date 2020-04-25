@@ -1,0 +1,73 @@
+extends layout
+
+block content
+    div(class = "w3-row-padding w3-section"  id ="addCourseDiv")
+        div(class = "w3-white w3-col w3-border w3-padding")
+          h2 Add Courses
+          br
+          br    
+          form(name="add-course", action="add-course", method="post" id="addCourseForm")   
+            div.input
+              table(id="addCourseTable")
+                tr
+                  td
+                    b
+                      span.label Course Code 
+                  td
+                    input(type="text", name="code", placeholder="Ex. SER 517")    
+                tr
+                  td 
+                    b 
+                      span.label Course Name 
+                  td   
+                    input(type="text", name="name" placeholder="Ex. Data Structures") 
+                tr 
+                  td 
+                    b  
+                      span.label Meeting Days 
+                  td
+                    input(type="checkbox", name="days", value="MO")
+                    span.label  MO 
+                    input(type="checkbox", name="days", value="TU")
+                    span.label  TU 
+                    input(type="checkbox", name="days", value="WE")
+                    span.label  WE 
+                    input(type="checkbox", name="days", value="TH")
+                    span.label  TH 
+                    input(type="checkbox", name="days", value="FR")
+                    span.label  FR 
+                    input(type="checkbox", name="days", value="SA")
+                    span.label  SA 
+                    input(type="checkbox", name="days", value="SU")
+                    span.label  SU 
+                tr
+                  td
+                    b
+                      span.label Meeting Time
+                  td  
+                    input(type="time", name="time") 
+                tr
+                  td
+                    b
+                      span.label Course Instructor 
+                  td
+                    input(type="text", name="instructor"  placeholder="Ex. John Doe")
+              br
+              br
+              div.action(class="w3-col w3-padding") 
+                input(type="submit", value="Add", class="w3-button w3-light-gray w3-hover-red")
+
+        div(class = "w3-white w3-col w3-border w3-padding l12 s12")
+          h2(class="w3-col") Add Multiple Courses
+          form(method="post", action="/upload-csv", enctype="multipart/form-data")
+            div.input(class="w3-col w3-padding")
+              br
+              span.label Upload a CSV file 
+              input(type="file", name="document")
+            div(class="w3-col")
+            div.actions(class="w3-col")
+              br
+              br
+              input(type="submit", value = "Add"  class="w3-button w3-light-gray w3-hover-red")
+              br
+              br

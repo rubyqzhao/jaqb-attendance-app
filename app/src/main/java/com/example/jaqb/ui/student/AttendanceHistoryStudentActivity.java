@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.jaqb.R;
 import com.example.jaqb.data.model.LoggedInUser;
+import com.example.jaqb.data.model.UserLevel;
 import com.example.jaqb.services.FireBaseDBServices;
 import com.example.jaqb.ui.LogoutActivity;
 import com.google.firebase.database.DataSnapshot;
@@ -41,6 +43,9 @@ public class AttendanceHistoryStudentActivity extends LogoutActivity {
     private List<String> courseAttendance;
     private CaldroidFragment caldroidFragment;
     private CaldroidFragment dialogCaldroidFragment;
+    private TextView presentTextView;
+    private TextView absentTextView;
+    private TextView lateTextView;
 
     /**
      * Triggers when the user first accesses the activity. Initializes values
@@ -51,31 +56,60 @@ public class AttendanceHistoryStudentActivity extends LogoutActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         onCreate(R.layout.activity_calendar_view);
+        presentTextView = (TextView) findViewById(R.id.present_stat);
+        presentTextView.setTextColor(Color.GREEN);
+
+        absentTextView = (TextView) findViewById(R.id.absent_stat);
+        absentTextView.setTextColor(Color.RED);
+
+        lateTextView = (TextView) findViewById(R.id.late_stat);
+        lateTextView.setTextColor(Color.YELLOW);
+        findViewById(R.id.overall_stats).setVisibility(View.VISIBLE);
         courseAttendance = new ArrayList<>();
         fireBaseDBServices = FireBaseDBServices.getInstance();
         currentUser = fireBaseDBServices.getCurrentUser();
+        String studentId = "";
+        if(currentUser.getLevel().equals(UserLevel.STUDENT)){
+            studentId = currentUser.getuID();
+        }
+        else{
+            studentId = (String) getIntent().getCharSequenceExtra("studentId");
+        }
         courseCode = (String) getIntent().getCharSequenceExtra("code");
         databaseReference = FirebaseDatabase.getInstance().getReference("User")
-                .child(currentUser.getuID())
+                .child(studentId)
                 .child("attendanceHistory")
                 .child(courseCode);
         databaseReference.addValueEventListener(new ValueEventListener() {
             /**
              * Triggers when there has to a change in Database
-             *
              * @param dataSnapshot the current state of database
              */
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot keyNode : dataSnapshot.getChildren()) {
+                int present = 0, absent = 0, late = 0;
+                for(DataSnapshot keyNode : dataSnapshot.getChildren()){
                     String date = keyNode.getKey();
                     String presence = (String) keyNode.getValue();
                     courseAttendance.add(date + " : " + presence);
+                    if("true".equalsIgnoreCase(presence)) {
+                        present++;
+                    }
+                    else if("false".equalsIgnoreCase(presence)){
+                        absent++;
+                    }
+                    else if("late".equalsIgnoreCase(presence)){
+                        late++;
+                    }
                 }
                 // Attach to the activity
                 FragmentTransaction t = getSupportFragmentManager().beginTransaction();
                 t.replace(R.id.calendar1, caldroidFragment);
                 t.commit();
+
+                presentTextView.setText("Present : " + present);
+                absentTextView.setText("Absent : " + absent);
+                lateTextView.setText("Late : " + late);
                 try {
                     setCustomResourceForDates();
                 } catch (ParseException e) {
@@ -85,7 +119,6 @@ public class AttendanceHistoryStudentActivity extends LogoutActivity {
 
             /**
              * Triggers if data fails to get updated
-             *
              * @param databaseError the error due to which change could not happen
              */
             @Override
@@ -131,18 +164,10 @@ public class AttendanceHistoryStudentActivity extends LogoutActivity {
 
             @Override
             public void onLongClickDate(Date date, View view) {
-                Toast.makeText(getApplicationContext(),
-                        "Long click " + formatter.format(date),
-                        Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onCaldroidViewCreated() {
-                if (caldroidFragment.getLeftArrowButton() != null) {
-                    Toast.makeText(getApplicationContext(),
-                            "Caldroid view is created", Toast.LENGTH_SHORT)
-                            .show();
-                }
             }
 
         };

@@ -72,6 +72,16 @@ public class QRCodeHelper {
         mContent = content;
         return this;
     }
+
+    /**
+     * Simply getting the encrypted to qrcode.
+     *
+     * @return the text of the content of the qr code
+     */
+    public String getContent() {
+        return mContent;
+    }
+
     /**
      * Simply setting the width and height for qrcode.
      *

@@ -1,0 +1,66 @@
+extends layout
+
+block content
+    div(class = "w3-row-padding")
+        div(class = "w3-col w3-white w3-padding")
+            h1 #{title}
+
+    div(class = "w3-row-padding")
+        div(class = "w3-col w3-white w3-padding")
+            h2 Institution Statistics
+            h3 Overall Attendance Rate for Your Institution: #{attendPercent}%
+
+
+            button(onclick='chartFunction( [#{attendTrue}], [#{attendLate}], [#{attendFalse}], "#{labelList}" )' class="w3-button w3-light-gray w3-hover-red") View Attendance by Course
+            div(class="chart-container", style="position: relative; height:40vh; width:80vw")
+                canvas(id="myChart", width="400", height="400")
+            script(type="text/javascript", src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.js").
+
+            script.
+                function chartFunction(didAttend, lateAttend, noAttend, labels) {
+                    data = labels.split(",");
+                    var ctx = 'myChart';
+                    var myChart = new Chart(ctx, {
+                        type: 'horizontalBar',
+                        data: {
+                            labels: data,
+                            datasets: [{
+                                label: 'Students attended',
+                                data: didAttend,
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Students late',
+                                data: lateAttend,
+                                backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                                borderColor: 'rgba(255, 206, 86, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Students absent',
+                                data: noAttend,
+                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 1
+                            }]
+
+                        },
+                        options: {
+                            scales: {
+                                xAxes: [{
+                                    stacked: true
+                                }],
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    },
+                                    stacked: true
+                                }]
+                            },
+                            maintainAspectRatio: false
+                        }
+                    });
+                }
+
