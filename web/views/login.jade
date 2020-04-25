@@ -1,0 +1,29 @@
+doctype html
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href="https://www.w3schools.com/w3css/4/w3.css")
+    
+  body 
+    
+    div(class="w3-bar w3-light-gray w3-xlarge") 
+      a(href="/", class="w3-bar-item w3-button w3-hover-red") JAQB Admin
+      a(href="/about", class="w3-bar-item w3-button w3-right w3-hover-red") About
+
+    div(class = "box2")
+    block content
+        div(id="loginDiv" class="w3-white")
+            br
+            h1 Welcome!
+            form(action="/login" method="post")
+                div(class="imgcontainer")
+                    img(src="images/Logo_Circle.png" alt="JAQB Logo" class="avatar")
+                div(class="container")
+                    label(for="uname")
+                        b Username
+                    input(type="text" placeholder="Enter Username" name="uname" required)
+                    label(for="psw")
+                        b Password
+                    input(type="password" placeholder="Enter Password" name="psw" required)
+                    button(type="submit" class="w3-button w3-red w3-hover-green") Login

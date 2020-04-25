@@ -1,15 +1,25 @@
 package com.example.jaqb.ui.instructor;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.jaqb.R;
 import com.example.jaqb.data.model.RegisteredUser;
 import com.example.jaqb.data.model.User;
 import com.example.jaqb.services.FireBaseDBServices;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -41,6 +51,10 @@ public class CheckAttendance extends AppCompatActivity {
     private ArrayAdapter<String> arrayAdapter;
     private DatabaseReference databaseReference;
     private DatabaseReference databaseReference2;
+    private ArrayList attendance;
+    private PieDataSet dataSet;
+    private PieChart pieChart;
+    private ArrayList dates;
 
     /**
      * Initial method that triggers when the user accesses the attendance list
@@ -64,16 +78,61 @@ public class CheckAttendance extends AppCompatActivity {
         studentData = new HashMap<String, RegisteredUser>();
         listView = (ListView) findViewById(R.id.dates_course_list);
         findViewById(R.id.dates_progressBar).setVisibility(View.GONE);
-        arrayAdapter = new ArrayAdapter<>(this, R.layout.class_list_item, R.id.class_item_name, studentNames);
+        arrayAdapter = new ArrayAdapter<String>(this, R.layout.class_list_item, R.id.class_item_name, studentNames){
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent){
+                View view = super.getView(position, convertView, parent);
+                TextView textView = (TextView)view.findViewById(R.id.class_item_name);
+                String text = textView.getText().toString();//setTextColor(position % 2 == 0 ? Color.WHITE : Color.RED); // here can be your logic
+                String color = text.split(":")[1].trim();
+                if("late".equalsIgnoreCase(color)){
+                    textView.setTextColor(Color.YELLOW);
+                }
+                else if("present".equalsIgnoreCase(color)) {
+                    textView.setTextColor(Color.GREEN);
+                }
+                else if("absent".equalsIgnoreCase(color)){
+                    textView.setTextColor(Color.RED);
+                }
+                return view;
+            };
+        };
+
+        pieChart = findViewById(R.id.piechart);
+        pieChart.setVisibility(View.VISIBLE);
+        pieChart.animateXY(2000, 2000);
+
+        attendance = new ArrayList();
+        dates = new ArrayList();
+
+        dates.add("Present");
+        dates.add("Absent");
+        dates.add("Late");
+
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                int present = 0, absent = 0, late = 0;
                 for(DataSnapshot keyNode : dataSnapshot.getChildren()) {
                     String studentId = keyNode.getKey();
-                    boolean attendance = (boolean) keyNode.getValue();
+                    String attendance = (String) keyNode.getValue();
                     studentIds.add(studentId);
-                    studentPresence.add((attendance) ? "Present" : "Absent");
+                    if("true".equalsIgnoreCase(attendance)){
+                        studentPresence.add("Present");
+                        present++;
+                    }
+                    else if("false".equalsIgnoreCase(attendance)){
+                        studentPresence.add("Absent");
+                        absent++;
+                    }
+                    else if("late".equalsIgnoreCase(attendance)){
+                        studentPresence.add("Late");
+                        late++;
+                    }
                 }
+                attendance.add(new Entry(present, 0));
+                attendance.add(new Entry(absent, 1));
+                attendance.add(new Entry(late, 2));
             }
 
             @Override
@@ -92,6 +151,11 @@ public class CheckAttendance extends AppCompatActivity {
                     studentData.put(key, user);
                 }
                 getDisplayDate();
+                dataSet = new PieDataSet(attendance, "Attendance");
+                int[] color = new int[]{ Color.GREEN, Color.RED, Color.YELLOW};
+                dataSet.setColors(color);
+                PieData data = new PieData(dates, dataSet);
+                pieChart.setData(data);
                 listView.setAdapter(arrayAdapter);
             }
 

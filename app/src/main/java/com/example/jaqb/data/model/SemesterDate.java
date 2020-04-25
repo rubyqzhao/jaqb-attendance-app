@@ -55,4 +55,9 @@ public class SemesterDate
     {
         return formattedString;
     }
+
+    public String toString2()
+    {
+        return month + "-" + day + "-" + year;
+    }
 }
