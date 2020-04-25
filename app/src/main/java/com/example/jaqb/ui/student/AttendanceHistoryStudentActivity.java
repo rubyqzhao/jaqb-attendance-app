@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.jaqb.R;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.services.FireBaseDBServices;
+import com.example.jaqb.ui.LogoutActivity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,7 +32,7 @@ import java.util.List;
 /**
  * Class to hold the activity that shows the attendance history of an user
  */
-public class AttendanceHistoryStudentActivity extends AppCompatActivity {
+public class AttendanceHistoryStudentActivity extends LogoutActivity {
 
     private String courseCode;
     private DatabaseReference databaseReference;
@@ -49,7 +50,7 @@ public class AttendanceHistoryStudentActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_calendar_view);
+        onCreate(R.layout.activity_calendar_view);
         courseAttendance = new ArrayList<>();
         fireBaseDBServices = FireBaseDBServices.getInstance();
         currentUser = fireBaseDBServices.getCurrentUser();
@@ -61,11 +62,12 @@ public class AttendanceHistoryStudentActivity extends AppCompatActivity {
         databaseReference.addValueEventListener(new ValueEventListener() {
             /**
              * Triggers when there has to a change in Database
+             *
              * @param dataSnapshot the current state of database
              */
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot keyNode : dataSnapshot.getChildren()){
+                for (DataSnapshot keyNode : dataSnapshot.getChildren()) {
                     String date = keyNode.getKey();
                     String presence = (String) keyNode.getValue();
                     courseAttendance.add(date + " : " + presence);
@@ -83,6 +85,7 @@ public class AttendanceHistoryStudentActivity extends AppCompatActivity {
 
             /**
              * Triggers if data fails to get updated
+             *
              * @param databaseError the error due to which change could not happen
              */
             @Override

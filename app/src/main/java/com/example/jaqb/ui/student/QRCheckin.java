@@ -25,6 +25,7 @@ import com.example.jaqb.R;
 import com.example.jaqb.data.model.Course;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.services.FireBaseDBServices;
+import com.example.jaqb.ui.LogoutActivity;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -51,7 +52,7 @@ import java.util.Map;
  * whether to mark attendance or not
  */
 
-public class QRCheckin extends AppCompatActivity implements LocationListener {
+public class QRCheckin extends LogoutActivity implements LocationListener {
 
     private static final double ALLOWED_DISTANCE = 500;
     private EditText editText;
@@ -76,7 +77,7 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_qrcheckin);
+        onCreate(R.layout.activity_qrcheckin);
 
         Intent receiveIntent = this.getIntent();
         currentLongitude = receiveIntent.getDoubleExtra("courseLongitude", 0.0);

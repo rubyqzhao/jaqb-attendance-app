@@ -13,6 +13,20 @@
         android:text="@string/action_attendance_history"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/checkin_toolbar" />
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/checkin_toolbar"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/toolbar_height"
+        android:background="@color/colorAccent"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="Attendance History"
+        app:titleTextColor="#FFFFFF" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

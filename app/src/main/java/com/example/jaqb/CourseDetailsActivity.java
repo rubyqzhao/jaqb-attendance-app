@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.jaqb.data.model.Course;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.services.FireBaseDBServices;
+import com.example.jaqb.ui.LogoutActivity;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -32,7 +33,7 @@ import java.util.List;
  * for that course.
  * */
 
-public class CourseDetailsActivity extends AppCompatActivity implements View.OnClickListener {
+public class CourseDetailsActivity extends LogoutActivity implements View.OnClickListener {
 
     private String courseCode;
     private String courseName;
@@ -61,7 +62,7 @@ public class CourseDetailsActivity extends AppCompatActivity implements View.OnC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_course_details);
+        onCreate(R.layout.activity_course_details);
         courseCode = (String) getIntent().getCharSequenceExtra("code");
         courseName = (String) getIntent().getCharSequenceExtra("name");
         courseDays = (String) getIntent().getCharSequenceExtra("days");
