@@ -20,6 +20,7 @@ import com.example.jaqb.R;
 import com.example.jaqb.data.model.Course;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.services.FireBaseDBServices;
+import com.example.jaqb.ui.LogoutActivity;
 import com.example.jaqb.ui.instructor.AttendanceHistoryInstructorActivity;
 import com.example.jaqb.ui.menu.MenuOptionsActivity;
 import com.google.firebase.database.DataSnapshot;
@@ -40,7 +41,7 @@ import java.util.Map;
  * to different activities based on their action.
  * */
 
-public class CheckInActivity extends MenuOptionsActivity {
+public class CheckInActivity extends LogoutActivity {
     private TextView upcomingClass;
     private DatabaseReference databaseReference;
     private List<Course> courseList;
@@ -56,9 +57,7 @@ public class CheckInActivity extends MenuOptionsActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_checkin);
-        Toolbar myToolbar = findViewById(R.id.checkin_toolbar);
-        setSupportActionBar(myToolbar);
+        onCreate(R.layout.activity_checkin);
         upcomingClass = findViewById(R.id.upcoming_class);
         databaseReference = FirebaseDatabase.getInstance().getReference();
         fireBaseDBServices = FireBaseDBServices.getInstance();
@@ -83,36 +82,6 @@ public class CheckInActivity extends MenuOptionsActivity {
     protected void onResume() {
         super.onResume();
         upcomingClass.setText(determineClassToDisplay());
-    }
-
-    /**
-     * When the menu is accessed
-     * @param menu f type MENU
-     * @return true if menu loads, else false
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_items, menu);
-        return true;
-    }
-
-    /**
-     * Triggers when an option is selected from the list of options
-     * @param item of type MenuItem
-     * @return true if option gets selected
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_logout) {
-            FireBaseDBServices.getInstance().logoutUser();
-            Intent intent = new Intent(this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     /**

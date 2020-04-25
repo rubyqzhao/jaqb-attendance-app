@@ -15,6 +15,7 @@ import com.example.jaqb.R;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.data.model.UserLevel;
 import com.example.jaqb.services.FireBaseDBServices;
+import com.example.jaqb.ui.LogoutActivity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,7 +34,7 @@ import java.util.List;
 /**
  * Class to hold the activity that shows the attendance history of an user
  */
-public class AttendanceHistoryStudentActivity extends AppCompatActivity {
+public class AttendanceHistoryStudentActivity extends LogoutActivity {
 
     private String courseCode;
     private DatabaseReference databaseReference;
@@ -54,7 +55,7 @@ public class AttendanceHistoryStudentActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_calendar_view);
+        onCreate(R.layout.activity_calendar_view);
         presentTextView = (TextView) findViewById(R.id.present_stat);
         presentTextView.setTextColor(Color.GREEN);
 

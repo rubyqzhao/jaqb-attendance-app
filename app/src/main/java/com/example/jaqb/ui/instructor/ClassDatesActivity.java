@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.jaqb.R;
+import com.example.jaqb.ui.LogoutActivity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -38,7 +39,7 @@ import java.util.List;
  * @author Amanjot Singh
  * @version 1.0
  */
-public class ClassDatesActivity extends AppCompatActivity {
+public class ClassDatesActivity extends LogoutActivity {
 
     private String courseCode;
     private List<String> courseDates;
@@ -55,7 +56,7 @@ public class ClassDatesActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_calendar_view);
+        onCreate(R.layout.activity_calendar_view);
         courseCode = (String) getIntent().getCharSequenceExtra("code");
         findViewById(R.id.overall_stats).setVisibility(View.GONE);
         databaseReference = FirebaseDatabase.getInstance().getReference("InstructorAttendance")

@@ -10,6 +10,7 @@ import com.example.jaqb.R;
 import com.example.jaqb.data.model.Course;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.services.FireBaseDBServices;
+import com.example.jaqb.ui.LogoutActivity;
 import com.example.jaqb.ui.courses.CourseAdapter;
 import com.example.jaqb.ui.student.AttendanceHistoryStudentActivity;
 
@@ -20,7 +21,7 @@ import com.example.jaqb.ui.student.AttendanceHistoryStudentActivity;
  * Activity class to handle the attendance history page for the users
  */
 
-public class AttendanceHistoryInstructorActivity extends AppCompatActivity
+public class AttendanceHistoryInstructorActivity extends LogoutActivity
         implements AdapterView.OnItemClickListener {
 
     private FireBaseDBServices fireBaseDBServices;
@@ -36,7 +37,7 @@ public class AttendanceHistoryInstructorActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_attendance_history_instructor);
+        onCreate(R.layout.activity_attendance_history_instructor);
         fireBaseDBServices = FireBaseDBServices.getInstance();
         currentUser = fireBaseDBServices.getCurrentUser();
         listView = (ListView) findViewById(R.id.instructor_courses);
