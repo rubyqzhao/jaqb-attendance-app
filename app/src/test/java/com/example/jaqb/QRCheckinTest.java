@@ -28,10 +28,9 @@ public class QRCheckinTest {
 
     @Test
     public void  TestCheckTimeString_ShouldAlsoReturnTrueInLittleEarly() {
-        Calendar now = Calendar.getInstance();
-        now.roll(Calendar.MINUTE, 10);
-        Date newDate = now.getTime();
-        String earlyTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(newDate);
+        Date date = new Date(System.currentTimeMillis() + 12*60*1000);
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+        String earlyTime = formatter.format(date);
         String earlyTimeStatus = qrCheckin.getCheckTimeString(earlyTime);
         assertTrue(earlyTimeStatus.equals("true"));
     }
@@ -39,30 +38,27 @@ public class QRCheckinTest {
 
     @Test
     public void TestCheckTimeString_ShouldReturnEarly() {
-        Calendar now = Calendar.getInstance();
-        now.roll(Calendar.MINUTE, 20);
-        Date newDate = now.getTime();
-        String earlyTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(newDate);
+        Date date = new Date(System.currentTimeMillis() + 20*60*1000);
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+        String earlyTime = formatter.format(date);
         String earlyTimeStatus = qrCheckin.getCheckTimeString(earlyTime);
         assertTrue(earlyTimeStatus.equals("early"));
     }
 
     @Test
     public void TestCheckTimeString_ShouldReturnLate() {
-        Calendar now = Calendar.getInstance();
-        now.roll(Calendar.MINUTE, -12);
-        Date newDate = now.getTime();
-        String lateTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(newDate);
+        Date date = new Date(System.currentTimeMillis() - 12*60*1000);
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+        String lateTime = formatter.format(date);
         String lateTimeStatus = qrCheckin.getCheckTimeString(lateTime);
         assertTrue(lateTimeStatus.equals("late"));
     }
 
     @Test
     public void TestCheckTimeString_ShouldReturnTooLate() {
-        Calendar now = Calendar.getInstance();
-        now.roll(Calendar.MINUTE, -20);
-        Date newDate = now.getTime();
-        String tooLateTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(newDate);
+        Date date = new Date(System.currentTimeMillis() - 30*60*1000);
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+        String tooLateTime = formatter.format(date);
         String tooLateTimeStatus = qrCheckin.getCheckTimeString(tooLateTime);
         assertTrue(tooLateTimeStatus.equals("tooLate"));
     }
