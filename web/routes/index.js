@@ -37,6 +37,7 @@ function checkIfAdmin(req) {
     ref.on("value", function(snapshot) {
         if(snapshot.val() === "ADMIN"){
             req.session.userLoggedIn = true;
+            res.redirect('/home');
         }
     }, function(error) {
         console.log("error"+error.code);
@@ -69,7 +70,6 @@ router.post('/login', function(req, res) {
     firebase.auth().signInWithEmailAndPassword(username, password)
     .then(function(){
         checkIfAdmin(req);
-        res.redirect('/home');
     })
     .catch(function(error) {
         // Handle Errors here.
