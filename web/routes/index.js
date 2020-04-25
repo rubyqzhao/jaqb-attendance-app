@@ -31,7 +31,7 @@ var database = firebase.database();
 
 /* GET home page. */
 
-function checkIfAdmin(req) {
+function checkIfAdmin(req, res) {
     var loggingUserId = firebase.auth().currentUser.uid;
     var ref = database.ref('User/'+loggingUserId+'/level');
     ref.on("value", function(snapshot) {
@@ -69,7 +69,7 @@ router.post('/login', function(req, res) {
     console.log(username+" "+password);   
     firebase.auth().signInWithEmailAndPassword(username, password)
     .then(function(){
-        checkIfAdmin(req);
+        checkIfAdmin(req, res);
     })
     .catch(function(error) {
         // Handle Errors here.
