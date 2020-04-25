@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
@@ -17,6 +18,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -73,6 +75,7 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
     /**
      * @param savedInstanceState saved application context passed into activity when it is created
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,7 +88,7 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
         databaseReference = FirebaseDatabase.getInstance().getReference();
         fireBaseDBServices = FireBaseDBServices.getInstance();
         currentUser = fireBaseDBServices.getCurrentUser();
-//        nextCourse = currentUser.getNextCourse();
+        nextCourse = currentUser.getNextCourse();
         editText = findViewById(R.id.codeArea);
         cameraSurfaceView = (SurfaceView) findViewById(R.id.cameraView);
         barcodeDetector = new BarcodeDetector.Builder(this)
@@ -224,14 +227,13 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
             final Boolean bool = true;
             final String currDate = formatter.format(date);
 
-            //todo: get the upcoming class
             //String upcomingClass = currentUser.getUpcomingCourse();
-            final String upcomingClass = "SER 515";
+//            final String upcomingClass = "SER 515";
 
             final DatabaseReference userRef = databaseReference.child("User").child(currentUser.getuID())
-                    .child("attendanceHistory").child(upcomingClass).child(currDate);
+                    .child("attendanceHistory").child(nextCourse.getCode()).child(currDate);
             final DatabaseReference instRef = databaseReference.child("InstructorAttendance")
-                    .child(upcomingClass).child(currDate);
+                    .child(nextCourse.getCode()).child(currDate);
             // update table for student
             userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -241,7 +243,7 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
                         Log.d("database", "Exists");
                         databaseReference.child("User").child(currentUser.getuID())
                                 .child("attendanceHistory")
-                                .child(upcomingClass)
+                                .child(nextCourse.getCode())
                                 .child(currDate).setValue(time);
                     } else {
                         Log.d("database", "Doesn't exist");
@@ -312,8 +314,8 @@ public class QRCheckin extends AppCompatActivity implements LocationListener {
         Date date = new Date();
         SimpleDateFormat format = new SimpleDateFormat("HH:mm");
         try {
-            Date classTimeOnTime = format.parse("23:45");
-//            Date classTimeOnTime = format.parse(nextCourse.getTime());
+//            Date classTimeOnTime = format.parse("23:45");
+            Date classTimeOnTime = format.parse(nextCourse.getTime());
             Date nowTime = format.parse(format.format(date));
 
             Calendar calendar = Calendar.getInstance();

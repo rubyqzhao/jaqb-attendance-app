@@ -120,20 +120,20 @@ public class CheckInActivity extends MenuOptionsActivity {
      * for the upcoming course displayed on check in
      * @param view
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void checkinButtonOnClick(View view) {
         Double courseLongitude;
         Double courseLatitude;
-        //String courseQR;
-        //todo: change decision logic to get closest upcoming class
+        String courseQR = "";
         if(!courseList.isEmpty()) {
-            Course course = courseList.get(1);
-            courseLongitude = -111.9179767;//course.getLongitude();
-            courseLatitude = 33.4144485;//course.getLatitude();
-            //courseQR = course.getCourseQRCode();
+            Course course = currentUser.getNextCourse();
+            courseLongitude = course.getLongitude();
+            courseLatitude = course.getLatitude();
+            courseQR = course.getCourseQRCode().split(" ")[0].trim();
             Intent intent = new Intent(this, QRCheckin.class);
             intent.putExtra("courseLongitude", courseLongitude);
             intent.putExtra("courseLatitude", courseLatitude);
-            intent.putExtra("courseQR", "6468");
+            intent.putExtra("courseQR", courseQR);
             startActivity(intent);
         }
         else {

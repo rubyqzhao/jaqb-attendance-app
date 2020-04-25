@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -50,6 +51,10 @@ public class CheckAttendance extends AppCompatActivity {
     private ArrayAdapter<String> arrayAdapter;
     private DatabaseReference databaseReference;
     private DatabaseReference databaseReference2;
+    private ArrayList attendance;
+    private PieDataSet dataSet;
+    private PieChart pieChart;
+    private ArrayList dates;
 
     /**
      * Initial method that triggers when the user accesses the attendance list
@@ -92,23 +97,42 @@ public class CheckAttendance extends AppCompatActivity {
                 return view;
             };
         };
+
+        pieChart = findViewById(R.id.piechart);
+        pieChart.setVisibility(View.VISIBLE);
+        pieChart.animateXY(2000, 2000);
+
+        attendance = new ArrayList();
+        dates = new ArrayList();
+
+        dates.add("Present");
+        dates.add("Absent");
+        dates.add("Late");
+
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                int present = 0, absent = 0, late = 0;
                 for(DataSnapshot keyNode : dataSnapshot.getChildren()) {
                     String studentId = keyNode.getKey();
                     String attendance = (String) keyNode.getValue();
                     studentIds.add(studentId);
                     if("true".equalsIgnoreCase(attendance)){
                         studentPresence.add("Present");
+                        present++;
                     }
                     else if("false".equalsIgnoreCase(attendance)){
                         studentPresence.add("Absent");
+                        absent++;
                     }
                     else if("late".equalsIgnoreCase(attendance)){
                         studentPresence.add("Late");
+                        late++;
                     }
                 }
+                attendance.add(new Entry(present, 0));
+                attendance.add(new Entry(absent, 1));
+                attendance.add(new Entry(late, 2));
             }
 
             @Override
@@ -127,6 +151,11 @@ public class CheckAttendance extends AppCompatActivity {
                     studentData.put(key, user);
                 }
                 getDisplayDate();
+                dataSet = new PieDataSet(attendance, "Attendance");
+                int[] color = new int[]{ Color.GREEN, Color.RED, Color.YELLOW};
+                dataSet.setColors(color);
+                PieData data = new PieData(dates, dataSet);
+                pieChart.setData(data);
                 listView.setAdapter(arrayAdapter);
             }
 
@@ -135,39 +164,6 @@ public class CheckAttendance extends AppCompatActivity {
 
             }
         });
-
-        PieChart pieChart = findViewById(R.id.piechart);
-        pieChart.setVisibility(View.VISIBLE);
-        ArrayList NoOfEmp = new ArrayList();
-
-        NoOfEmp.add(new Entry(945f, 0));
-        NoOfEmp.add(new Entry(1040f, 1));
-        NoOfEmp.add(new Entry(1133f, 2));
-        NoOfEmp.add(new Entry(1240f, 3));
-        NoOfEmp.add(new Entry(1369f, 4));
-        NoOfEmp.add(new Entry(1487f, 5));
-        NoOfEmp.add(new Entry(1501f, 6));
-        NoOfEmp.add(new Entry(1645f, 7));
-        NoOfEmp.add(new Entry(1578f, 8));
-        NoOfEmp.add(new Entry(1695f, 9));
-        PieDataSet dataSet = new PieDataSet(NoOfEmp, "Number Of Employees");
-
-        ArrayList year = new ArrayList();
-
-        year.add("2008");
-        year.add("2009");
-        year.add("2010");
-        year.add("2011");
-        year.add("2012");
-        year.add("2013");
-        year.add("2014");
-        year.add("2015");
-        year.add("2016");
-        year.add("2017");
-        PieData data = new PieData(year, dataSet);
-        pieChart.setData(data);
-        dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
-        pieChart.animateXY(5000, 5000);
     }
 
     private void getDisplayDate(){

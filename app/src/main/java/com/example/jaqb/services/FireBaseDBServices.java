@@ -180,10 +180,12 @@ public class FireBaseDBServices {
 
                                                 }
                                             });
-                                            if(currentUser != null && currentUser.isEmailVerified()) {
+                                            currentUser.setRegisteredCourses(getUserCourses(currentUser, allCourses));
+                                            getBadges();
+                                            /*if(currentUser != null && currentUser.isEmailVerified()) {
                                                 currentUser.setRegisteredCourses(getUserCourses(currentUser, allCourses));
                                                 getBadges();
-                                            }
+                                            }*/
                                         }
 
                                         @Override
