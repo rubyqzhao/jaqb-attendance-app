@@ -8,25 +8,97 @@ const csv = require('fast-csv');
 const upload = multer({ dest: 'test/' });
 const http = require('http');
 const fs = require('fs');
-
+var path = require('path');
+require('firebase/auth');
+var session = require('express-session');
+var Chart = require('chart.js');
 
 const firebaseConfig = {
-    apiKey: process.env.API_KEY,
-    authDomain: process.env.AUTH_DOMAIN,
+    apiKey: "AIzaSyDxSA3WWlv6kQnBEiXiw6k8hmmlIztgHjY",
+    authDomain: "jaqb-attendance-app.firebaseapp.com",
     databaseURL: "https://jaqb-attendance-app.firebaseio.com",
     projectId: "jaqb-attendance-app",
     storageBucket: "jaqb-attendance-app.appspot.com",
-    messagingSenderId: process.env.MSG_ID,
-    appId: process.env.APP_ID,
-    measurementId: process.env.MEASURE_ID
-};
+    messagingSenderId: "986621442209",
+    appId: "1:986621442209:web:bb66e7ef1c1d9f962518e0",
+    measurementId: "G-0RMT5V21FJ"
+  };
+
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 var database = firebase.database();
 
 /* GET home page. */
+
+function checkIfAdmin(req) {
+    var loggingUserId = firebase.auth().currentUser.uid;
+    var ref = database.ref('User/'+loggingUserId+'/level');
+    ref.on("value", function(snapshot) {
+        if(snapshot.val() === "ADMIN"){
+            req.session.userLoggedIn = true;
+        }
+    }, function(error) {
+        console.log("error"+error.code);
+    });
+}
+
+function checkAuth(req, res, next) {
+    if (req.session.userLoggedIn) {
+        next();
+    } else {
+        res.status(403).send('Unauthorized! Only Admins can login. <a href="/">Go back home</a>');
+        return;
+    }
+  }
+
+router.use(session({
+    secret: 'jaqb-app',
+    saveUninitialized: true,
+    resave: true
+}));
+
 router.get('/', function(req, res) {
+    res.render('login', {title: "login"});
+});
+
+router.post('/login', function(req, res) {
+    var username = req.body.uname;
+    var password = req.body.psw;
+    console.log(username+" "+password);   
+    firebase.auth().signInWithEmailAndPassword(username, password)
+    .then(function(){
+        checkIfAdmin(req);
+        res.redirect('/home');
+    })
+    .catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        res.render('error', {message: "Sign-in Error: "+errorCode+" "+ errorMessage});
+      });
+});
+
+router.get('/signout', function(req, res) {
+    firebase.auth().signOut().then(function() {
+        req.session.userLoggedIn = false;
+        res.redirect('/');
+      }).catch(function(error) {
+        res.render('error', {message: "Sign-out Error: "+errorCode+" "+ errorMessage});
+      });      
+});
+
+router.use('/home', checkAuth);
+
+router.get('/home', function(req, res) {
+    res.render('home', {title: "Home"});
+});
+
+router.get('/about', function(req, res) {
+    res.render('about', {title: "About"});
+});
+
+router.get('/courses', function(req, res) {
     getCourses(function(courseList) {
         res.render('index', {
             title: 'JAQB Admin',
@@ -35,7 +107,16 @@ router.get('/', function(req, res) {
     });
 });
 
+router.use('/add_course', checkAuth);
+
+router.get('/add_course', function(req, res) {
+    res.render('add_course', {title: "Add Courses"});
+});
+
+
 // opens the page with list of users, enables admin to change user privileges
+router.use('/user_privileges_page', checkAuth);
+
 router.get('/user_privileges_page', function(req, res) {
     getUsers(function(userList) {
         res.render('user_privileges', {
@@ -46,16 +127,20 @@ router.get('/user_privileges_page', function(req, res) {
 });
 
 // opens list of instructors in the app, enables admin to assign courses to them
+router.use('/assign_courses', checkAuth);
+
 router.get('/assign_courses', function(req, res) {
     getInstructors(function(instructorList) {
         res.render('all_instructors', {
-            title: 'instructors',
+            title: 'Instructors',
             instructors: instructorList
         });
     });
 });
 
 // get courses in page - add courses to the instructor
+router.use('/all_courses', checkAuth);
+
 router.get('/all_courses', function(req, res) {
     var ins_details = req.query.ins_data.split(',');
     var fname = ins_details[0];
@@ -71,13 +156,13 @@ router.get('/all_courses', function(req, res) {
 // post request to update the user privileges
 router.post('/change_privilege', function(req, res) {
     changePrivilege(JSON.stringify(req.body));
-    res.redirect('/');
+    res.redirect('/user_priviliges');
 });
 
 router.post('/add_course_to_instructor', function(req, res) {
     //console.log(JSON.stringify(req.body) + " : BODY");
     addCourseToInstructor(JSON.stringify(req.body));
-    res.redirect('/');
+    res.redirect('/assign_courses');
 });
 
 router.post('/add-course', function (req, res) {
@@ -87,12 +172,12 @@ router.post('/add-course', function (req, res) {
     //if input isn't entered or invalid, prevent send
     if(response == null || response.code == null || response.name == null
         || response.days == null || response.instructor == null || response.time == null) {
-        res.send('Submission is invalid');
+            res.status(400).send('Invalid Submission! <a href="/add_course">Go back</a>');
     }
     else if(response.code.localeCompare("") == 0 || response.name.localeCompare("") == 0
         || response.days == [""] || response.instructor.localeCompare("") == 0
         || response.time.localeCompare("") == 0) {
-        res.send('Missing information');
+        res.status(400).send('Information missing! <a href="/add_course">Go back</a>');
     }
     else {
         var daysList;
@@ -115,7 +200,7 @@ router.post('/add-course', function (req, res) {
             instructorName: response.instructor,
             time: response.time
         });
-        res.send('Submitted');
+        res.status(200).send('Submitted! <a href="/add_course">Go back</a>');
     }
 });
 
@@ -142,7 +227,7 @@ router.post('/delete-course', function(req, res) {
         }
     });
 
-    res.redirect('/');
+    res.redirect('/index');
 });
 
 
@@ -371,8 +456,86 @@ router.post('/upload-csv', upload.single('document'), function (req, res) {
                 });
             }
 
-            res.send('Uploaded');
+            res.status(200).send('Uploaded! <a href="/add_course">Go back</a>');
         })
 });
+
+firebase.auth().onAuthStateChanged(function(user) {
+    if(user) {
+        var loggedInUser = firebase.auth.currentUser;
+        if(loggedInUser!=null) {
+
+        }
+    } else {
+        
+    }
+});
+
+router.use('/stats', checkAuth);
+
+router.get('/stats', function(req, res) {
+    getStats(function(labels, attendTrueList, attendLateList, attendFalseList, attendRatio) {
+        res.render('stats', {
+            labelList: labels,
+            attendTrue: attendTrueList,
+            attendLate: attendLateList,
+            attendFalse: attendFalseList,
+            attendPercent: attendRatio
+        });
+    });
+
+});
+
+function getStats(callback) {
+    var attendRef = database.ref('InstructorAttendance/');
+    attendRef.once('value', function(snapshot) {
+        var labels = [];
+        var attendTrueList = [];
+        var attendLateList = [];
+        var attendFalseList = [];
+        var totalAttended = 0;
+        var totalClasses = 0;
+        var attendRatio = 0;
+
+        snapshot.forEach(function(item) {
+            var attendTrue = 0;
+            var attendLate = 0;
+            var attendFalse = 0;
+
+            console.log(item.key);
+            labels.push(item.key);
+            for (date in item.val()) {
+                console.log("Date ", date);
+                console.log("child of date ", item.child(date));
+                for (attendance in item.child(date).val()) {
+                    console.log("Attendance ", attendance);
+                    console.log("value of attendance ", item.child(date + "/" + attendance).val());
+                    if (item.child(date + "/" + attendance).val().toLocaleString().localeCompare("true") == 0)
+                        attendTrue++;
+                    else if (item.child(date + "/" + attendance).val().toLocaleString().localeCompare("late") == 0)
+                        attendLate++;
+                    else
+                        attendFalse++;
+                }
+
+            }
+
+            attendTrueList.push(attendTrue);
+            attendLateList.push(attendLate);
+            attendFalseList.push(attendFalse);
+            totalAttended += attendTrue + attendLate;
+            totalClasses += attendTrue + attendLate + attendFalse;
+
+            console.log("true list ", attendTrueList);
+            console.log("late list ", attendLateList);
+            console.log("false list ", attendFalseList);
+
+
+            attendRatio = Math.round(totalAttended / totalClasses * 100);
+        });
+
+        return callback(labels, attendTrueList, attendLateList, attendFalseList, attendRatio);
+    });
+}
 
 module.exports = router;

@@ -28,6 +28,13 @@ public class Course {
         this.courseName = courseName;
     }
 
+    public Course(String code, String courseName, String days, String time) {
+        this.code = code;
+        this.courseName = courseName;
+        this.days = days;
+        this.time = time;
+    }
+
     /**
      * Gets the course code
      * @return The course code

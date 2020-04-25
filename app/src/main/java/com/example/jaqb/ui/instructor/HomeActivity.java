@@ -24,6 +24,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.text.ParseException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -104,10 +105,16 @@ public class HomeActivity extends MenuOptionsActivity {
         int res = fireBaseDBServices.startAttendanceForCourse(nextClass);
         Intent intent = new Intent();
         intent.setClass(this, DisplayQRCodeActivity.class);
+        intent.putExtra("courseCode", nextClass.getCode());
         // generate random code
         InstructorServicesHelper instructorServicesHelper = new InstructorServicesHelper();
-        boolean isPrevCodeValid = instructorServicesHelper.isPreviousCodeValid(nextClass.getCourseQRCode(), TimeUnit.HOURS);
-//        boolean isPrevCodeValid = instructorServicesHelper.isPreviousCodeValid("6468 2020-04-17 01:18:10", TimeUnit.HOURS);
+        boolean isPrevCodeValid = false;
+        try {
+            isPrevCodeValid = instructorServicesHelper.isPreviousCodeValid(nextClass.getCourseQRCode(), TimeUnit.HOURS);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
         int code = 0;
         if(!isPrevCodeValid){
             code = instructorServicesHelper.generateRandomCode();
