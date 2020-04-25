@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.jaqb.R;
 import com.example.jaqb.data.model.RegisteredUser;
+import com.example.jaqb.ui.LogoutActivity;
 import com.example.jaqb.ui.student.AttendanceHistoryStudentActivity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -27,7 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AttendanceHistoryByNamesActivity extends AppCompatActivity {
+public class AttendanceHistoryByNamesActivity extends LogoutActivity {
 
     private String courseCode;
     private String date;
@@ -51,7 +52,7 @@ public class AttendanceHistoryByNamesActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_student_name_list);
+        onCreate(R.layout.activity_student_name_list);
         courseCode = (String) getIntent().getCharSequenceExtra("code");
         textView = (TextView) findViewById(R.id.studentLabel);
         textView.setText("List of students : " + courseCode);

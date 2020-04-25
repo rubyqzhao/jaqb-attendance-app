@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/checkin_toolbar"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/toolbar_height"
+            android:background="@color/colorAccent"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:title="Attendance History"
+            app:titleTextColor="#FFFFFF" />
 
         <TextView
             android:id="@+id/textview"
@@ -17,13 +31,15 @@
             android:text="@string/action_attendance_history"
             android:textSize="18sp"
             android:layout_gravity="center"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/checkin_toolbar"/>
 
         <LinearLayout
             android:id="@+id/calendar1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/textview">
 
         </LinearLayout>
 
@@ -33,28 +49,37 @@
             android:layout_height="wrap_content"
             android:text="Overall Attendance"
             android:textSize="18sp"
-            tools:visibility="gone" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/calendar1"/>
 
         <TextView
             android:id="@+id/present_stat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:textSize="16sp"
-            tools:visibility="gone" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/overall_stats"/>
 
         <TextView
             android:id="@+id/absent_stat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:textSize="16sp"
-            tools:visibility="gone" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/present_stat"/>
 
         <TextView
             android:id="@+id/late_stat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            tools:visibility="gone" />
+            tools:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/absent_stat"/>
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
