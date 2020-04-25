@@ -31,12 +31,13 @@ var database = firebase.database();
 
 /* GET home page. */
 
-function checkIfAdmin(req) {
+function checkIfAdmin(req, res) {
     var loggingUserId = firebase.auth().currentUser.uid;
     var ref = database.ref('User/'+loggingUserId+'/level');
     ref.on("value", function(snapshot) {
         if(snapshot.val() === "ADMIN"){
             req.session.userLoggedIn = true;
+            res.redirect('/home');
         }
     }, function(error) {
         console.log("error"+error.code);
@@ -68,8 +69,7 @@ router.post('/login', function(req, res) {
     console.log(username+" "+password);   
     firebase.auth().signInWithEmailAndPassword(username, password)
     .then(function(){
-        checkIfAdmin(req);
-        res.redirect('/home');
+        checkIfAdmin(req, res);
     })
     .catch(function(error) {
         // Handle Errors here.
