@@ -405,9 +405,15 @@ function getInstructors(callback) {
             var lastName = item.val().lname;
             var level = item.val().level;
             var courses = JSON.stringify(item.val().courses);
+            if(courses == undefined) {
+                var  courses = "";
+            }
             if(level.localeCompare("INSTRUCTOR") == 0){
                 var regex = new RegExp(/true|"|:|{|}/gi);
                 var str1 = courses.replace(regex, '');
+                if(str1 == '') {
+                    str1 = "No Courses assigned"
+                }
                 var instructor = [firstName, lastName, level, str1];
                 instructorList.push(instructor);
             }
