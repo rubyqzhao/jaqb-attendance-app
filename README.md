@@ -37,6 +37,15 @@ The team delivered the increment for sprint 5 of the project as an android appli
 
 The apk file for the sprint 5 increment can be downloaded from [here](./deliverables/). Download the JAQB_S5.apk by right click and save link as and run in an android device. [Link](https://youtu.be/18cp0zY7Jko) to youtube video.
 
+#### Sprint 6: 04/11/2020 - 04/25/2020
+
+The team delivered the increment for sprint 6 of the project as an android application. Some of the features delivered are showing graphs and charts to view the attendance history. The details of the features implemented by the team can be found [here](https://docs.google.com/document/d/1AScjAHSFp7BSkPucqlTWBzPWHWCJLbAb6dFQApk1Z_c/edit?usp=sharing)
+
+There are two files added for the sprint 6 deliverable. One (JAQB_S6_Email_Verification.apk) includes the email verification when the users register for the app. Since there are many users already added in our app. So for testing purposes, we have an apk (JAQB_S6_Without_Email_Verification.apk) which does not require user to verify their email id.
+
+The apk file for the sprint 6 increment can be downloaded from [here](./deliverables/). Download the apk by right click and save link as and run in an android device. [Link](https://www.youtube.com/watch?v=YC8VPXonTmk) to youtube video.
+
+
 ## Installation: Android App
 
 1. Open the project in Android Studio
