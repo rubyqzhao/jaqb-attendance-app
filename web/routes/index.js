@@ -156,7 +156,7 @@ router.get('/all_courses', function(req, res) {
 // post request to update the user privileges
 router.post('/change_privilege', function(req, res) {
     changePrivilege(JSON.stringify(req.body));
-    res.redirect('/user_priviliges');
+    res.redirect('/user_privileges_page');
 });
 
 router.post('/add_course_to_instructor', function(req, res) {
@@ -227,7 +227,7 @@ router.post('/delete-course', function(req, res) {
         }
     });
 
-    res.redirect('/index');
+    res.redirect('/home');
 });
 
 
