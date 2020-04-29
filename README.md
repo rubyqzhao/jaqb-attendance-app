@@ -31,6 +31,11 @@ The team delivered the increment for sprint 4 of the project as an android appli
 
 The apk file for the sprint 4 increment can be downloaded from [here](./deliverables/). Download the JAQB_S4.apk by right click and save link as and run in an android device. [Link](https://www.youtube.com/watch?v=PhNChG0-J1A) to youtube video.
 
+#### Sprint 5: 03/28/2020 - 04/11/2020
+
+The team delivered the increment for sprint 5 of the project as an android application. Some of the features delivered are QR code generator for instructors and QR code scanner for the students. The details of the functionalities implemented by the team can be found [here](https://docs.google.com/document/d/19jeyEss-5CRruo5-N8Jb1P0WSUZSE8NUT7nYMKxJmG4/edit?usp=sharing)
+
+The apk file for the sprint 5 increment can be downloaded from [here](./deliverables/). Download the JAQB_S5.apk by right click and save link as and run in an android device. [Link](https://youtu.be/18cp0zY7Jko) to youtube video.
 
 ## Installation: Android App
 
