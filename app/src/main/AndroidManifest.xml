@@ -23,7 +23,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:exported="true">
-        <activity android:name=".QRCheckin"/>
+        <activity android:name=".ui.student.QRCheckin"/>
         <activity
             android:name=".ui.login.LoginActivity"
             android:label="@string/title_activity_login" />
@@ -49,6 +49,8 @@
         <activity android:name=".ui.instructor.ClassDatesActivity" />
         <activity android:name=".ui.instructor.CheckAttendance" />
         <activity android:name=".ui.student.AttendanceHistoryStudentActivity" />
+        <activity android:name=".ui.instructor.AttendanceHistoryOptionsActivity" />
+        <activity android:name=".ui.instructor.AttendanceHistoryByNamesActivity" />
 
         <meta-data
             android:name="com.google.android.gms.vision.DEPENDENCIES"

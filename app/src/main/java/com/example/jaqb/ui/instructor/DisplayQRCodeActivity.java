@@ -24,7 +24,7 @@ public class DisplayQRCodeActivity extends AppCompatActivity {
 
     private TextView qrCode;
     private FireBaseDBServices fireBaseDBServices;
-    private String courseCode = "SER 515";
+    private String courseCode;
     private ImageView imageView;
 
     /**
@@ -37,6 +37,7 @@ public class DisplayQRCodeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_qr_code);
         int code = getIntent().getIntExtra("code", 1234);
+        courseCode = getIntent().getStringExtra("courseCode");
         boolean isCodeValid = getIntent().getBooleanExtra("validCode", false);
         qrCode = (TextView) findViewById(R.id.qrcode);
         qrCode.setGravity(Gravity.CENTER);

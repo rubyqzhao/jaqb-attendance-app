@@ -24,6 +24,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.text.ParseException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -61,7 +62,7 @@ public class HomeActivity extends MenuOptionsActivity {
         //coordDisplay = findViewById(R.id.gps_coord);
         fireBaseDBServices = FireBaseDBServices.getInstance();
         upcomingClass = findViewById(R.id.upcoming_class);
-        nextClass = new Course("SER 515", "Dummy Class");
+        upcomingClass.setText(determineClassToDisplay());
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -86,10 +87,10 @@ public class HomeActivity extends MenuOptionsActivity {
     protected String determineClassToDisplay() {
         String message;
         if(!fireBaseDBServices.getCurrentUser().getRegisteredCourses().isEmpty()) {
-            Course course = fireBaseDBServices.getCurrentUser().getNextCourse();
-            String code = course.getCode();
-            String days = course.getDays();
-            String time = course.getTime();
+            nextClass = fireBaseDBServices.getCurrentUser().getNextCourse();
+            String code = nextClass.getCode();
+            String days = nextClass.getDays();
+            String time = nextClass.getTime();
 
             message = code + "\n" + days + " @ " + time;
         }
@@ -104,18 +105,24 @@ public class HomeActivity extends MenuOptionsActivity {
         int res = fireBaseDBServices.startAttendanceForCourse(nextClass);
         Intent intent = new Intent();
         intent.setClass(this, DisplayQRCodeActivity.class);
+        intent.putExtra("courseCode", nextClass.getCode());
         // generate random code
         InstructorServicesHelper instructorServicesHelper = new InstructorServicesHelper();
-//        boolean generateCode = instructorServicesHelper.isPreviousCodeValid(nextClass.getCourseQRCode(), TimeUnit.HOURS);
-        boolean isPrevCodeValid = instructorServicesHelper.isPreviousCodeValid("5115 2020-04-05 16:04:15", TimeUnit.HOURS);
+        boolean isPrevCodeValid = false;
+        try {
+            isPrevCodeValid = instructorServicesHelper.isPreviousCodeValid(nextClass.getCourseQRCode(), TimeUnit.HOURS);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
         int code = 0;
         if(!isPrevCodeValid){
             code = instructorServicesHelper.generateRandomCode();
             intent.putExtra("validCode", false);
         }
         else{
-//            code = Integer.getInteger(nextClass.getCourseQRCode().split(" ")[0]);
-            code = Integer.valueOf("5115");
+            code = Integer.parseInt(nextClass.getCourseQRCode().split(" ")[0].trim());
+//            code = Integer.valueOf("6468");
             intent.putExtra("validCode", true);
         }
         intent.putExtra("code", code);

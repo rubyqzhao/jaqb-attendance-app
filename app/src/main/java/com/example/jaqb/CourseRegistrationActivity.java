@@ -9,6 +9,7 @@ import android.widget.SearchView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.jaqb.data.model.Course;
 import com.example.jaqb.services.FireBaseDBServices;
+import com.example.jaqb.ui.LogoutActivity;
 import com.example.jaqb.ui.courses.CourseAdapter;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ import java.util.List;
  * Activity class to list out all courses and provide the functionality to search courses
  * */
 
-public class CourseRegistrationActivity extends AppCompatActivity implements
+public class CourseRegistrationActivity extends LogoutActivity implements
         SearchView.OnQueryTextListener,
         AdapterView.OnItemClickListener {
 
@@ -36,7 +37,7 @@ public class CourseRegistrationActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_course_registration);
+        onCreate(R.layout.activity_course_registration);
         findViewById(R.id.my_progressBar).setVisibility(View.GONE);
         courseList = new ArrayList<>();
         fireBaseDBServices = FireBaseDBServices.getInstance();
@@ -73,13 +74,14 @@ public class CourseRegistrationActivity extends AppCompatActivity implements
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Intent intent = new Intent();
+        Course course = courseAdapter.getItem(position);
         intent.setClass(this, CourseDetailsActivity.class);
-        intent.putExtra("code", (String) courseList.get((int) id).getCode());
-        intent.putExtra("name", (String) courseList.get((int) id).getCourseName());
-        intent.putExtra("instructor", (String) courseList.get((int) id).getInstructorName());
-        intent.putExtra("days", (String) courseList.get((int) id).getDays());
-        intent.putExtra("time", (String) courseList.get((int) id).getTime());
-        if(fireBaseDBServices.courseAlreadyRegistered(courseList.get((int) id).getCode())){
+        intent.putExtra("code", (String) course.getCode());
+        intent.putExtra("name", (String) course.getCourseName());
+        intent.putExtra("instructor", (String) course.getInstructorName());
+        intent.putExtra("days", (String) course.getDays());
+        intent.putExtra("time", (String) course.getTime());
+        if(fireBaseDBServices.courseAlreadyRegistered(course.getCode())){
             intent.putExtra("registered", "true");
         }
         else{

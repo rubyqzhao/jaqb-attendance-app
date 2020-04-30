@@ -1,6 +1,6 @@
 body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  background-color: #8C1D40;
+  background-color: #00A0F9;
 }
 
 a {
@@ -8,8 +8,13 @@ a {
 }
 
 .box {
-  height: 100px;
+  height: 50px;
 }
+
+.box2 {
+  height: 75px;
+}
+
 
 .wrapper {
   margin: auto;
@@ -37,15 +42,24 @@ a {
 
 #courselist {
   overflow-y: auto;
-  height: 450px;
+  height: 800px;
 }
 
 #addCourseDiv {
-  width: 65%;
-  float: left;
-  padding: 20px;
-  height: 150px;
-  margin-right: 21px;
+  width: 40%;
+  padding: 30px;
+  margin: auto;
+  text-align: center;
+}
+
+#addCourseTable{
+  text-align: left;
+}
+
+
+#addCourseTable td{
+  width: 20%;
+  padding: 10px;
 }
 
 #addMultiple {
@@ -80,3 +94,111 @@ a {
   width: 15%;
   margin: auto;
 }
+
+#menu{
+  margin-top: 100px;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.menuItem {
+  height: 300px;
+  text-align: center;
+  padding-top: 50px;
+}
+
+.menuImage {
+  padding: 30px;
+}
+
+.menuImage p {
+  font-size: 2em;
+}
+
+.menuItem a {
+  display: block;
+  text-decoration: none;
+}
+
+#loginDiv {
+  margin: auto;
+  width: 40%;
+  text-align: center;
+}
+
+#loginDiv h1 {
+  padding: 10px;
+  margin: 10px;
+}
+
+
+/* Full-width inputs */
+#loginDiv input[type=text], input[type=password] {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+/* Set a style for all buttons */
+#loginDiv button {
+  background-color: #DC4844;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+#loginDiv button:hover {
+  opacity: 0.8;
+}
+
+
+#loginDiv .imgcontainer {
+  text-align: center;
+  margin: 24px 0 12px 0;
+}
+
+#loginDiv img.avatar {
+  width: 40%;
+  border-radius: 50%;
+}
+
+#loginDiv .container {
+  padding: 16px;
+}
+
+/* The "Forgot password" text */
+#loginDiv span.psw {
+  float: right;
+  padding-top: 16px;
+}
+
+@media screen and (max-width: 300px) {
+  #loginDiv span.psw {
+    display: block;
+    float: none;
+  }
+} 
+
+#aboutDiv {
+  margin: auto;
+}
+
+table.dataTable thead .sorting_asc {
+  background: url("http://cdn.datatables.net/1.10.0/images/sort_asc.png") no-repeat center left;
+}
+
+table.dataTable thead .sorting_desc {
+  background: url("http://cdn.datatables.net/1.10.0/images/sort_desc.png") no-repeat center left;
+}
+
+table.dataTable thead .sorting {
+  background: url("http://cdn.datatables.net/1.10.0/images/sort_both.png") no-repeat center left;
+}
+
