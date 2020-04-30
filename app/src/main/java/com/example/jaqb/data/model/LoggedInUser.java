@@ -153,4 +153,13 @@ public class LoggedInUser extends Observable {
     {
         return CalendarServices.getNextCourse(registeredCourses, this);
     }
+
+    /**
+     * Returns true if the user's email has been verified
+     * @return True if the email is verified
+     */
+    public boolean isEmailVerified()
+    {
+        return firebaseUser.isEmailVerified();
+    }
 }

@@ -9,6 +9,7 @@ import android.widget.SearchView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.jaqb.data.model.Course;
 import com.example.jaqb.services.FireBaseDBServices;
+import com.example.jaqb.ui.LogoutActivity;
 import com.example.jaqb.ui.courses.CourseAdapter;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ import java.util.List;
  * Activity class to list out all courses and provide the functionality to search courses
  * */
 
-public class CourseRegistrationActivity extends AppCompatActivity implements
+public class CourseRegistrationActivity extends LogoutActivity implements
         SearchView.OnQueryTextListener,
         AdapterView.OnItemClickListener {
 
@@ -36,7 +37,7 @@ public class CourseRegistrationActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_course_registration);
+        onCreate(R.layout.activity_course_registration);
         findViewById(R.id.my_progressBar).setVisibility(View.GONE);
         courseList = new ArrayList<>();
         fireBaseDBServices = FireBaseDBServices.getInstance();

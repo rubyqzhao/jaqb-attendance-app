@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.jaqb.R;
+import com.example.jaqb.ui.LogoutActivity;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -22,7 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AttendanceHistoryOptionsActivity extends AppCompatActivity {
+public class AttendanceHistoryOptionsActivity extends LogoutActivity {
 
     private Button historyByDates;
     private Button historyByNames;
@@ -35,7 +36,7 @@ public class AttendanceHistoryOptionsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_attendance_history_options);
+        onCreate(R.layout.activity_attendance_history_options);
         courseCode = (String) getIntent().getCharSequenceExtra("code");
         courseAttendance = new ArrayList<>();
         textView = (TextView) findViewById(R.id.attendance_history_text);

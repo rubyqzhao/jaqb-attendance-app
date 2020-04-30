@@ -22,21 +22,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.jaqb.data.model.Course;
-import com.example.jaqb.data.model.SemesterDate;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.services.CalendarServices;
 import com.example.jaqb.services.FireBaseDBServices;
-
-import java.time.DayOfWeek;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.temporal.TemporalAdjusters;
+import com.example.jaqb.ui.LogoutActivity;
 
 /**
  * @author amanjotsingh
@@ -45,7 +38,7 @@ import java.time.temporal.TemporalAdjusters;
  * for that course.
  * */
 
-public class RegisteredCourseDetailsActivity extends AppCompatActivity implements View.OnClickListener {
+public class RegisteredCourseDetailsActivity extends LogoutActivity implements View.OnClickListener {
 
     private String courseCode;
     private String courseName;
@@ -70,7 +63,7 @@ public class RegisteredCourseDetailsActivity extends AppCompatActivity implement
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_registered_course_details);
+        onCreate(R.layout.activity_registered_course_details);
         courseCode = (String) getIntent().getCharSequenceExtra("code");
         courseName = (String) getIntent().getCharSequenceExtra("name");
         courseDays = (String) getIntent().getCharSequenceExtra("days");

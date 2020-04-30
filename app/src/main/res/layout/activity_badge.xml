@@ -8,18 +8,18 @@
     android:scrollbars="vertical">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
+        android:id="@+id/checkin_toolbar"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/toolbar_height"
         android:background="@color/colorAccent"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
-        app:layout_constraintBottom_toTopOf="@+id/badge_grid"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="@string/badges"
-        app:titleTextColor="#ffffff" />
+        app:title="Badges"
+        app:titleTextColor="#FFFFFF" />
 
     <GridView
         android:id="@+id/badge_grid"
@@ -35,5 +35,5 @@
         android:verticalSpacing="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/checkin_toolbar" />
 </androidx.constraintlayout.widget.ConstraintLayout>

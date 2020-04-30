@@ -3,14 +3,19 @@ package com.example.jaqb;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.CalendarContract;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import com.example.jaqb.data.model.Course;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.services.FireBaseDBServices;
+import com.example.jaqb.ui.LogoutActivity;
 import com.example.jaqb.ui.courses.CourseAdapter;
 
 /**
@@ -19,7 +24,7 @@ import com.example.jaqb.ui.courses.CourseAdapter;
  * Activity class to display the courses for the logged-in user
  * */
 
-public class MyCoursesActivity extends AppCompatActivity implements
+public class MyCoursesActivity extends LogoutActivity implements
         View.OnClickListener,
         AdapterView.OnItemClickListener {
 
@@ -35,7 +40,7 @@ public class MyCoursesActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my_courses);
+        onCreate(R.layout.activity_my_courses);
         fireBaseDBServices = FireBaseDBServices.getInstance();
         currentUser = fireBaseDBServices.getCurrentUser();
         searchCourses = (Button) findViewById(R.id.more_courses);

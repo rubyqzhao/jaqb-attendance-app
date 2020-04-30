@@ -20,6 +20,7 @@ import com.example.jaqb.R;
 import com.example.jaqb.data.model.Course;
 import com.example.jaqb.data.model.LoggedInUser;
 import com.example.jaqb.services.FireBaseDBServices;
+import com.example.jaqb.ui.LogoutActivity;
 import com.example.jaqb.ui.instructor.AttendanceHistoryInstructorActivity;
 import com.example.jaqb.ui.menu.MenuOptionsActivity;
 import com.google.firebase.database.DataSnapshot;
@@ -40,7 +41,7 @@ import java.util.Map;
  * to different activities based on their action.
  * */
 
-public class CheckInActivity extends MenuOptionsActivity {
+public class CheckInActivity extends LogoutActivity {
     private TextView upcomingClass;
     private DatabaseReference databaseReference;
     private List<Course> courseList;
@@ -52,17 +53,17 @@ public class CheckInActivity extends MenuOptionsActivity {
      * and gets data from the firebase database.
      * @param savedInstanceState the previous state of app
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_checkin);
-        Toolbar myToolbar = findViewById(R.id.checkin_toolbar);
-        setSupportActionBar(myToolbar);
+        onCreate(R.layout.activity_checkin);
         upcomingClass = findViewById(R.id.upcoming_class);
         databaseReference = FirebaseDatabase.getInstance().getReference();
         fireBaseDBServices = FireBaseDBServices.getInstance();
         currentUser = fireBaseDBServices.getCurrentUser();
         courseList = currentUser.getRegisteredCourses();
+        upcomingClass.setText(determineClassToDisplay());
     }
 
     /**
@@ -80,37 +81,7 @@ public class CheckInActivity extends MenuOptionsActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        //upcomingClass.setText(determineClassToDisplay());
-    }
-
-    /**
-     * When the menu is accessed
-     * @param menu f type MENU
-     * @return true if menu loads, else false
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_items, menu);
-        return true;
-    }
-
-    /**
-     * Triggers when an option is selected from the list of options
-     * @param item of type MenuItem
-     * @return true if option gets selected
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_logout) {
-            FireBaseDBServices.getInstance().logoutUser();
-            Intent intent = new Intent(this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        upcomingClass.setText(determineClassToDisplay());
     }
 
     /**
@@ -118,20 +89,20 @@ public class CheckInActivity extends MenuOptionsActivity {
      * for the upcoming course displayed on check in
      * @param view
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void checkinButtonOnClick(View view) {
         Double courseLongitude;
         Double courseLatitude;
-        //String courseQR;
-        //todo: change decision logic to get closest upcoming class
+        String courseQR = "";
         if(!courseList.isEmpty()) {
-            Course course = courseList.get(1);
-            courseLongitude = -111.9179767;//course.getLongitude();
-            courseLatitude = 33.4144485;//course.getLatitude();
-            //courseQR = course.getCourseQRCode();
+            Course course = currentUser.getNextCourse();
+            courseLongitude = course.getLongitude();
+            courseLatitude = course.getLatitude();
+            courseQR = course.getCourseQRCode().split(" ")[0].trim();
             Intent intent = new Intent(this, QRCheckin.class);
             intent.putExtra("courseLongitude", courseLongitude);
             intent.putExtra("courseLatitude", courseLatitude);
-            intent.putExtra("courseQR", "6468");
+            intent.putExtra("courseQR", courseQR);
             startActivity(intent);
         }
         else {
@@ -186,7 +157,6 @@ public class CheckInActivity extends MenuOptionsActivity {
     @RequiresApi(api = Build.VERSION_CODES.O)
     protected String determineClassToDisplay() {
         String message;
-        //todo: change decision logic to get closest upcoming class
         if(!courseList.isEmpty()) {
             Course course = currentUser.getNextCourse();
             String code = course.getCode();
@@ -241,7 +211,7 @@ public class CheckInActivity extends MenuOptionsActivity {
                     Log.d("database", attendance.toString());
                     int tempStreak = 0;
                     for(int i = 0; i < attendDates.size(); i++) {
-                        if(attendance.get(attendDates.get(i)).toString().equals("true")) {
+                        if(attendance.get(attendDates.get(i)).toString().equals("true") || attendance.get(attendDates.get(i)).toString().equals("late")) {
                             tempStreak++;
                             numAttended++;
                         }
@@ -273,5 +243,37 @@ public class CheckInActivity extends MenuOptionsActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
+    }
+
+    /**
+     * Determines badge stats based on inputted attendance data
+     * @param attendDates
+     * @param attendance
+     */
+    public Map<String, Object> badgeStats(List<String> attendDates, Map<String, Object> attendance) {
+        Map<String, Object> stats = new HashMap<>();
+        int currentStreak = 0;
+        int numAttended = 0;
+        int totalClasses = attendance.size();;
+        int tempStreak = 0;
+        for(int i = 0; i < attendDates.size(); i++) {
+            if(attendance.get(attendDates.get(i)).toString().equals("true")) {
+                tempStreak++;
+                numAttended++;
+            }
+            else {
+                if(tempStreak > currentStreak)
+                    currentStreak = tempStreak;
+                tempStreak = 0;
+            }
+        }
+        if(tempStreak > currentStreak)
+            currentStreak = tempStreak;
+
+        stats.put("currentStreak", Integer.valueOf(currentStreak));
+        stats.put("numAttended", Integer.valueOf(numAttended));
+        stats.put("totalClasses", Integer.valueOf(totalClasses));
+
+        return stats;
     }
 }
