@@ -315,7 +315,6 @@ public class QRCheckin extends LogoutActivity implements LocationListener {
         Date date = new Date();
         SimpleDateFormat format = new SimpleDateFormat("HH:mm");
         try {
-            //Date classTimeOnTime = format.parse("23:45");
             Date classTimeOnTime = format.parse(courseTime);
             Date nowTime = format.parse(format.format(date));
 
