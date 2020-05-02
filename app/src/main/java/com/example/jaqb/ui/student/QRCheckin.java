@@ -196,7 +196,7 @@ public class QRCheckin extends LogoutActivity implements LocationListener {
         updateLocation();
         boolean distOk = checkDist();
         boolean codeOk = (currentQR.equals(code));
-        String timeDiff = checkTime();
+        String timeDiff = checkTime(nextCourse.getTime());
         if("early".equalsIgnoreCase(timeDiff)){
             Toast.makeText(this, "You are too early for the class", Toast.LENGTH_LONG).show();
             finish();
@@ -311,12 +311,11 @@ public class QRCheckin extends LogoutActivity implements LocationListener {
      * @return true : If the time when student checks-in attendance for the class is valid
      *              otherwise false
      */
-    private String checkTime(){
+    private String checkTime(String courseTime){
         Date date = new Date();
         SimpleDateFormat format = new SimpleDateFormat("HH:mm");
         try {
-//            Date classTimeOnTime = format.parse("23:45");
-            Date classTimeOnTime = format.parse(nextCourse.getTime());
+            Date classTimeOnTime = format.parse(courseTime);
             Date nowTime = format.parse(format.format(date));
 
             Calendar calendar = Calendar.getInstance();
@@ -345,6 +344,18 @@ public class QRCheckin extends LogoutActivity implements LocationListener {
         }
         return "error";
     }
+
+    /**
+     * @author Bharat Goel
+     *
+     * This is just afunction to test checkTime function
+     * @param str
+     * @return
+     */
+    public String getCheckTimeString(String str){
+        return checkTime(str);
+    }
+
 
     /**
      * This method checks the distance of the android device with the class co-ordinates

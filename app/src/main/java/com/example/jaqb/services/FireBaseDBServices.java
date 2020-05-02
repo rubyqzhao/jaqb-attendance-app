@@ -266,6 +266,7 @@ public class FireBaseDBServices {
             DatabaseReference reff = database.getReference("User").child(user.getuID());
             reff.child("courses").child(newCourse.getCode()).setValue("true");
             boolean isStudent = "STUDENT" == user.getLevel().toString();
+            boolean isInstructor = "INSTRUCTOR" == user.getLevel().toString();
             if(isStudent) {
                 Query query = database.getReference("Course/").orderByChild("code")
                         .equalTo(newCourse.getCode());
@@ -278,6 +279,28 @@ public class FireBaseDBServices {
                                 database.getReference("Course").child(keyNode.getKey())
                                         .child("students").child(user.getuID()).setValue("true");
                             }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            } else if(isInstructor) {
+                Query query = database.getReference("Course").orderByChild("code")
+                        .equalTo(newCourse.getCode());
+
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for(DataSnapshot keyNode : dataSnapshot.getChildren()){
+                            String key = "";
+                            key = keyNode.getKey();
+                            database.getReference("Course")
+                                    .child(key)
+                                    .child("instructorName")
+                                    .setValue(currentUser.getfName() + " " + currentUser.getlName());
                         }
                     }
 
@@ -491,43 +514,7 @@ public class FireBaseDBServices {
         return attendanceCreated[0];
     }
 
-                      
-    /**
-     * This method updates the Database when instructor registers for the course. As soon as user signs up for
-     * registering for a class, it updates instructor name in the Courses Table.
-     * 
-     * @param courseCode courseCode that instructor is registering
-     * @param currentUser user currently logged in the app
-     */
 
-    public void updateDatabase(String courseCode, final LoggedInUser currentUser) {
-        try {
-            Query query = database.getReference("Course").orderByChild("code")
-                    .equalTo(courseCode);
-
-            query.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for(DataSnapshot keyNode : dataSnapshot.getChildren()){
-                        String key = "";
-                        key = keyNode.getKey();
-                        database.getReference("Course")
-                                .child(key)
-                                .child("instructorName")
-                                .setValue(currentUser.getfName() + " " + currentUser.getlName());
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-    }
                       
                       
     /**
