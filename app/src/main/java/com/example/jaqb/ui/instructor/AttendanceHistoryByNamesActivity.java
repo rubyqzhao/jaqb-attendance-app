@@ -80,6 +80,25 @@ public class AttendanceHistoryByNamesActivity extends LogoutActivity {
                         }
                     }
                 }
+                databaseReference2.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for(DataSnapshot keyNode : dataSnapshot.getChildren()){
+                            String key = keyNode.getKey();
+                            String fname = (String) keyNode.child("fname").getValue();
+                            String lname = (String) keyNode.child("lname").getValue();
+                            RegisteredUser user = new RegisteredUser(fname, lname);
+                            studentData.put(key, user);
+                        }
+                        getDisplayDate();
+                        listView.setAdapter(arrayAdapter);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
 
             @Override
@@ -87,25 +106,7 @@ public class AttendanceHistoryByNamesActivity extends LogoutActivity {
 
             }
         });
-        databaseReference2.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot keyNode : dataSnapshot.getChildren()){
-                    String key = keyNode.getKey();
-                    String fname = (String) keyNode.child("fname").getValue();
-                    String lname = (String) keyNode.child("lname").getValue();
-                    RegisteredUser user = new RegisteredUser(fname, lname);
-                    studentData.put(key, user);
-                }
-                getDisplayDate();
-                listView.setAdapter(arrayAdapter);
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
